@@ -1,77 +1,115 @@
 package com.team2.getfitwithhenry;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.camera.core.CameraSelector;
-import androidx.camera.core.ImageAnalysis;
-import androidx.camera.core.ImageProxy;
-import androidx.camera.core.Preview;
-import androidx.camera.lifecycle.ProcessCameraProvider;
-import androidx.camera.view.PreviewView;
-import androidx.core.content.ContextCompat;
-import androidx.lifecycle.LifecycleOwner;
-
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Size;
-import android.view.OrientationEventListener;
-import android.widget.TextView;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.Toast;
 
-import com.google.common.util.concurrent.ListenableFuture;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
-import java.util.concurrent.ExecutionException;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class CameraActivity extends AppCompatActivity {
-    private PreviewView previewView;
-    private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
-    private TextView textView;
+
+    private final int CAPTURE_IMAGE_REQUEST = 1;
+    private File photoFile;
+    private String mCurrentPhotoPath;
+    private Button mbtncapture;
+    private ImageView mimageView;
+    ActivityResultLauncher<Intent> captureImageResult;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreate(Bundle savedInstance) {
+        super.onCreate(savedInstance);
         setContentView(R.layout.activity_camera);
-        previewView = findViewById(R.id.previewView);
-        cameraProviderFuture = ProcessCameraProvider.getInstance(this);
-        textView = findViewById(R.id.orientation);
-        cameraProviderFuture.addListener(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
-                    bindImageAnalysis(cameraProvider);
-                } catch (ExecutionException | InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, ContextCompat.getMainExecutor(this));
+
+        mbtncapture = findViewById(R.id.btncapture);
+        mimageView = findViewById(R.id.imageView);
+        mbtncapture.setOnClickListener(view -> captureImage());
+
+        registerActivityResult();
+
     }
 
 
-    private void bindImageAnalysis(@NonNull ProcessCameraProvider cameraProvider) {
-        ImageAnalysis imageAnalysis =
-                new ImageAnalysis.Builder()
-                        .setTargetResolution(new Size(1280, 720))
-                        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                        .build();
-        imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(this), new ImageAnalysis.Analyzer() {
+    private void captureImage() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            startCameraandWritetoFile();
+        } else {
+            String[] permissions = new String[]{
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+            };
+            ActivityCompat.requestPermissions(this, permissions, CAPTURE_IMAGE_REQUEST);
+        }
+    }
 
-            @Override
-            public void analyze(@NonNull ImageProxy image) {
-                image.close();
+    private void startCameraandWritetoFile() {
+        Intent captureImageIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        if (captureImageIntent.resolveActivity(getPackageManager()) != null) {
+            try {
+                photoFile = createImageFile();
+                Uri photoURI = FileProvider.getUriForFile(
+                        this,
+                        "com.team2.getfitwithhenry.fileprovider",
+                        photoFile
+                );
+                captureImageIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                captureImageIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                //startActivityForResult(captureImageIntent, CAPTURE_IMAGE_REQUEST);
+                captureImageResult.launch(captureImageIntent);
+            } catch (Exception ex) {
+                Toast.makeText(getBaseContext(), ex.getMessage().toString(), Toast.LENGTH_LONG).show();
             }
-        });
-        OrientationEventListener orientationEventListener = new OrientationEventListener(this) {
-            @Override
-            public void onOrientationChanged(int orientation) {
-                textView.setText(Integer.toString(orientation));
-            }
-        };
-        orientationEventListener.enable();
-        Preview preview = new Preview.Builder().build();
-        CameraSelector cameraSelector = new CameraSelector.Builder()
-                .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-                .build();
-        preview.setSurfaceProvider(previewView.getSurfaceProvider());
-        cameraProvider.bindToLifecycle(this, cameraSelector, imageAnalysis, preview);
+        } else {
+            Toast.makeText(getBaseContext(), "Noting to Show", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private File createImageFile() throws IOException {
+        String timeStamp = DateFormat();
+        String imgFileName = "JPEG_" + timeStamp + "_";
+        File dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File myFile = new File(dir, imgFileName);
+        mCurrentPhotoPath = myFile.getAbsolutePath();
+        return (File.createTempFile(imgFileName, ".jpg", dir));
+    }
+
+    private String DateFormat() {
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
+        Date date = new Date(System.currentTimeMillis());
+        return formatter.format(date);
+    }
+
+    protected void registerActivityResult() {
+        captureImageResult = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(), result -> {
+                    if (result.getResultCode() == AppCompatActivity.RESULT_OK) {
+                        Intent data = result.getData();
+
+                        Bitmap bitImage = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
+                        mimageView.setImageBitmap(bitImage);
+                        Toast.makeText(getBaseContext(), "Showing the image", Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 }

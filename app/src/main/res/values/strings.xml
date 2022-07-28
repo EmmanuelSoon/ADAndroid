@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">GetFitWithHenry</string>
+    <string name="capture_image">Take Picture</string>
+    <string name="content_desc">Capture(d) Image</string>
 </resources>
