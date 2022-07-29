@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="16dp"
+    android:orientation="vertical"
+    tools:context=".LoggerActivity">
+
+    <TextView
+        android:id="@+id/log_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="My Records"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        />
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="20dp">
+
+    </com.github.mikephil.charting.charts.LineChart>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginVertical="20dp">
+        <TextView
+            android:id="@+id/total_calories"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Total Calories: 0"
+            />
+
+        <TextView
+            android:id="@+id/current_calories"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Current Calories: 0"
+            />
+
+        <TextView
+            android:id="@+id/BMI"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="BMI: 0"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginVertical="20dp">
+
+        <EditText
+            android:id="@+id/set_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter to edit limit/Add Calories">
+
+        </EditText>
+
+        <Button
+            android:id="@+id/set_limit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Set Calorie Limit" />
+
+        <Button
+            android:id="@+id/add_calories"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Calories" />
+
+    </LinearLayout>
+
+
+
+</LinearLayout>
