@@ -15,6 +15,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -50,11 +51,14 @@ public class CameraActivity extends AppCompatActivity {
     //this is for okhttp testing
     public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
+    private final int REQUEST_CODE_PERMISSIONS = 10;
+    private String[] REQUIRED_PERMISSIONS = new String[] {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
     private final int CAPTURE_IMAGE_REQUEST = 1;
     private File photoFile;
     private String mCurrentPhotoPath;
-    private Button mbtncapture;
     private ImageView mimageView;
+    private TextView resultsText;
     ActivityResultLauncher<Intent> captureImageResult;
 
     @Override
@@ -62,15 +66,47 @@ public class CameraActivity extends AppCompatActivity {
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_camera);
 
-        mbtncapture = findViewById(R.id.btncapture);
+
         mimageView = findViewById(R.id.imageView);
-        mbtncapture.setOnClickListener(view -> captureImage());
+        resultsText = findViewById(R.id.resultsText);
+        if(havePermission()){
+            startCameraAndWriteToFile();
+        }
+        else{
+            requestPermission();
+        }
 
+        captureImage();
         registerActivityResult();
-
 
     }
 
+    protected Boolean havePermission(){
+        if(ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    private void requestPermission() {
+        ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS,REQUEST_CODE_PERMISSIONS);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+            if (havePermission()) {
+                startCameraAndWriteToFile();
+            } else {
+                Toast.makeText(this, "Permissions not granted by the user.", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        }
+    }
 
     private void captureImage() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
@@ -82,6 +118,7 @@ public class CameraActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, permissions, CAPTURE_IMAGE_REQUEST);
         }
     }
+
 
     private void startCameraAndWriteToFile() {
         Intent captureImageIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);

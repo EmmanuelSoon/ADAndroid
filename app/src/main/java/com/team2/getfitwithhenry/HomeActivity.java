@@ -36,7 +36,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(intent);
         }
         if(id==R.id.scanBtn){
-            intent=new Intent(this,MainActivity.class);
+            intent=new Intent(this, CameraActivity.class);
             startActivity(intent);
         }
     }
