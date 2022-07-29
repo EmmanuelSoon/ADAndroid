@@ -2,4 +2,12 @@
     <string name="app_name">GetFitWithHenry</string>
     <string name="capture_image">Take Picture</string>
     <string name="content_desc">Capture(d) Image</string>
+    <string name="enter_foodname">Enter food lists here...</string>
+    <string name="search">Search</string>
+    <string name="calories_left">calories left</string>
+    <string name="drink_water">Drink 5 glasses of water</string>
+    <string name="log">Logs</string>
+    <string name="receipe">Receipe</string>
+    <string name="scanner">Scanner</string>
+    <string name="me">Me</string>
 </resources>
