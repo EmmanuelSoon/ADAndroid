@@ -30,13 +30,19 @@
             android:name=".CameraActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".SearchFoodActivity"
+            android:exported="true" />
+        <activity
+            android:name=".HomeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
         </activity>
 
         <provider
