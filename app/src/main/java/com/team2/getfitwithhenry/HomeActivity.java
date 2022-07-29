@@ -28,7 +28,7 @@ public class HomeActivity extends AppCompatActivity {
 
         }
 
-        
+
 
 //        Typeface font = Typeface.createFromAsset(getAssets(),"fonts/fontawesome-webfont.ttf");
 //        searchBtn.setTypeface(font);

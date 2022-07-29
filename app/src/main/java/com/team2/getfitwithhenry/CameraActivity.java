@@ -45,7 +45,7 @@ import okhttp3.ResponseBody;
 public class CameraActivity extends AppCompatActivity implements View.OnClickListener {
 
     private final OkHttpClient client = new OkHttpClient();
-
+    private static final MediaType MEDIA_TYPE_PLAINTEXT = MediaType.parse("text/plain; charset=utf-8");
     private final int REQUEST_CODE_PERMISSIONS = 10;
     private File photoFile;
     private String[] REQUIRED_PERMISSIONS = new String[] {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -80,8 +80,6 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
         registerActivityResult();
         checkPermissions();
-
-
 
     }
 
@@ -192,7 +190,8 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
     private void uploadRequestBody() {
         Request request = new Request.Builder()
-                .url("http://192.168.10.127:8080/test/method1")
+                .url("http://192.168.0.111:8080/flask/recieveImgFromAndroid")
+                .post(RequestBody.create(MEDIA_TYPE_PLAINTEXT, getBytesFromBitmap(bitImage)))
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
