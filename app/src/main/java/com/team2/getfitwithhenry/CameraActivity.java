@@ -2,6 +2,7 @@ package com.team2.getfitwithhenry;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -10,6 +11,8 @@ import android.graphics.Path;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -45,11 +48,11 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public class CameraActivity extends AppCompatActivity {
 
-    //this is for okhttp testing
-    public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+    private final OkHttpClient client = new OkHttpClient();
 
     private final int REQUEST_CODE_PERMISSIONS = 10;
     private String[] REQUIRED_PERMISSIONS = new String[] {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -66,9 +69,11 @@ public class CameraActivity extends AppCompatActivity {
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_camera);
 
-
         mimageView = findViewById(R.id.imageView);
         resultsText = findViewById(R.id.resultsText);
+
+        registerActivityResult();
+
         if(havePermission()){
             startCameraAndWriteToFile();
         }
@@ -76,8 +81,7 @@ public class CameraActivity extends AppCompatActivity {
             requestPermission();
         }
 
-        captureImage();
-        registerActivityResult();
+
 
     }
 
@@ -137,10 +141,10 @@ public class CameraActivity extends AppCompatActivity {
                 //startActivityForResult(captureImageIntent, CAPTURE_IMAGE_REQUEST);
                 captureImageResult.launch(captureImageIntent);
             } catch (Exception ex) {
-                Toast.makeText(getBaseContext(), ex.getMessage().toString(), Toast.LENGTH_LONG).show();
+                ex.printStackTrace();
             }
         } else {
-            Toast.makeText(getBaseContext(), "Noting to Show", Toast.LENGTH_LONG).show();
+            Toast.makeText(getBaseContext(), "Nothing to Show", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -173,40 +177,50 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private void uploadRequestBody() {
-        System.out.println("inside method");
-
-        OkHttpClient client = new OkHttpClient();
-
         Request request = new Request.Builder()
-                .url("http://localhost:8080/test/method1")
-
+                .url("http://192.168.10.127:8080/test/method1")
                 .build();
 
-        new Thread(new Runnable(){
+        client.newCall(request).enqueue(new Callback() {
             @Override
-            public void run(){
-                Log.i("In thread", "run");
-                try (Response response = client.newCall(request).execute()) {
-                    Log.i("Inside try", "try");
-                    if (!response.isSuccessful()) {
-                        Log.i("In response", "not success");
-                        throw new IOException("Unexpected code " + response);
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
 
+            @Override
+            public void onResponse(Call call, Response response) {
+                try {
+                    ResponseBody responseBody = response.body();
+                    if (!response.isSuccessful()) {
+                        throw new IOException("Unexpected code " + response);
                     }
 
-                    Log.i("In thread", "received response");
-                }
-                catch(Exception e){
+                    String msg = String.valueOf(responseBody.string());
+                    backgroundThreadShortToast(getApplicationContext(),msg);
+
+                    Log.i("data", responseBody.string());
+                } catch (Exception e) {
                     e.printStackTrace();
-                    System.out.println("something went wrong");
+                }
             }
-        }});
-
+        });
 
 
     }
 
+    public static void backgroundThreadShortToast(final Context context, final String msg) {
+        if (context != null && msg != null) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+
+                @Override
+                public void run() {
+                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
+
+}
 
 
 
