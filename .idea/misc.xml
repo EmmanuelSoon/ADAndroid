@@ -3,9 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/KRISH/AndroidStudioProjects/ADAndroid/app/src/main/res/xml/file_path.xml" value="0.20833333333333334" />
         <entry key="app/src/main/res/layout/activity_camera.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_test_http.xml" value="0.264945652173913" />
+        <entry key="app/src/main/res/xml/network_security_config.xml" value="0.3453125" />
       </map>
     </option>
   </component>
