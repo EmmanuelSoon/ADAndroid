@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:enabled="true"
+        android:id="@+id/nav_search"
+        android:title="Search"
+        android:icon="@drawable/nav_search" />
+    <item
+        android:enabled="true"
+        android:id="@+id/nav_log"
+        android:title="Log"
+        android:icon="@drawable/nav_log" />
+    <item
+        android:enabled="true"
+        android:id="@+id/nav_home"
+        android:title="Home"
+        android:icon="@drawable/nav_dashboard" />
+    <item
+        android:enabled="true"
+        android:id="@+id/nav_recipe"
+        android:title="Recipies"
+        android:icon="@drawable/nav_recipe" />
+    <item
+        android:enabled="true"
+        android:id="@+id/nav_scanner"
+        android:title="Scan"
+        android:icon="@drawable/nav_scanner" />
+</menu>

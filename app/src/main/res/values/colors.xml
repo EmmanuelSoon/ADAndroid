@@ -11,4 +11,6 @@
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
     <color name="ocean_green">#4DA27A</color>
+    <color name="green">#3db83b</color>
+    <color name="red">#e62e2e</color>
 </resources>

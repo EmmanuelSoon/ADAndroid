@@ -14,6 +14,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,18 +42,27 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-public class CameraActivity extends AppCompatActivity {
+public class CameraActivity extends AppCompatActivity implements View.OnClickListener {
 
     private final OkHttpClient client = new OkHttpClient();
-    private static final MediaType MEDIA_TYPE_PLAINTEXT = MediaType
-            .parse("text/plain; charset=utf-8");
+
     private final int REQUEST_CODE_PERMISSIONS = 10;
-    private final String[] REQUIRED_PERMISSIONS = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
     private File photoFile;
+    private String[] REQUIRED_PERMISSIONS = new String[] {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    ActivityResultLauncher<Intent> captureImageResult;
+
     private ImageView mimageView;
     private TextView resultsText;
+    private Button goToSearchBtn;
+    private Button incorrectBtn;
+    private String returnMsg;
+
+
+    //consider not making this global?
+    private String mCurrentPhotoPath;
     private Bitmap bitImage;
-    ActivityResultLauncher<Intent> captureImageResult;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstance) {
@@ -61,50 +72,60 @@ public class CameraActivity extends AppCompatActivity {
         mimageView = findViewById(R.id.imageView);
         resultsText = findViewById(R.id.resultsText);
 
+        goToSearchBtn = findViewById(R.id.goToSearchBtn);
+        incorrectBtn = findViewById(R.id.incorrectBtn);
+
+        goToSearchBtn.setOnClickListener(this);
+        incorrectBtn.setOnClickListener(this);
+
         registerActivityResult();
+        checkPermissions();
 
-        if (havePermission()) {
-            startCameraAndWriteToFile();
-        } else {
-            requestPermission();
+
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        Intent intent;
+        if(v.getId() == R.id.goToSearchBtn){
+            intent = new Intent(this, SearchFoodActivity.class);
+            intent.putExtra("SearchValue", returnMsg);
+            startActivity(intent);
         }
-
-
+        else if(v.getId() == R.id.incorrectBtn){
+            Toast.makeText(this, "Oh no! Classifier got it wrong.", Toast.LENGTH_SHORT).show();
+        }
     }
 
-    protected Boolean havePermission() {
-        return ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.CAMERA)
-                == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private void requestPermission() {
-        ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
+    public void checkPermissions(){
+        for (String permission : REQUIRED_PERMISSIONS){
+            if(ContextCompat.checkSelfPermission(getBaseContext(), permission) == PackageManager.PERMISSION_GRANTED){
+                startCameraAndWriteToFile();
+            }
+            else{
+                ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS,REQUEST_CODE_PERMISSIONS);
+            }
+        }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
-            if (havePermission()) {
-                startCameraAndWriteToFile();
-            } else {
+            for (String permission : REQUIRED_PERMISSIONS) {
+                if (ContextCompat.checkSelfPermission(getBaseContext(), permission) == PackageManager.PERMISSION_GRANTED) {
+                    startCameraAndWriteToFile();
+                }
+            }
+        } else {
                 Toast.makeText(this, "Permissions not granted by the user.", Toast.LENGTH_SHORT).show();
                 finish();
             }
-        }
+
     }
 
-    private void captureImage() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            startCameraAndWriteToFile();
-        } else {
-            String[] permissions = new String[]{
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-            };
-            int CAPTURE_IMAGE_REQUEST = 1;
-            ActivityCompat.requestPermissions(this, permissions, CAPTURE_IMAGE_REQUEST);
-        }
-    }
+
 
 
     private void startCameraAndWriteToFile() {
@@ -112,6 +133,7 @@ public class CameraActivity extends AppCompatActivity {
 
         if (captureImageIntent.resolveActivity(getPackageManager()) != null) {
             try {
+                //note to alyssa -> dont set this as global, try to get the file from the intent
                 photoFile = createImageFile();
                 Uri photoURI = FileProvider.getUriForFile(
                         this,
@@ -135,8 +157,8 @@ public class CameraActivity extends AppCompatActivity {
         String timeStamp = DateFormat();
         String imgFileName = "JPEG_" + timeStamp + "_";
         File dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        //File myFile = new File(dir, imgFileName);
-        //String mCurrentPhotoPath = myFile.getAbsolutePath();
+        File myFile = new File(dir, imgFileName);
+        mCurrentPhotoPath = myFile.getAbsolutePath();
         return (File.createTempFile(imgFileName, ".jpg", dir));
     }
 
@@ -156,6 +178,9 @@ public class CameraActivity extends AppCompatActivity {
                         Toast.makeText(getBaseContext(), "Showing the image", Toast.LENGTH_LONG).show();
                         uploadRequestBody();
                     }
+                    else{
+                        System.out.println(result.getResultCode());
+                    }
                 });
     }
 
@@ -166,10 +191,8 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private void uploadRequestBody() {
-
         Request request = new Request.Builder()
-                .url("http://192.168.0.111:8080/flask/recieveImgFromAndroid")
-                .post(RequestBody.create(MEDIA_TYPE_PLAINTEXT, getBytesFromBitmap(bitImage)))
+                .url("http://192.168.10.127:8080/test/method1")
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -186,9 +209,8 @@ public class CameraActivity extends AppCompatActivity {
                         throw new IOException("Unexpected code " + response);
                     }
 
-                    String msg = String.valueOf(responseBody.string());
-
-                    backgroundThreadShortToast(getApplicationContext(), msg);
+                    returnMsg = String.valueOf(responseBody.string());
+                    displayResponse(getApplicationContext(), returnMsg);
 
                     Log.i("data", responseBody.string());
                 } catch (Exception e) {
@@ -197,11 +219,20 @@ public class CameraActivity extends AppCompatActivity {
             }
         });
 
+
     }
 
-    public static void backgroundThreadShortToast(final Context context, final String msg) {
+    public void displayResponse(final Context context, final String msg) {
         if (context != null && msg != null) {
-            new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show());
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+
+                @Override
+                public void run() {
+                    resultsText.setText(msg);
+                    goToSearchBtn.setVisibility(View.VISIBLE);
+                    incorrectBtn.setVisibility(View.VISIBLE);
+                }
+            });
         }
     }
 
