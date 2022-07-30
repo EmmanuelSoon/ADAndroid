@@ -61,6 +61,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     //consider not making this global?
     private String mCurrentPhotoPath;
     private Bitmap bitImage;
+    private boolean hasPermission = false;
 
 
 
@@ -80,6 +81,9 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
         registerActivityResult();
         checkPermissions();
+        deletePicturesFromPath();
+        if(hasPermission)
+            startCameraAndWriteToFile();
 
     }
 
@@ -98,27 +102,29 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
     public void checkPermissions(){
         for (String permission : REQUIRED_PERMISSIONS){
-            if(ContextCompat.checkSelfPermission(getBaseContext(), permission) != PackageManager.PERMISSION_GRANTED){
+            if(ContextCompat.checkSelfPermission(getBaseContext(), permission) == PackageManager.PERMISSION_GRANTED){
+                hasPermission = true;
+            }
+            else{
+                hasPermission = false;
                 ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS,REQUEST_CODE_PERMISSIONS);
             }
-
         }
-        startCameraAndWriteToFile();
     }
 
     @Override
-    //work in progress, to degrade app gracefully
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             for (String permission : REQUIRED_PERMISSIONS) {
-                if (ContextCompat.checkSelfPermission(getBaseContext(), permission) != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Permissions not granted by the user.", Toast.LENGTH_SHORT).show();
-                    finish();   //finishing here will result in the camera activity closing
+                if (ContextCompat.checkSelfPermission(getBaseContext(), permission) == PackageManager.PERMISSION_GRANTED) {
+                    startCameraAndWriteToFile();
                 }
             }
-            startCameraAndWriteToFile();
-        }
+        } else {
+                Toast.makeText(this, "Permissions not granted by the user.", Toast.LENGTH_SHORT).show();
+                finish();
+            }
 
     }
 
@@ -152,7 +158,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
     private File createImageFile() throws IOException {
         String timeStamp = DateFormat();
-        String imgFileName = "JPEG_" + timeStamp + "_";
+        String imgFileName = "DIETPHOTO_" + timeStamp + "_";
         File dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File myFile = new File(dir, imgFileName);
         mCurrentPhotoPath = myFile.getAbsolutePath();
@@ -231,6 +237,22 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                     incorrectBtn.setVisibility(View.VISIBLE);
                 }
             });
+        }
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        deletePicturesFromPath();
+    }
+
+    private void deletePicturesFromPath()
+    {
+        File[] dietPhotos = getExternalFilesDir(Environment.DIRECTORY_PICTURES).listFiles();
+        for(File photo : dietPhotos)
+        {
+            photo.delete();
         }
     }
 
