@@ -98,28 +98,27 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
     public void checkPermissions(){
         for (String permission : REQUIRED_PERMISSIONS){
-            if(ContextCompat.checkSelfPermission(getBaseContext(), permission) == PackageManager.PERMISSION_GRANTED){
-                startCameraAndWriteToFile();
-            }
-            else{
+            if(ContextCompat.checkSelfPermission(getBaseContext(), permission) != PackageManager.PERMISSION_GRANTED){
                 ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS,REQUEST_CODE_PERMISSIONS);
             }
+
         }
+        startCameraAndWriteToFile();
     }
 
     @Override
+    //work in progress, to degrade app gracefully
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             for (String permission : REQUIRED_PERMISSIONS) {
-                if (ContextCompat.checkSelfPermission(getBaseContext(), permission) == PackageManager.PERMISSION_GRANTED) {
-                    startCameraAndWriteToFile();
+                if (ContextCompat.checkSelfPermission(getBaseContext(), permission) != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "Permissions not granted by the user.", Toast.LENGTH_SHORT).show();
+                    finish();   //finishing here will result in the camera activity closing
                 }
             }
-        } else {
-                Toast.makeText(this, "Permissions not granted by the user.", Toast.LENGTH_SHORT).show();
-                finish();
-            }
+            startCameraAndWriteToFile();
+        }
 
     }
 

@@ -27,7 +27,7 @@ public class HomeActivity extends AppCompatActivity {
         setBottomNavBar();
 
         }
-        
+
 
     public void setBottomNavBar() {
         bottomNavView = findViewById(R.id.bottom_navigation);
@@ -58,10 +58,10 @@ public class HomeActivity extends AppCompatActivity {
                         startActivity(intent);
                         break;
 
-                    case(R.id.nav_home):
-                        intent = new Intent(getApplicationContext(), HomeActivity.class);
-                        startActivity(intent);
-                        break;
+//                    case(R.id.nav_home):
+//                        intent = new Intent(getApplicationContext(), HomeActivity.class);
+//                        startActivity(intent);
+//                        break;
                 }
 
                 return false;
