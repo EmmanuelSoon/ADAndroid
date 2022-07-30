@@ -27,15 +27,7 @@ public class HomeActivity extends AppCompatActivity {
         setBottomNavBar();
 
         }
-
-
-
-//        Typeface font = Typeface.createFromAsset(getAssets(),"fonts/fontawesome-webfont.ttf");
-//        searchBtn.setTypeface(font);
-//        searchBtn.setText("\f002");
-
-
-
+        
 
     public void setBottomNavBar() {
         bottomNavView = findViewById(R.id.bottom_navigation);
@@ -60,14 +52,21 @@ public class HomeActivity extends AppCompatActivity {
                         intent = new Intent(getApplicationContext(), LoggerActivity.class);
                         startActivity(intent);
                         break;
+
+                    case(R.id.nav_recipe):
+                        intent = new Intent(getApplicationContext(), ReceipeActivity.class);
+                        startActivity(intent);
+                        break;
+
+                    case(R.id.nav_home):
+                        intent = new Intent(getApplicationContext(), HomeActivity.class);
+                        startActivity(intent);
+                        break;
                 }
 
                 return false;
             }
-
-
         });
-
     }
 
 

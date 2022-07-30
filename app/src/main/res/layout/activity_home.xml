@@ -7,34 +7,41 @@
     android:layout_height="match_parent"
     android:fillViewport="false"
     android:orientation="vertical">
-
-    <ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintLeft_toLeftOf="parent"
-    tools:context=".HomeActivity">
+<!--    <ScrollView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintLeft_toLeftOf="parent"-->
+<!--        tools:context=".HomeActivity">-->
+    <EditText
+        android:id="@+id/weight_editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/customborder"
+        android:gravity="center"
+        android:hint="Weight Track (will change later when graph is confirmed)"
+        android:inputType="textMultiLine"
+        android:lines="8"
+        android:maxLines="10"
+        android:minLines="7"
+        android:scrollbars="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:ignore="MissingConstraints" />
 
         <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight=".6"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/weight_editText"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
         android:orientation="horizontal">
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/customborder"
-            android:gravity="center"
-            android:hint="Weight Track (will change later when graph is confirmed)"
-            android:inputType="textMultiLine"
-            android:scrollbars="vertical" />
-
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_weight="2"
             android:background="@drawable/customborder">
@@ -71,7 +78,7 @@
     </LinearLayout>
 
 
-    </ScrollView>
+<!--    </ScrollView>-->
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
@@ -88,50 +95,4 @@
 
 
 
-
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="0dp"-->
-<!--        android:layout_weight=".2"-->
-<!--        android:orientation="horizontal">-->
-<!--        <Button-->
-<!--            style="@style/btnStyle"-->
-<!--            android:id="@+id/searchBtn"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:text="@string/search"-->
-<!--            android:layout_weight="1"-->
-<!--            android:layout_marginRight="2dp"></Button>-->
-<!--        <Button-->
-<!--            style="@style/btnStyle"-->
-<!--            android:id="@+id/logBtn"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:text="@string/log"-->
-<!--            android:layout_weight="1"-->
-<!--            android:layout_marginRight="2dp"></Button>-->
-<!--        <Button-->
-<!--            style="@style/btnStyle"-->
-<!--            android:id="@+id/receipeBtn"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:text="@string/receipe"-->
-<!--            android:layout_marginRight="2dp"-->
-<!--            android:layout_weight="1"></Button>-->
-<!--        <Button-->
-<!--            style="@style/btnStyle"-->
-<!--            android:id="@+id/scanBtn"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:text="@string/scanner"-->
-<!--            android:layout_marginRight="2dp"-->
-<!--            android:layout_weight="1"></Button>-->
-<!--        <Button-->
-<!--            style="@style/btnStyle"-->
-<!--            android:id="@+id/meBtn"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:text="@string/me"-->
-<!--            android:layout_weight="1"></Button>-->
-<!--    </LinearLayout>-->
 
