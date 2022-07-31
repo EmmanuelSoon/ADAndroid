@@ -34,5 +34,5 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/editText"
-        android:layout_marginTop="10dp"></ListView>
+        android:layout_marginTop="20dp"></ListView>
 </androidx.constraintlayout.widget.ConstraintLayout>

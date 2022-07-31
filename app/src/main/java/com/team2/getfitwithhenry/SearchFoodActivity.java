@@ -136,7 +136,7 @@ public class SearchFoodActivity extends AppCompatActivity {
                         mlistView.setAdapter(myAdapter);
                     }
 
-                    String name = myList.get(0).getName();
+                    String name = myList.get(0).getName() + " size: " + myList.size();
                     Toast toast = Toast.makeText(context, name, Toast.LENGTH_SHORT);
                     toast.show();
 
