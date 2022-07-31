@@ -2,73 +2,85 @@ package com.team2.getfitwithhenry.model;
 
 import android.text.LoginFilter;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class User {
+    private int id;
+    private String name;
     private String username;
     private String password;
-    private List<Integer> dailyCal = new ArrayList<>();
-    private double height;
-    private double weight;
-    private int calorieCap = 2000;
+    private Role role;
+    private Goal goal;
+    private List<Ingredient> dislike = new ArrayList<>();
 
-    public User(String username, String password, double height, double weight){
+
+    public User(@JsonProperty("id") int id, @JsonProperty("name") String name, @JsonProperty("username") String username, @JsonProperty("password")String password, @JsonProperty("role") Role role, @JsonProperty("goal") Goal goal, @JsonProperty("dislike") List<Ingredient> dislike) {
+        this.id = id;
+        this.name = name;
         this.username = username;
         this.password = password;
-        this.height = height;
-        this.weight = weight;
-        dailyCal.add(0);
+        this.role = role;
+        this.goal = goal;
+        this.dislike = dislike;
+    }
+
+    public User(int id,String name,String username,String password, Role role, Goal goal) {
+        this.id = id;
+        this.name = name;
+        this.username = username;
+        this.password = password;
+        this.role = role;
+        this.goal = goal;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getUsername() {
         return username;
     }
 
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public String getPassword() {
         return password;
     }
 
-    public List<Integer> getDailyCal() {
-        return dailyCal;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public double getHeight() {
-        return height;
+    public Role getRole() {
+        return role;
     }
 
-    public double getWeight() {
-        return weight;
-    }
-    public int getCalorieCap() {
-        return calorieCap;
+    public void setRole(Role role) {
+        this.role = role;
     }
 
-    public void addCalories(int cal){
-        int todayCal = dailyCal.get(dailyCal.size() - 1);
-        todayCal = todayCal + cal;
-        dailyCal.set(dailyCal.size()-1, todayCal);
+    public Goal getGoal() {
+        return goal;
     }
 
-    public int getCurrentCal(){
-        return dailyCal.get(dailyCal.size() -1);
+    public void setGoal(Goal goal) {
+        this.goal = goal;
     }
-
-    public void setCalorieCap(int cal){
-        calorieCap = cal;
-    }
-
-    public void setNewDay(){
-        dailyCal.add(0);
-    }
-
-    public void seeding(){
-        dailyCal.add(1900);
-        dailyCal.add(2000);
-        dailyCal.add(1922);
-        dailyCal.add(1800);
-        dailyCal.add(0);
-    }
-
-
 }
