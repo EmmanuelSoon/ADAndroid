@@ -2,6 +2,9 @@ package com.team2.getfitwithhenry.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +17,8 @@ import androidx.annotation.NonNull;
 import com.team2.getfitwithhenry.R;
 import com.team2.getfitwithhenry.model.Ingredient;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 public class FoodListAdapter extends ArrayAdapter<Ingredient> {
@@ -34,14 +39,34 @@ public class FoodListAdapter extends ArrayAdapter<Ingredient> {
             view = inflater.inflate(R.layout.food_list, parent, false);
         }
 
-        ImageView imageView = view.findViewById(R.id.imageView);
-        imageView.setImageResource(R.drawable.bread);
-        //to set images
 
-        TextView textView = view.findViewById(R.id.textView);
-        textView.setText(iList.get(pos).getName());
+        String className = iList.get(pos).getName();
+
+        ImageView imageView = view.findViewById(R.id.imageView);
+        try {
+            imageView.setImageBitmap(getBitmapFromAssets("seed_images/" + className + ".jpg"));
+        } catch (IOException ex){
+            imageView.setImageResource(R.drawable.ic_baseline_image_not_supported_24);
+        }
+
+        TextView nameView = view.findViewById(R.id.queryName);
+        nameView.setText(iList.get(pos).getName());
+
+        TextView nutriView = view.findViewById(R.id.queryNutrition);
+        nutriView.setText(iList.get(pos).getNutritionRecord().getTruncNutrition());
+
 
         return view;
+
+    }
+
+    public Bitmap getBitmapFromAssets(String filename) throws IOException {
+        AssetManager assetManager = context.getAssets();
+        InputStream ins = assetManager.open(filename);
+        Bitmap bitmap = BitmapFactory.decodeStream(ins);
+        ins.close();
+
+        return bitmap;
     }
 
 
