@@ -4,13 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
 public class HomeActivity extends AppCompatActivity {
@@ -55,7 +52,7 @@ public class HomeActivity extends AppCompatActivity {
                         break;
 
                     case(R.id.nav_recipe):
-                        intent = new Intent(getApplicationContext(), ReceipeActivity.class);
+                        intent = new Intent(getApplicationContext(), RecipeActivity.class);
                         startActivity(intent);
                         break;
 
