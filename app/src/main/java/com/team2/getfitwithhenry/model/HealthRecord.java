@@ -3,6 +3,7 @@ package com.team2.getfitwithhenry.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class HealthRecord {
     private int id;
@@ -59,6 +60,8 @@ public class HealthRecord {
     public double getUserWeight() {
         return userWeight;
     }
+
+    public LocalDate getDate(){ return date; }
 
     public void setCalIntake(double calIntake) {
         this.calIntake = calIntake;
