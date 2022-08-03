@@ -175,7 +175,7 @@ public class LoggerActivity extends AppCompatActivity {
 
             //need to use your own pc's ip address here, cannot use local host.
             Request request = new Request.Builder()
-                    .url("http://192.168.10.122:8080/user/getdietrecords")
+                    .url("http://172.29.208.1:8080/user/getdietrecords")
                     .post(body)
                     .build();
 
