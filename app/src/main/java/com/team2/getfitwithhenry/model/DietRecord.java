@@ -23,6 +23,8 @@ public class DietRecord {
         this.user = user;
     }
 
+    public DietRecord(){}
+
     public int getId() {
         return id;
     }

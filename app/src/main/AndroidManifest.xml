@@ -35,6 +35,10 @@
             android:exported="true">
 
         </activity>
+
+        <activity
+            android:name=".AddMealActivity"
+            android:exported="false" />
         <activity
             android:name=".testHttp"
             android:exported="true"></activity>
