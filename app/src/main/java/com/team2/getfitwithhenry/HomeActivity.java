@@ -54,7 +54,7 @@ public class HomeActivity extends AppCompatActivity {
                         break;
 
                     case(R.id.nav_recipe):
-                        intent = new Intent(getApplicationContext(), ReceipeActivity.class);
+                        intent = new Intent(getApplicationContext(), RecipeActivity.class);
                         startActivity(intent);
                         break;
 
