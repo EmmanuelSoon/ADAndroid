@@ -48,7 +48,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     private static final MediaType MEDIA_TYPE_PLAINTEXT = MediaType.parse("text/plain; charset=utf-8");
     private final int REQUEST_CODE_PERMISSIONS = 10;
     private File photoFile;
-    private String[] REQUIRED_PERMISSIONS = new String[] {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    private String[] REQUIRED_PERMISSIONS = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
     ActivityResultLauncher<Intent> captureImageResult;
 
     private ImageView mimageView;
@@ -62,7 +62,6 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     private String mCurrentPhotoPath;
     private Bitmap bitImage;
     private boolean hasPermission = false;
-
 
 
     @Override
@@ -82,7 +81,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         registerActivityResult();
         checkPermissions();
         deletePicturesFromPath();
-        if(hasPermission)
+        if (hasPermission)
             startCameraAndWriteToFile();
 
     }
@@ -90,24 +89,22 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onClick(View v) {
         Intent intent;
-        if(v.getId() == R.id.goToSearchBtn){
+        if (v.getId() == R.id.goToSearchBtn) {
             intent = new Intent(this, SearchFoodActivity.class);
             intent.putExtra("SearchValue", returnMsg);
             startActivity(intent);
-        }
-        else if(v.getId() == R.id.incorrectBtn){
+        } else if (v.getId() == R.id.incorrectBtn) {
             Toast.makeText(this, "Oh no! Classifier got it wrong.", Toast.LENGTH_SHORT).show();
         }
     }
 
-    public void checkPermissions(){
-        for (String permission : REQUIRED_PERMISSIONS){
-            if(ContextCompat.checkSelfPermission(getBaseContext(), permission) == PackageManager.PERMISSION_GRANTED){
+    public void checkPermissions() {
+        for (String permission : REQUIRED_PERMISSIONS) {
+            if (ContextCompat.checkSelfPermission(getBaseContext(), permission) == PackageManager.PERMISSION_GRANTED) {
                 hasPermission = true;
-            }
-            else{
+            } else {
                 hasPermission = false;
-                ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS,REQUEST_CODE_PERMISSIONS);
+                ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
             }
         }
     }
@@ -118,18 +115,19 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             for (String permission : REQUIRED_PERMISSIONS) {
                 if (ContextCompat.checkSelfPermission(getBaseContext(), permission) == PackageManager.PERMISSION_GRANTED) {
-                    startCameraAndWriteToFile();
+                    hasPermission = true;
                 }
             }
         } else {
-                Toast.makeText(this, "Permissions not granted by the user.", Toast.LENGTH_SHORT).show();
-                finish();
-            }
+            hasPermission = false;
+            Toast.makeText(this, "Permissions not granted by the user.", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+
+        if (hasPermission)
+            startCameraAndWriteToFile();
 
     }
-
-
-
 
     private void startCameraAndWriteToFile() {
         Intent captureImageIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -146,7 +144,6 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 captureImageIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
                 captureImageIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                //startActivityForResult(captureImageIntent, CAPTURE_IMAGE_REQUEST);
                 captureImageResult.launch(captureImageIntent);
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -180,8 +177,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                         mimageView.setImageBitmap(bitImage);
                         Toast.makeText(getBaseContext(), "Showing the image", Toast.LENGTH_LONG).show();
                         uploadRequestBody();
-                    }
-                    else{
+                    } else {
                         System.out.println(result.getResultCode());
                     }
                 });
@@ -195,7 +191,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
     private void uploadRequestBody() {
         Request request = new Request.Builder()
-                .url("http://172.29.208.1:8080/flask/recieveImgFromAndroid")
+                .url("http://192.168.0.111:8080/flask/recieveImgFromAndroid")
                 .post(RequestBody.create(MEDIA_TYPE_PLAINTEXT, getBytesFromBitmap(bitImage)))
                 .build();
 
@@ -241,17 +237,14 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     @Override
-    protected void onDestroy()
-    {
+    protected void onDestroy() {
         super.onDestroy();
         deletePicturesFromPath();
     }
 
-    private void deletePicturesFromPath()
-    {
+    private void deletePicturesFromPath() {
         File[] dietPhotos = getExternalFilesDir(Environment.DIRECTORY_PICTURES).listFiles();
-        for(File photo : dietPhotos)
-        {
+        for (File photo : dietPhotos) {
             photo.delete();
         }
     }
