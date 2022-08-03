@@ -7,13 +7,8 @@
         <entry key="..\:/AD project/ADAndroid/app/src/main/res/layout/activity_home.xml" value="0.36666666666666664" />
         <entry key="..\:/AD project/ADAndroid/app/src/main/res/layout/activity_logger.xml" value="0.36666666666666664" />
         <entry key="..\:/AD project/ADAndroid/app/src/main/res/layout/activity_main.xml" value="0.36666666666666664" />
+        <entry key="..\:/AD project/ADAndroid/app/src/main/res/layout/activity_recipe.xml" value="0.36666666666666664" />
         <entry key="..\:/AD project/ADAndroid/app/src/main/res/layout/food_list.xml" value="0.36666666666666664" />
-        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/layout/activity_login.xml" value="0.18611111111111112" />
-        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/layout/activity_main.xml" value="0.30052083333333335" />
-        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/layout/activity_search_food.xml" value="0.30052083333333335" />
-        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/layout/food_list.xml" value="0.438974358974359" />
-        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/layout/fragment_meal.xml" value="0.438974358974359" />
-        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/layout/meal_list.xml" value="0.438974358974359" />
         <entry key="app/src/main/res/drawable-anydpi/nav_scanner.xml" value="0.2655" />
         <entry key="app/src/main/res/drawable/customborder.xml" value="0.188" />
         <entry key="app/src/main/res/drawable/ic_baseline_image_not_supported_24.xml" value="0.2505" />
@@ -24,8 +19,8 @@
         <entry key="app/src/main/res/drawable/nav_search.xml" value="0.2655" />
         <entry key="app/src/main/res/layout/activity_add_meal.xml" value="0.2695187165775401" />
         <entry key="app/src/main/res/layout/activity_camera.xml" value="0.25" />
-        <entry key="app/src/main/res/layout/activity_home.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/activity_logger.xml" value="0.23481414324569355" />
+        <entry key="app/src/main/res/layout/activity_home.xml" value="0.21851851851851853" />
+        <entry key="app/src/main/res/layout/activity_logger.xml" value="0.5578125" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_receipe.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_search_food.xml" value="0.33" />
