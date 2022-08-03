@@ -55,7 +55,6 @@ public class FoodListAdapter extends ArrayAdapter<Ingredient> {
         TextView nutriView = view.findViewById(R.id.queryNutrition);
         nutriView.setText(iList.get(pos).getNutritionRecord().getTruncNutrition());
 
-
         return view;
 
     }
@@ -68,6 +67,8 @@ public class FoodListAdapter extends ArrayAdapter<Ingredient> {
 
         return bitmap;
     }
+
+
 
 
 }

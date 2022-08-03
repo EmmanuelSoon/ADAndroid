@@ -8,30 +8,26 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.Editable;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethod;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.android.material.navigation.NavigationBarView;
 import com.team2.getfitwithhenry.adapter.FoodListAdapter;
-import com.team2.getfitwithhenry.model.HealthRecord;
 import com.team2.getfitwithhenry.model.Ingredient;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -81,7 +77,10 @@ public class SearchFoodActivity extends AppCompatActivity {
             public void onClick(View v) {
                 query = mEditText.getText().toString();
                 getSearchResult(query);
-                //drop the text input
+
+                //drop the softkeyboard
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
             }
         });
 
@@ -150,6 +149,18 @@ public class SearchFoodActivity extends AppCompatActivity {
                     Toast toast = Toast.makeText(context, name, Toast.LENGTH_SHORT);
                     toast.show();
 
+                    mlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            Ingredient selectedIng = iList.get(position);
+                            //maybe change to add meal activity
+                            Intent intent = new Intent(context, LoggerActivity.class);
+                            intent.putExtra("ingredient", selectedIng);
+                            startActivity(intent);
+
+                        }
+                    });
+
                 }
             });
         }
@@ -170,18 +181,13 @@ public class SearchFoodActivity extends AppCompatActivity {
                         startActivity(intent);
                         break;  //or should this be finish?
 
-//                    case(R.id.nav_search):
-//                        intent = new Intent(getApplicationContext(), SearchFoodActivity.class);
-//                        startActivity(intent);
-//                        break;
-
                     case(R.id.nav_log):
                         intent = new Intent(getApplicationContext(), LoggerActivity.class);
                         startActivity(intent);
                         break;
 
                     case(R.id.nav_recipe):
-                        intent = new Intent(getApplicationContext(), ReceipeActivity.class);
+                        intent = new Intent(getApplicationContext(), RecipeActivity.class);
                         startActivity(intent);
                         break;
 

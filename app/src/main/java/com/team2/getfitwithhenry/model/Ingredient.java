@@ -2,7 +2,9 @@ package com.team2.getfitwithhenry.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Ingredient {
+import java.io.Serializable;
+
+public class Ingredient implements Serializable {
     private int id;
     private String name;
     private String image;
@@ -25,6 +27,8 @@ public class Ingredient {
     public Ingredient(String name) {
         this.name = name;
     }
+
+    public Ingredient() {}
 
     @Override
     public String toString() {

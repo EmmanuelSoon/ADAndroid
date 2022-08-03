@@ -7,9 +7,10 @@
     <string name="calories_left">calories left</string>
     <string name="drink_water">Drink 5 glasses of water</string>
     <string name="log">Logs</string>
-    <string name="receipe">Receipe</string>
+    <string name="recipe">Recipe</string>
     <string name="scanner">Scanner</string>
     <string name="me">Me</string>
+    <string name="addMealHeader">Add Meal</string>
 
     <string name="goToSearch">Find Specific</string>
     <string name="incorrect">Incorrect</string>

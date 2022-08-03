@@ -195,7 +195,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
     private void uploadRequestBody() {
         Request request = new Request.Builder()
-                .url("http://192.168.10.127:8080/flask/recieveImgFromAndroid")
+                .url("http://172.29.208.1:8080/flask/recieveImgFromAndroid")
                 .post(RequestBody.create(MEDIA_TYPE_PLAINTEXT, getBytesFromBitmap(bitImage)))
                 .build();
 
