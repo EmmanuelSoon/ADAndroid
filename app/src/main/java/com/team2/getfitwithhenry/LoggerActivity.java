@@ -1,22 +1,31 @@
 package com.team2.getfitwithhenry;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 import com.team2.getfitwithhenry.model.DietRecord;
 import com.team2.getfitwithhenry.model.Goal;
 import com.team2.getfitwithhenry.model.HealthRecord;
@@ -51,12 +60,13 @@ import okhttp3.ResponseBody;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class LoggerActivity extends AppCompatActivity {
+public class LoggerActivity extends AppCompatActivity implements LifecycleObserver {
 
     private User tempUser;
     private final OkHttpClient client = new OkHttpClient();
     private DatePickerDialog datePickerDialog;
     private Button dateButton;
+    private BottomNavigationView bottomNavView;
 
 
     @Override
@@ -69,6 +79,10 @@ public class LoggerActivity extends AppCompatActivity {
         dateButton = findViewById(R.id.datePickerButton);
         dateButton.setText(getTodaysDate());
 
+        //set up bottom navbar
+        setBottomNavBar();
+
+
 
         //temp user just to add in the logic
         //int id, String name, String username, String password, Role role, Goal goal
@@ -77,13 +91,29 @@ public class LoggerActivity extends AppCompatActivity {
         String currDate = LocalDate.now().format(formatter);
         getDietRecordsFromServer(tempUser, currDate);
 
-
+        //add meal function
         Button addFoodBtn = findViewById(R.id.add_food);
         addFoodBtn.setOnClickListener((view -> {
-            //DO TO: go to add food activity or search
+            DatePicker datePicker = datePickerDialog.getDatePicker();
+            String dateSelect = datePicker.getYear() + "-" + String.format("%02d", (datePicker.getMonth() + 1)) + "-" + String.format("%02d", datePicker.getDayOfMonth());
+            Intent intent = new Intent(this, AddMealActivity.class);
+            intent.putExtra("date", dateSelect);
+            intent.putExtra("user", tempUser);
+
+            startActivity(intent);
+
+
         }));
 
     }
+
+    @Override
+    public void onResume() {
+
+        super.onResume();
+    }
+
+
 
     public void openDatePicker(View view)
     {
@@ -172,10 +202,9 @@ public class LoggerActivity extends AppCompatActivity {
             MediaType JSON = MediaType.parse("application/json; charset=utf-8");
             RequestBody body = RequestBody.create(postData.toString(), JSON);
 
-
             //need to use your own pc's ip address here, cannot use local host.
             Request request = new Request.Builder()
-                    .url("http://192.168.10.122:8080/user/getdietrecords")
+                    .url("http://192.168.10.127:8080/user/getdietrecords")
                     .post(body)
                     .build();
 
@@ -209,6 +238,42 @@ public class LoggerActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setBottomNavBar() {
+        bottomNavView = findViewById(R.id.bottom_navigation);
+        bottomNavView.setSelectedItemId(R.id.nav_log);
+        bottomNavView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener(){
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Intent intent;
+                int id = item.getItemId();
+                switch(id){
+
+                    case(R.id.nav_scanner):
+                        intent = new Intent(getApplicationContext(), CameraActivity.class);
+                        startActivity(intent);
+                        break;  //or should this be finish?
+
+                    case(R.id.nav_search):
+                        intent = new Intent(getApplicationContext(), SearchFoodActivity.class);
+                        startActivity(intent);
+                        break;
+
+                    case(R.id.nav_recipe):
+                        intent = new Intent(getApplicationContext(), RecipeActivity.class);
+                        startActivity(intent);
+                        break;
+
+                    case(R.id.nav_home):
+                        intent = new Intent(getApplicationContext(), HomeActivity.class);
+                        startActivity(intent);
+                        break;
+                }
+
+                return false;
+            }
+        });
     }
 
 

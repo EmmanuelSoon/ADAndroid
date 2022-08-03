@@ -28,6 +28,8 @@ public class Ingredient implements Serializable {
         this.name = name;
     }
 
+    public Ingredient() {}
+
     @Override
     public String toString() {
         return "Ingredient{" +
