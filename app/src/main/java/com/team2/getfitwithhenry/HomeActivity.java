@@ -31,6 +31,7 @@ public class HomeActivity extends AppCompatActivity {
 
     public void setBottomNavBar() {
         bottomNavView = findViewById(R.id.bottom_navigation);
+        bottomNavView.setSelectedItemId(R.id.nav_home);
         bottomNavView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener(){
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {

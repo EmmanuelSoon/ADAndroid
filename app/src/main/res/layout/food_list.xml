@@ -6,13 +6,29 @@
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="0dp"
-        android:layout_height="120dp"
+        android:layout_height="140dp"
         android:layout_weight="1"></ImageView>
-    <TextView
-        android:id="@+id/textView"
+
+    <LinearLayout
         android:layout_width="0dp"
+        android:layout_height="140dp"
+        android:layout_weight="2"
+        android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/queryName"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:gravity="center"
-        android:layout_weight="2"></TextView>
+        android:textSize="25sp"
+        android:gravity="left"></TextView>
+
+        <TextView
+            android:id="@+id/queryNutrition"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:textSize="20sp"></TextView>
+
+    </LinearLayout>
+
 </LinearLayout>

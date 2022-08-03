@@ -1,5 +1,6 @@
 package com.team2.getfitwithhenry;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -9,6 +10,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,6 +22,7 @@ import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.android.material.navigation.NavigationBarView;
 import com.team2.getfitwithhenry.adapter.FoodListAdapter;
 import com.team2.getfitwithhenry.model.HealthRecord;
 import com.team2.getfitwithhenry.model.Ingredient;
@@ -47,6 +50,7 @@ public class SearchFoodActivity extends AppCompatActivity {
     private ListView mlistView;
     private Button mSearchBtn;
     private EditText mEditText;
+    private NavigationBarView bottomNavView;
     List<Ingredient> iList;
     String query;
     private final OkHttpClient client = new OkHttpClient();
@@ -58,12 +62,17 @@ public class SearchFoodActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_food);
 
+        setBottomNavBar();
+
         mSearchBtn = findViewById(R.id.search);
         mEditText = findViewById(R.id.editText);
 
 
         Intent intent = getIntent();
         query = intent.getStringExtra("SearchValue");
+        if(query != null){
+            getSearchResult(query);
+        }
 
         mEditText.setText(query);
 
@@ -72,6 +81,7 @@ public class SearchFoodActivity extends AppCompatActivity {
             public void onClick(View v) {
                 query = mEditText.getText().toString();
                 getSearchResult(query);
+                //drop the text input
             }
         });
 
@@ -143,6 +153,47 @@ public class SearchFoodActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    public void setBottomNavBar() {
+        bottomNavView = findViewById(R.id.bottom_navigation);
+        bottomNavView.setSelectedItemId(R.id.nav_search);
+        bottomNavView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener(){
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Intent intent;
+                int id = item.getItemId();
+                switch(id){
+
+                    case(R.id.nav_scanner):
+                        intent = new Intent(getApplicationContext(), CameraActivity.class);
+                        startActivity(intent);
+                        break;  //or should this be finish?
+
+//                    case(R.id.nav_search):
+//                        intent = new Intent(getApplicationContext(), SearchFoodActivity.class);
+//                        startActivity(intent);
+//                        break;
+
+                    case(R.id.nav_log):
+                        intent = new Intent(getApplicationContext(), LoggerActivity.class);
+                        startActivity(intent);
+                        break;
+
+                    case(R.id.nav_recipe):
+                        intent = new Intent(getApplicationContext(), ReceipeActivity.class);
+                        startActivity(intent);
+                        break;
+
+                    case(R.id.nav_home):
+                        intent = new Intent(getApplicationContext(), HomeActivity.class);
+                        startActivity(intent);
+                        break;
+                }
+
+                return false;
+            }
+        });
     }
 
 

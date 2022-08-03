@@ -68,6 +68,10 @@ public class NutritionRecord {
         this.totalCalories = totalCalories;
     }
 
+    public String getTruncNutrition(){
+        return "Total Calories: " + totalCalories + "\nCarbohydrates: " + carbs + "\nProteins: " + proteins + "\nFats: " + fats;
+    }
+
     // Getters and setters
     public int getId() {
         return id;
