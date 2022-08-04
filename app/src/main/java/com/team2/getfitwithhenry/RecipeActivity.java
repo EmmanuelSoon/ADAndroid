@@ -29,7 +29,7 @@ public class RecipeActivity extends AppCompatActivity {
 
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("http")
-                .authority("192.168.10.122:3000")
+                .authority("192.168.1.126:3000")
                 .appendQueryParameter("userId", Integer.toString(user.getId()));
         mUrl = builder.build().toString();
 
