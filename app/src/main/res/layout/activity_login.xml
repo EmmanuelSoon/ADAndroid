@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".LoginActivity">
 
     <TextView
         android:layout_width="wrap_content"
@@ -25,6 +27,8 @@
         android:id="@+id/txtUsername"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
+        android:hint="Your username"
+        android:inputType="text"
         android:ems="10"></EditText>
     <TextView
         android:layout_width="wrap_content"
@@ -39,12 +43,27 @@
         android:id="@+id/txtPassword"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
+        android:inputType="textPassword"
+        android:hint="Your password"
         android:ems="10"></EditText>
+
+    <TextView
+        android:id="@+id/validationErrorText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=" "
+        android:textColor="@color/red"
+        android:layout_gravity="center"
+        android:visibility="invisible"
+        android:layout_marginTop="20dp">
+    </TextView>
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/loginBtn"
         style="@style/btnStyle"
+        android:enabled="false"
         android:text="Login"
         android:layout_gravity="center"></Button>
 

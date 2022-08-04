@@ -1,19 +1,25 @@
 package com.team2.getfitwithhenry;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.gson.Gson;
 import com.team2.getfitwithhenry.model.User;
 
 import org.json.JSONException;
@@ -30,135 +36,164 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button mLoginBtn;
     private EditText mUsernameTxt;
     private EditText mPasswordTxt;
+    private TextView mValidationErrorText;
     private final OkHttpClient client = new OkHttpClient();
-    private User u;
-    private String pass;
-
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-
         mUsernameTxt = findViewById(R.id.txtUsername);
         mPasswordTxt = findViewById(R.id.txtPassword);
-        mLoginBtn =  findViewById(R.id.loginBtn);
+        mLoginBtn = findViewById(R.id.loginBtn);
+        mValidationErrorText = findViewById(R.id.validationErrorText);
 
-        SharedPreferences pref = getSharedPreferences("user_credentials", MODE_PRIVATE);
-        if(pref.contains("username") && pref.contains("password")){
-            boolean loginOk = login(pref.getString("username", ""),
-                    pref.getString("password",""));
-            if(loginOk){
-                startHomeActivity();
+        mUsernameTxt.addTextChangedListener(loginWatcher);
+        mPasswordTxt.addTextChangedListener(loginWatcher);
+        mLoginBtn.setOnClickListener(this);
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
+        if(pref.contains("userDetails"))
+            startHomeActivity();
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        if (v.getId() == R.id.loginBtn) {
+            try {
+                validateUser(mUsernameTxt.getText().toString(), mPasswordTxt.getText().toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private TextWatcher loginWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            Boolean isUsernameEmpty = (mUsernameTxt.getText().toString().trim().isEmpty());
+            Boolean isPasswordEmpty = (mPasswordTxt.getText().toString().trim().isEmpty());
+
+            mValidationErrorText.setText(" ");
+            mValidationErrorText.setVisibility(View.INVISIBLE);
+
+            mLoginBtn.setEnabled(!mUsernameTxt.getText().toString().trim().isEmpty() && !mPasswordTxt.getText().toString().trim().isEmpty());
+
+            if (isUsernameEmpty) {
+                mUsernameTxt.setError("Username cannot be empty");
+            }
+
+            if (isPasswordEmpty) {
+                mPasswordTxt.setError("Password cannot be empty");
             }
         }
 
-        mLoginBtn.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view){
-                String username = mUsernameTxt.getText().toString();
-                String password = mPasswordTxt.getText().toString();
-                u = new User(username, password);
-                getUserDetailsFromServer(u);
+        @Override
+        public void afterTextChanged(Editable s) {
 
-//                if(login(username, password)){
-//                    System.out.println("success");
-//                    SharedPreferences pref = getSharedPreferences("user_credentials", MODE_PRIVATE);
-//                    SharedPreferences.Editor editor = pref.edit();
-//                    editor.putString("username", username);
-//                    editor.putString("password", password);
-//                    editor.commit();
-//
-//                    Toast.makeText(getApplicationContext(), "Login successful", Toast.LENGTH_LONG).show();
-//                    startHomeActivity();
-//                }
-//                else{
-//                    System.out.println("unsuccess");
-//                    Toast.makeText(getApplicationContext(), "Invalid login", Toast.LENGTH_LONG).show();
-//                }
+        }
+    };
+
+    private void storeUserinSharedPreference(User user) {
+        //https://stackoverflow.com/questions/7145606/how-do-you-save-store-objects-in-sharedpreferences-on-android
+        //Check the above url to retrieve the object from shared pref
+        SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(user);
+        editor.putString("userDetails", json);
+        editor.commit();
+
+    }
+
+    private void startHomeActivity() {
+        Intent intent = new Intent(this, HomeActivity.class);
+        startActivity(intent);
+    }
+
+    private void validateUser(String username, String password) throws JSONException {
+        User validUser = new User(username, password);
+
+        JSONObject userObj = new JSONObject();
+        userObj.put("username", validUser.getUsername());
+        userObj.put("password", validUser.getPassword());
+
+        validateUserFromDetails(userObj);
+    }
+
+    private void validateUserFromDetails(JSONObject userObj) {
+        MediaType JsonObj = MediaType.parse("application/json; charset=utf-8");
+        RequestBody requestBody = RequestBody.create(JsonObj, userObj.toString());
+
+        Request request = new Request.Builder().url("http://192.168.0.111:8080/login/validateUserDetails").post(requestBody).build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                ResponseBody responseBody = response.body();
+
+                if (!response.isSuccessful()) {
+                    throw new IOException("Unexpected code " + response);
+                }
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.registerModule(new JavaTimeModule());
+
+                if (responseBody.contentLength() != 0)
+                    user = objectMapper.readValue(responseBody.string(), User.class);
+                else
+                    user = null;
+
+                if (user == null) {
+                    displayValidationError(getApplicationContext(), user);
+                }
+
+                if (user != null) {
+                    storeUserinSharedPreference(user);
+                    startHomeActivity();
+                }
             }
         });
     }
 
-    private boolean login(String username, String password){
-        getUserDetailsFromServer(u);
+    private void displayValidationError(Context context, User user) {
 
-        if(password.equals(pass)){
-            return true;
-        }
-        return false;
-    }
-    private void getUserDetailsFromServer(User user){
-        JSONObject postData = new JSONObject();
-        try{
-            postData.put("username", user.getUsername());
+        if (context != null && user != null) {
+            new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_LONG).show());
+        } else {
+            new Handler(Looper.getMainLooper()).post(() -> {
 
-            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-            RequestBody body = RequestBody.create(postData.toString(), JSON);
-
-            Request request = new Request.Builder()
-                    .url("http://172.29.208.1:8080/login/authentication")
-                    .post(body)
-                    .build();
-
-            client.newCall(request).enqueue(new Callback(){
-                @Override
-                public void onFailure(Call call, IOException e){
-                    System.out.println("failure");
-                    e.printStackTrace(); }
-
-                @Override
-                public void onResponse(Call call, Response response){
-                    try{
-                        ResponseBody responseBody = response.body();
-                        if(!response.isSuccessful()){
-                            throw new IOException("Unexpected code " + response);
-                        }
-
-                        String pass1 = String.valueOf(responseBody);
-                        displayResponse(getApplicationContext(), pass1);
-
-//                        ObjectMapper objectMapper = new ObjectMapper();
-//                        pass = objectMapper.readValue(responseBody.string(), User[].class.toString());
-                    }catch(Exception e){
-                        System.out.println("in response error");
-                        e.printStackTrace();
-                    }
-                }
+                mValidationErrorText.setText("Invalid Username/Password");
+                mValidationErrorText.setVisibility(View.VISIBLE);
+                Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_LONG).show();
             });
         }
-        catch(JSONException e){
-            System.out.println("in Json error");
 
-            e.printStackTrace();
-        }
     }
 
-    public void displayResponse(final Context context, final String msg) {
-        if (context != null && msg != null) {
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-
-                @Override
-                public void run() {
-                    String toastMsg = "Null";
-                    if(msg != null){
-                        String toastmsg = msg;
-                    }
-                    Toast.makeText(getApplicationContext(), toastMsg, Toast.LENGTH_LONG).show();
-                }
-            });
-        }
-    }
-
-    private void startHomeActivity(){
-        Intent intent = new Intent(this, HomeActivity.class);
-        startActivity(intent);
-    }
 }

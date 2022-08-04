@@ -7,21 +7,12 @@
     tools:context=".RecipeActivity">
     <WebView
         android:id="@+id/web_view"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
         android:layout_marginTop="8dp"></WebView>
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        tools:visibility="visible"></ProgressBar>
 
 
     <com.google.android.material.bottomnavigation.BottomNavigationView

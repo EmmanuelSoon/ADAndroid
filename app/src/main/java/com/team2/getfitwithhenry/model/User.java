@@ -18,7 +18,7 @@ public class User implements Serializable {
     private List<Ingredient> dislike = new ArrayList<>();
 
 
-    public User(@JsonProperty("id") int id, @JsonProperty("name") String name, @JsonProperty("username") String username, @JsonProperty("password")String password, @JsonProperty("role") Role role, @JsonProperty("goal") Goal goal, @JsonProperty("dislike") List<Ingredient> dislike) {
+    public User(@JsonProperty("id") int id, @JsonProperty("name") String name, @JsonProperty("username") String username, @JsonProperty("password") String password, @JsonProperty("role") Role role, @JsonProperty("goal") Goal goal, @JsonProperty("dislike") List<Ingredient> dislike) {
         this.id = id;
         this.name = name;
         this.username = username;
@@ -28,7 +28,7 @@ public class User implements Serializable {
         this.dislike = dislike;
     }
 
-    public User(int id,String name,String username,String password, Role role, Goal goal) {
+    public User(int id, String name, String username, String password, Role role, Goal goal) {
         this.id = id;
         this.name = name;
         this.username = username;
@@ -37,7 +37,7 @@ public class User implements Serializable {
         this.goal = goal;
     }
 
-    public User(String username, String password){
+    public User(String username, String password) {
         this.username = username;
         this.password = password;
     }
