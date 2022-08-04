@@ -205,7 +205,7 @@ public class HomeActivity extends AppCompatActivity {
                             Double calLeft = getClaoriesLeft(healthRecordList);
                             Double waterLeft = getWaterLeft(healthRecordList);
                             caloriesText.setText(("Calories Left: "+calLeft).toString());
-                            waterText.setText(waterLeft.toString());
+                            waterText.setText(("Water intake Left: "+waterLeft).toString());
                         }
                         else{
                             caloriesText.setText(("Calories Left: "+dailyCal).toString());
