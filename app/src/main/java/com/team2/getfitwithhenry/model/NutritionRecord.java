@@ -2,7 +2,9 @@ package com.team2.getfitwithhenry.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class NutritionRecord {
+import java.io.Serializable;
+
+public class NutritionRecord implements Serializable {
 
     private int id;
     private double totalCalories;

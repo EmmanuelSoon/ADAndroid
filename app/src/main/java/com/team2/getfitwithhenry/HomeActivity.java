@@ -125,7 +125,7 @@ public class HomeActivity extends AppCompatActivity {
 
             //need to use your own pc's ip address here, cannot use local host.
             Request request = new Request.Builder()
-                    .url("http://192.168.1.79:8080/home/gethealthrecordsbyUserName")
+                    .url("http://192.168.10.127:8080/home/gethealthrecordsbyUserName")
                     .post(body)
                     .build();
 

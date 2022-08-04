@@ -1,5 +1,7 @@
 package com.team2.getfitwithhenry.model;
 
+import android.os.Parcelable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;

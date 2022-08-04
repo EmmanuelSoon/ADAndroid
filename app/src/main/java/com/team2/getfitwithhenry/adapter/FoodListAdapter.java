@@ -68,6 +68,8 @@ public class FoodListAdapter extends ArrayAdapter<Ingredient> {
         return bitmap;
     }
 
+    
+
 
 
 

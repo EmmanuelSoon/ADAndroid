@@ -68,6 +68,12 @@ public class LoggerActivity extends AppCompatActivity implements LifecycleObserv
     private Button dateButton;
     private BottomNavigationView bottomNavView;
 
+    //TODO LIST:
+    //date
+    //refresh page after adding meal
+    //get user's calories for the day
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +94,7 @@ public class LoggerActivity extends AppCompatActivity implements LifecycleObserv
         //int id, String name, String username, String password, Role role, Goal goal
         tempUser = new User(1, "Henry","Henry@gmail.com" ,"password", Role.NORMAL, Goal.MUSCLE);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
+        //fix date here
         String currDate = LocalDate.now().format(formatter);
         getDietRecordsFromServer(tempUser, currDate);
 
