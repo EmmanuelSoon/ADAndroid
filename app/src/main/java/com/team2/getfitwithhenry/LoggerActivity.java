@@ -73,9 +73,11 @@ public class LoggerActivity extends AppCompatActivity implements LifecycleObserv
     User user;
 
     //TODO LIST:
-    //fix add meal
     //refresh page after adding meal
+    //concat the ingredient names if meal name is empty
+    //ui wise -> add units
     //get user's calories for the day
+
 
 
 
@@ -195,7 +197,7 @@ public class LoggerActivity extends AppCompatActivity implements LifecycleObserv
                         }
 
                         String msg = String.valueOf(responseBody);
-                        //to do: convert responseBody into list of HealthRecords
+                        //convert responseBody into list of HealthRecords
                         ObjectMapper objectMapper = new ObjectMapper();
                         objectMapper.registerModule(new JavaTimeModule());
                         List <DietRecord> dietRecordList = Arrays.asList(objectMapper.readValue(responseBody.string(), DietRecord[].class));

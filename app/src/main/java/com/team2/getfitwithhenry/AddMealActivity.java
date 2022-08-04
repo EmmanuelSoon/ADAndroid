@@ -1,5 +1,7 @@
 package com.team2.getfitwithhenry;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
@@ -61,6 +63,9 @@ public class AddMealActivity extends AppCompatActivity {
     EditText mealName;
     EditText cals;
     EditText weight;
+    User user;
+    List<Ingredient> myMeal;
+    ActivityResultLauncher<Intent> rlSearchActivity;
 
     //TODO if you come from search how to enter date? also what about form validations?
     //TODO fix date
@@ -71,18 +76,22 @@ public class AddMealActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_meal);
 
+
+
         mealName = findViewById(R.id.meal_name_text);
         cals = findViewById(R.id.meal_cals_text);
         weight = findViewById(R.id.meal_weight_text);
 
-        SharedPreferences pref = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
         Gson gson = new Gson();
         String json = pref.getString("userDetails", "");
-        User user = gson.fromJson(json, User.class);
+        System.out.println(json);
+        user = gson.fromJson(json, User.class);
 
         Intent intent = getIntent();
         String strDate = intent.getStringExtra("date");
-        List<Ingredient> myMeal = (List<Ingredient>) intent.getSerializableExtra("ingredients");
+        myMeal = (List<Ingredient>) intent.getSerializableExtra("ingredients");
+        registerActivity();
 
         //TODO CHANGE THIS - setting to today's date if coming from search (to give options)
         if (strDate != null) {
@@ -92,27 +101,19 @@ public class AddMealActivity extends AppCompatActivity {
             LocalDate date = LocalDate.now();
         }
 
-        //if list not null set cals
-        if (myMeal != null){
-            setMealCals(myMeal);
-            FoodListAdapter myAdapter = new FoodListAdapter(getApplicationContext(), myMeal);
-            mlistView = findViewById(R.id.listView);
-            if(mlistView != null) {
-                mlistView.setAdapter(myAdapter);
-            }
-        }
-
-
-
+        setListView(myMeal);
 
         mealTypeSpinner = findViewById(R.id.mealtype_spinner);
         mealTypeSpinner.setAdapter(new ArrayAdapter<MealType>(this, android.R.layout.simple_spinner_item, MealType.values()));
 
+        //TODO change this button name
         addView = findViewById(R.id.addViewButton);
         addView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addIngredient();
+                //addIngredient();
+                Intent intent = new Intent(AddMealActivity.this, SearchFoodActivity.class);
+                rlSearchActivity.launch(intent);
             }
         });
 
@@ -148,6 +149,16 @@ public class AddMealActivity extends AppCompatActivity {
 //        ViewGroup parent = (ViewGroup) findViewById(R.id.linearViewAddMeal);
 //        layInf.inflate(R.layout.add_meal_row, parent);
 
+    }
+
+    public void registerActivity(){
+        rlSearchActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if(result.getResultCode() == AppCompatActivity.RESULT_OK){
+                Intent data = result.getData();
+                myMeal = (List<Ingredient>)data.getSerializableExtra("ingredients");
+                setListView(myMeal);
+            }
+        });
     }
 
     private void postToServer(JSONObject postData){
@@ -197,6 +208,17 @@ public class AddMealActivity extends AppCompatActivity {
         return postData;
     }
 
+    public void setListView(List<Ingredient> myMeal){
+        if (myMeal != null){
+            setMealCals(myMeal);
+            FoodListAdapter myAdapter = new FoodListAdapter(getApplicationContext(), myMeal);
+            mlistView = findViewById(R.id.listView);
+            if(mlistView != null) {
+                mlistView.setAdapter(myAdapter);
+            }
+        }
+    }
+
     public void setMealCals(List<Ingredient> myMeal){
         double mealCals = 0;
         for (Ingredient ing : myMeal){
@@ -206,6 +228,10 @@ public class AddMealActivity extends AppCompatActivity {
         cals.setText(String.valueOf(mealCals));
 
     }
+
+
+
+
 
 
 }

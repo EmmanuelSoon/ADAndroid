@@ -3,6 +3,7 @@ package com.team2.getfitwithhenry;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -82,7 +83,7 @@ public class SearchFoodActivity extends AppCompatActivity {
                 query = mEditText.getText().toString();
                 getSearchResult(query);
 
-                //drop the softkeyboard
+                //drop the soft keyboard
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
             }
@@ -92,9 +93,23 @@ public class SearchFoodActivity extends AppCompatActivity {
         mAddMealBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(SearchFoodActivity.this, AddMealActivity.class);
-                intent.putExtra("ingredients", (Serializable) mealBuilder);
-                startActivity(intent);
+                //check if there is an activity that called search
+
+                ComponentName componentName = getCallingActivity();
+                if (componentName == null){
+                    System.out.println("came from nav");
+                    Intent intent = new Intent(SearchFoodActivity.this, AddMealActivity.class);
+                    intent.putExtra("ingredients", (Serializable) mealBuilder);
+                    startActivity(intent);
+                }
+                else {
+                    System.out.println("came from log");
+                    Intent response = new Intent();
+                    response.putExtra("ingredients", (Serializable)mealBuilder);
+                    setResult(RESULT_OK, response);
+                    finish();
+                }
+
             }
         });
 
