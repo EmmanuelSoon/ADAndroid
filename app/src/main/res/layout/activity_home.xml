@@ -13,6 +13,14 @@
 <!--        app:layout_constraintTop_toTopOf="parent"-->
 <!--        app:layout_constraintLeft_toLeftOf="parent"-->
 <!--        tools:context=".HomeActivity">-->
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/logoutBtn"
+        android:text="Logout"
+        tools:ignore="MissingConstraints">
+
+    </Button>
     <com.jjoe64.graphview.GraphView
         android:id="@+id/GraphView"
         android:layout_width="match_parent"

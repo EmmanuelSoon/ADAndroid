@@ -4,9 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,6 +50,7 @@ import okhttp3.ResponseBody;
 public class HomeActivity extends AppCompatActivity {
     Button searchBtn;
     Button scanBtn;
+    Button mlogoutBtn;
 
     NavigationBarView bottomNavView;
     private User tempUser;
@@ -77,6 +80,29 @@ public class HomeActivity extends AppCompatActivity {
         getHealthRecordsbyUserNameAndDateFromServer(tempUser, currDate);
         getHealthRecordsbyUserNameFromServer(tempUser);
 
+        mlogoutBtn = findViewById(R.id.logoutBtn);
+        SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
+
+        mlogoutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences.Editor editor = pref.edit();
+                editor.clear();
+                editor.commit();
+
+                Toast.makeText(getApplicationContext(),"You have logged out successfully", Toast.LENGTH_LONG).show();
+                startLoginActivity();
+            }
+        });
+
+    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
+        if(!pref.contains("userDetails"))
+            startLoginActivity();
     }
 
     private void showGraphView(List<HealthRecord> healthRecordList){
@@ -125,7 +151,11 @@ public class HomeActivity extends AppCompatActivity {
 
             //need to use your own pc's ip address here, cannot use local host.
             Request request = new Request.Builder()
+<<<<<<< Updated upstream
                     .url("http://192.168.10.127:8080/home/gethealthrecordsbyUserName")
+=======
+                    .url("http://172.29.208.1:8080/home/gethealthrecordsbyUserName")
+>>>>>>> Stashed changes
                     .post(body)
                     .build();
 
@@ -178,7 +208,7 @@ public class HomeActivity extends AppCompatActivity {
 
             //need to use your own pc's ip address here, cannot use local host.
             Request request = new Request.Builder()
-                    .url("http://192.168.1.79:8080/home/gethealthrecords")
+                    .url("http://172.29.208.1:8080/home/gethealthrecords")
                     .post(body)
                     .build();
 
@@ -274,7 +304,15 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
     }
+    private void startLogoutActivity(){
+        Intent intent = new Intent(this, LogoutActivity.class);
+        startActivity(intent);
+    }
+    private void startLoginActivity(){
+        Intent intent = new Intent(this, LoginActivity.class);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
 
-
+    }
 
 }
