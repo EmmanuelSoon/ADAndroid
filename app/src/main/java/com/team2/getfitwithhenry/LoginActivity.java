@@ -74,7 +74,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onStart();
 
         SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
-        if(pref.contains("userDetails"))
+        if (pref.contains("userDetails"))
             startHomeActivity();
     }
 
@@ -87,11 +87,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        }
-        else if(id == R.id.forgotPasswordTxt){
+        } else if (id == R.id.forgotPasswordTxt) {
             startRegistrationActivity();
-        }
-        else if(id == R.id.newUserTxt){
+        } else if (id == R.id.newUserTxt) {
             startRegistrationActivity();
         }
     }
@@ -159,11 +157,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         MediaType JsonObj = MediaType.parse("application/json; charset=utf-8");
         RequestBody requestBody = RequestBody.create(JsonObj, userObj.toString());
 
-<<<<<<< Updated upstream
-        Request request = new Request.Builder().url("http://192.168.10.127:8080/login/validateUserDetails").post(requestBody).build();
-=======
-        Request request = new Request.Builder().url("http://172.27.64.1:8080/login/validateUserDetails").post(requestBody).build();
->>>>>>> Stashed changes
+        Request request = new Request.Builder().url("http://192.168.0.111:8080/login/validateUserDetails").post(requestBody).build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -213,10 +207,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
 
     }
+
     private void startRegistrationActivity() {
         Intent intent = new Intent(this, RegistrationActivity.class);
         startActivity(intent);
     }
+
     private void startForgotPasswordActivity() {
         //logic haven't implemented yet
         Intent intent = new Intent(this, RegistrationActivity.class);
