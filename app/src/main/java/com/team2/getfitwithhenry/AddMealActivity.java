@@ -5,6 +5,7 @@ import androidx.fragment.app.FragmentManager;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.gson.Gson;
 import com.team2.getfitwithhenry.adapter.FoodListAdapter;
 import com.team2.getfitwithhenry.model.DietRecord;
 import com.team2.getfitwithhenry.model.Ingredient;
@@ -73,9 +75,13 @@ public class AddMealActivity extends AppCompatActivity {
         cals = findViewById(R.id.meal_cals_text);
         weight = findViewById(R.id.meal_weight_text);
 
+        SharedPreferences pref = getPreferences(Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = pref.getString("userDetails", "");
+        User user = gson.fromJson(json, User.class);
+
         Intent intent = getIntent();
         String strDate = intent.getStringExtra("date");
-        User user = (User)intent.getSerializableExtra("user");//save preferences instead
         List<Ingredient> myMeal = (List<Ingredient>) intent.getSerializableExtra("ingredients");
 
         //TODO CHANGE THIS - setting to today's date if coming from search (to give options)
@@ -89,14 +95,15 @@ public class AddMealActivity extends AppCompatActivity {
         //if list not null set cals
         if (myMeal != null){
             setMealCals(myMeal);
+            FoodListAdapter myAdapter = new FoodListAdapter(getApplicationContext(), myMeal);
+            mlistView = findViewById(R.id.listView);
+            if(mlistView != null) {
+                mlistView.setAdapter(myAdapter);
+            }
         }
 
 
-        FoodListAdapter myAdapter = new FoodListAdapter(getApplicationContext(), myMeal);
-        mlistView = findViewById(R.id.listView);
-        if(mlistView != null) {
-            mlistView.setAdapter(myAdapter);
-        }
+
 
         mealTypeSpinner = findViewById(R.id.mealtype_spinner);
         mealTypeSpinner.setAdapter(new ArrayAdapter<MealType>(this, android.R.layout.simple_spinner_item, MealType.values()));
