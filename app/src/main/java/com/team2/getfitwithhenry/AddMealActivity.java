@@ -14,11 +14,13 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.team2.getfitwithhenry.adapter.FoodListAdapter;
 import com.team2.getfitwithhenry.model.DietRecord;
 import com.team2.getfitwithhenry.model.Ingredient;
 import com.team2.getfitwithhenry.model.MealType;
@@ -28,6 +30,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -52,6 +55,13 @@ public class AddMealActivity extends AppCompatActivity {
     Button addView;
     Button submitBtn;
     Spinner mealTypeSpinner;
+    ListView mlistView;
+    EditText mealName;
+    EditText cals;
+    EditText weight;
+
+    //TODO if you come from search how to enter date? also what about form validations?
+    //TODO fix date
 
 
     @Override
@@ -59,12 +69,34 @@ public class AddMealActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_meal);
 
+        mealName = findViewById(R.id.meal_name_text);
+        cals = findViewById(R.id.meal_cals_text);
+        weight = findViewById(R.id.meal_weight_text);
+
         Intent intent = getIntent();
         String strDate = intent.getStringExtra("date");
-        User user = (User)intent.getSerializableExtra("user");
+        User user = (User)intent.getSerializableExtra("user");//save preferences instead
+        List<Ingredient> myMeal = (List<Ingredient>) intent.getSerializableExtra("ingredients");
 
-        LocalDate date = LocalDate.parse(strDate);
+        //TODO CHANGE THIS - setting to today's date if coming from search (to give options)
+        if (strDate != null) {
+            LocalDate date = LocalDate.parse(strDate);
+        }
+        else{
+            LocalDate date = LocalDate.now();
+        }
 
+        //if list not null set cals
+        if (myMeal != null){
+            setMealCals(myMeal);
+        }
+
+
+        FoodListAdapter myAdapter = new FoodListAdapter(getApplicationContext(), myMeal);
+        mlistView = findViewById(R.id.listView);
+        if(mlistView != null) {
+            mlistView.setAdapter(myAdapter);
+        }
 
         mealTypeSpinner = findViewById(R.id.mealtype_spinner);
         mealTypeSpinner.setAdapter(new ArrayAdapter<MealType>(this, android.R.layout.simple_spinner_item, MealType.values()));
@@ -73,17 +105,17 @@ public class AddMealActivity extends AppCompatActivity {
         addView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addDietRecord();
+                addIngredient();
             }
         });
+
+
 
         submitBtn = findViewById(R.id.submitMealButton);
         submitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditText mealName = findViewById(R.id.meal_name_text);
-                EditText cals = findViewById(R.id.meal_cals_text);
-                EditText weight = findViewById(R.id.meal_weight_text);
+
                 String mealType = mealTypeSpinner.getSelectedItem().toString();
 
                 Map<String, String> myMap = new HashMap<>();
@@ -103,13 +135,11 @@ public class AddMealActivity extends AppCompatActivity {
 
     }
 
-
-    public void addDietRecord(){
-        LayoutInflater layInf = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        ViewGroup parent = (ViewGroup) findViewById(R.id.linearViewAddMeal);
-        layInf.inflate(R.layout.add_meal_row, parent);
-
-
+//commented out for now, to improve on in future revisions
+    public void addIngredient(){
+//        LayoutInflater layInf = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//        ViewGroup parent = (ViewGroup) findViewById(R.id.linearViewAddMeal);
+//        layInf.inflate(R.layout.add_meal_row, parent);
 
     }
 
@@ -160,12 +190,16 @@ public class AddMealActivity extends AppCompatActivity {
         return postData;
     }
 
+    public void setMealCals(List<Ingredient> myMeal){
+        double mealCals = 0;
+        for (Ingredient ing : myMeal){
+            mealCals += ing.getCalorie();
+        }
+
+        cals.setText(String.valueOf(mealCals));
+
+    }
+
 
 }
 
-//        this.date = date;
-//                this.foodName = foodName;
-//                this.calorie = calorie;
-//                this.weight = weight;
-//                this.mealType = mealType;
-//                this.user = user;

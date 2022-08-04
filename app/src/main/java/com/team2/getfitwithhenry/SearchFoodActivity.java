@@ -28,6 +28,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -47,9 +49,11 @@ public class SearchFoodActivity extends AppCompatActivity {
     private Button mSearchBtn;
     private EditText mEditText;
     private NavigationBarView bottomNavView;
+    private Button mAddMealBtn;
     List<Ingredient> iList;
     String query;
     private final OkHttpClient client = new OkHttpClient();
+    List<Ingredient> mealBuilder = new ArrayList<>();
 
 
 
@@ -83,6 +87,18 @@ public class SearchFoodActivity extends AppCompatActivity {
                 imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
             }
         });
+
+        mAddMealBtn = findViewById(R.id.add_as_meal);
+        mAddMealBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SearchFoodActivity.this, AddMealActivity.class);
+                intent.putExtra("ingredients", (Serializable) mealBuilder);
+                startActivity(intent);
+            }
+        });
+
+
 
     }
 
@@ -145,19 +161,40 @@ public class SearchFoodActivity extends AppCompatActivity {
                         mlistView.setAdapter(myAdapter);
                     }
 
+                    //testing, to delete once happy
                     String name = myList.get(0).getName() + " size: " + myList.size();
                     Toast toast = Toast.makeText(context, name, Toast.LENGTH_SHORT);
                     toast.show();
 
+                    mlistView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+                    mlistView.setItemsCanFocus(false);
+
+                    // add checkable instead
                     mlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            mealBuilder.add(iList.get(position));
+                            view.setSelected(true);
+
+                            if(!mealBuilder.isEmpty()){
+                                mAddMealBtn.setVisibility(View.VISIBLE);
+                            }
+
+                        }
+                    });
+
+                    mlistView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                        @Override
+                        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                             Ingredient selectedIng = iList.get(position);
-                            //maybe change to add meal activity
+                            //maybe change to show more details widget
                             Intent intent = new Intent(context, LoggerActivity.class);
                             intent.putExtra("ingredient", selectedIng);
                             startActivity(intent);
 
+
+                            view.setSelected(true);
+                            return true;
                         }
                     });
 
