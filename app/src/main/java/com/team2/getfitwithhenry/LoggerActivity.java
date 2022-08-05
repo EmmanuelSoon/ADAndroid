@@ -3,8 +3,10 @@ package com.team2.getfitwithhenry;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.OnLifecycleEvent;
 
 import android.app.AlertDialog;
@@ -63,7 +65,7 @@ import okhttp3.ResponseBody;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class LoggerActivity extends AppCompatActivity implements LifecycleObserver {
+public class LoggerActivity extends AppCompatActivity implements DefaultLifecycleObserver {
 
     private User tempUser;
     private final OkHttpClient client = new OkHttpClient();
@@ -74,9 +76,9 @@ public class LoggerActivity extends AppCompatActivity implements LifecycleObserv
 
     //TODO LIST:
     //refresh page after adding meal
-    //concat the ingredient names if meal name is empty
-    //ui wise -> add units
     //get user's calories for the day
+    //get meal list sorted by meal type (combine meal type)
+    //UI -> show break down of ingredients on click
 
 
 
@@ -103,8 +105,6 @@ public class LoggerActivity extends AppCompatActivity implements LifecycleObserv
         dateButton.setText(setDate(LocalDate.now()));
 
 
-
-
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         String currDate = LocalDate.now().format(formatter);
         getDietRecordsFromServer(user, currDate);
@@ -125,17 +125,19 @@ public class LoggerActivity extends AppCompatActivity implements LifecycleObserv
     }
 
     @Override
-    public void onResume() {
-
+    //TODO why is this not workikng
+    protected void onResume(){
         super.onResume();
+        DatePicker datePicker = datePickerDialog.getDatePicker();
+        String dateSelect = datePicker.getYear() + "-" + String.format("%02d", (datePicker.getMonth() + 1)) + "-" + String.format("%02d", datePicker.getDayOfMonth());
+        getDietRecordsFromServer(user, dateSelect);
+
+
     }
 
 
 
-    public void openDatePicker(View view)
-    {
-        datePickerDialog.show();
-    }
+    public void openDatePicker(View view) {   datePickerDialog.show();    }
 
     private void initDatePicker() {
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
@@ -155,6 +157,7 @@ public class LoggerActivity extends AppCompatActivity implements LifecycleObserv
         int year = cal.get(Calendar.YEAR);
         int month = cal.get(Calendar.MONTH);
         int day = cal.get(Calendar.DAY_OF_MONTH);
+
 
         int style = AlertDialog.THEME_HOLO_LIGHT;
 

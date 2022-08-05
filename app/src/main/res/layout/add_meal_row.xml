@@ -1,74 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="0dp"
+        android:layout_height="140dp"
+        android:layout_weight="1"></ImageView>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="140dp"
+        android:layout_weight="2"
         android:orientation="vertical">
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/foodName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
+            android:textSize="25sp"
+            android:gravity="left"></TextView>
         <TextView
-            android:layout_width="0dp"
+            android:id="@+id/foodCalories"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Enter meal name:" />
+            android:textSize="25sp"
+            android:gravity="left"></TextView>
 
         <EditText
-            android:id="@+id/meal_name_text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"></EditText>
-        </LinearLayout>
-
-        <LinearLayout
+            android:id="@+id/foodWeight"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Enter calories:" />
-
-            <EditText
-                android:id="@+id/meal_cals_text"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"></EditText>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Enter weight:" />
-
-            <EditText
-                android:id="@+id/meal_weight_text"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"></EditText>
-
-        </LinearLayout>
-
-    <Spinner
-        android:id="@+id/mealtype_spinner"
-        android:layout_width="2000dp"
-        android:layout_height="wrap_content" />
+            android:gravity="left"
+            android:textSize="20sp"></EditText>
 
     </LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>

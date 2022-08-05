@@ -9,21 +9,26 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.gson.Gson;
+import com.team2.getfitwithhenry.adapter.AddMealAdapter;
 import com.team2.getfitwithhenry.adapter.FoodListAdapter;
 import com.team2.getfitwithhenry.model.DietRecord;
 import com.team2.getfitwithhenry.model.Ingredient;
@@ -68,15 +73,13 @@ public class AddMealActivity extends AppCompatActivity {
     ActivityResultLauncher<Intent> rlSearchActivity;
 
     //TODO if you come from search how to enter date? also what about form validations?
-    //TODO fix date
+    //TODO add new listview adapter
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_meal);
-
-
 
         mealName = findViewById(R.id.meal_name_text);
         cals = findViewById(R.id.meal_cals_text);
@@ -211,11 +214,39 @@ public class AddMealActivity extends AppCompatActivity {
     public void setListView(List<Ingredient> myMeal){
         if (myMeal != null){
             setMealCals(myMeal);
-            FoodListAdapter myAdapter = new FoodListAdapter(getApplicationContext(), myMeal);
+            setMealName(myMeal);
+            AddMealAdapter myAdapter = new AddMealAdapter(getApplicationContext(), myMeal);
             mlistView = findViewById(R.id.listView);
             if(mlistView != null) {
                 mlistView.setAdapter(myAdapter);
             }
+
+            mlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Ingredient ing = myMeal.get(position);
+                    Double calsPerG = ing.getCalorie() / ing.getNutritionRecord().getServingSize();
+                    EditText ingWeight = view.findViewById(R.id.foodWeight);
+                    ingWeight.addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable s) {
+                            //errr what should this sequence be mathmatically/??
+                            double weight = Double.parseDouble(s.toString());
+                            cals.setText(String.valueOf(calsPerG * weight));
+                        }
+                    });
+                }
+            });
         }
     }
 
@@ -227,6 +258,15 @@ public class AddMealActivity extends AppCompatActivity {
 
         cals.setText(String.valueOf(mealCals));
 
+    }
+
+    public void setMealName(List<Ingredient> myMeal) {
+        String concatMealName = "";
+        if (myMeal.size() <= 2)
+        for (Ingredient ing : myMeal){
+            concatMealName += ing.getName() + " & ";
+        }
+        mealName.setText(concatMealName.substring(0,concatMealName.length()-2));
     }
 
 
