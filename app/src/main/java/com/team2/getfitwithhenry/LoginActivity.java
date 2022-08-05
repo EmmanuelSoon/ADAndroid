@@ -145,7 +145,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         MediaType JsonObj = MediaType.parse("application/json; charset=utf-8");
         RequestBody requestBody = RequestBody.create(JsonObj, userObj.toString());
 
-        Request request = new Request.Builder().url("http://192.168.0.111:8080/login/validateUserDetails").post(requestBody).build();
+        Request request = new Request.Builder().url("http://192.168.10.122:8080/login/validateUserDetails").post(requestBody).build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
