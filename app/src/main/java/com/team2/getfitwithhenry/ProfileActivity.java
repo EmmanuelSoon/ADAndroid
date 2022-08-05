@@ -2,9 +2,11 @@ package com.team2.getfitwithhenry;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,6 +17,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -24,10 +27,11 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 
 import okhttp3.OkHttpClient;
 
-public class ProfileActivity extends AppCompatActivity {
+public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
 
     private final OkHttpClient client = new OkHttpClient();
     private EditText mtxtName;
@@ -54,14 +58,25 @@ public class ProfileActivity extends AppCompatActivity {
         mbtnDob = findViewById(R.id.btnDob);
         mrBtnMale = findViewById(R.id.rBtnMale);
         mrBtnFemale = findViewById(R.id.rBtnFemale);
+        mRGGenderGrp = findViewById(R.id.rgGenderGrp);
         mtxtCalorieIntake = findViewById(R.id.txtCalorieIntake);
         mtxtWaterIntake = findViewById(R.id.txtWaterIntake);
         mGoalSelect = findViewById(R.id.goalSelect);
-        mbtnSaveChanges = findViewById(R.id.btnSaveChanges);
+        mbtnSaveChanges = findViewById(R.id.btnSaveProfileChanges);
+
+        mbtnSaveChanges.setOnClickListener(this);
 
         getUserFromSharedPreference();
         initDatePicker();
         onInitialDataBind();
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.btnSaveProfileChanges) {
+            if(validateFormFields())
+                checkIfDetailsChanged();
+        }
     }
 
     private void getUserFromSharedPreference() {
@@ -118,7 +133,9 @@ public class ProfileActivity extends AppCompatActivity {
 
         int style = AlertDialog.THEME_HOLO_LIGHT;
 
+
         mdobDatePicker = new DatePickerDialog(this, style, dateSetListener, year, month, day);
+        mdobDatePicker.getDatePicker().setMaxDate(new Date().getTime());
     }
 
     private String setDate(LocalDate date) {
@@ -129,4 +146,62 @@ public class ProfileActivity extends AppCompatActivity {
     public void openDatePicker(View view) {
         mdobDatePicker.show();
     }
+
+    private void checkIfDetailsChanged() {
+        RadioButton checkBtn = (RadioButton) findViewById(mRGGenderGrp.getCheckedRadioButtonId());
+        String selectedGoal = goalmatch[Arrays.asList(goals).indexOf(mGoalSelect.getSelectedItem().toString())];
+        String gender = (checkBtn == mrBtnMale ? "M" : "F");
+
+        if (mtxtName.getText().toString().equals(user.getName()) &&
+                mtxtUsername.getText().toString().equals(user.getUsername()) &&
+                mbtnDob.getText().toString().equals(setDate(user.getDateofbirth())) &&
+                gender.equals(user.getGender()) &&
+                selectedGoal.equals(user.getGoal().toString()) &&
+                mtxtCalorieIntake.getText().toString().equals(user.getCalorieintake_limit_inkcal().toString()) &&
+                mtxtWaterIntake.getText().toString().equals(user.getWaterintake_limit_inml().toString())) {
+            Toast.makeText(this,
+                    "No details changed", Toast.LENGTH_SHORT).show();
+        } else
+            Toast.makeText(this,
+                    "Details Changed", Toast.LENGTH_SHORT).show();
+    }
+
+    @SuppressLint("ResourceType")
+    private boolean validateFormFields()
+    {
+        if(mtxtName.getText().toString().trim().isEmpty()) {
+            mtxtName.setError("Name cannot be empty");
+            return false;
+        }
+
+        if(mtxtUsername.getText().toString().trim().isEmpty()) {
+            mtxtUsername.setError("Username cannot be empty");
+            return false;
+        }
+
+        //RadioButton checkBtn = (RadioButton) findViewById(mRGGenderGrp.getCheckedRadioButtonId());
+        if(mRGGenderGrp.getCheckedRadioButtonId()  <= 0 )
+        {
+            mrBtnFemale.setError("Select gender");
+        }
+
+        if(mGoalSelect.getSelectedItem() == null || mGoalSelect.getSelectedItem().toString().trim().isEmpty())
+        {
+            TextView errorText = (TextView) mGoalSelect.getSelectedView();
+            errorText.setError("Select goal");
+            errorText.setTextColor(Color.RED);
+        }
+
+        if(mtxtCalorieIntake.getText().toString().trim().isEmpty()) {
+            mtxtCalorieIntake.setError("Calorie limit cannot be empty");
+            return false;
+        }
+
+        if(mtxtWaterIntake.getText().toString().trim().isEmpty()) {
+            mtxtWaterIntake.setError("water limit cannot be empty");
+            return false;
+        }
+        return true;
+    }
+
 }

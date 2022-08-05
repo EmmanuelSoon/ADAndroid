@@ -89,6 +89,7 @@
     </LinearLayout>
 
     <RadioGroup
+        android:id="@+id/rgGenderGrp"
         android:layout_width="match_parent"
         android:layout_height="59dp"
         android:orientation="horizontal"
@@ -158,7 +159,8 @@
             android:layout_marginRight="10dp"
             android:background="@null"
             android:ems="15"
-            android:gravity="center" />
+            android:gravity="center"
+            android:inputType="numberDecimal"/>
     </LinearLayout>
 
     <LinearLayout
@@ -183,11 +185,12 @@
             android:layout_marginRight="10dp"
             android:background="@null"
             android:ems="15"
-            android:gravity="center" />
+            android:gravity="center"
+            android:inputType="numberDecimal"/>
     </LinearLayout>
 
     <Button
-        android:id="@+id/btnSaveChanges"
+        android:id="@+id/btnSaveProfileChanges"
         android:layout_width="241dp"
         android:layout_height="65dp"
         android:layout_gravity="center"
