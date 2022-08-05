@@ -151,11 +151,7 @@ public class HomeActivity extends AppCompatActivity {
 
             //need to use your own pc's ip address here, cannot use local host.
             Request request = new Request.Builder()
-<<<<<<< Updated upstream
                     .url("http://192.168.10.127:8080/home/gethealthrecordsbyUserName")
-=======
-                    .url("http://172.29.208.1:8080/home/gethealthrecordsbyUserName")
->>>>>>> Stashed changes
                     .post(body)
                     .build();
 
