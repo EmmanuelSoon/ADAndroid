@@ -1,7 +1,5 @@
 package com.team2.getfitwithhenry;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -9,10 +7,8 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -20,16 +16,32 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.gson.Gson;
+import com.team2.getfitwithhenry.model.Goal;
 import com.team2.getfitwithhenry.model.User;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -47,6 +59,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private String[] goalmatch = {"WEIGHTLOSS", "WEIGHTGAIN", "WEIGHTMAINTAIN", "MUSCLE"};
     private String[] goals = {"Weight Loss", "Weight Gain", "Weight Maintain", "Muscle"};
     private User user;
+    private User updatedUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,8 +87,14 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.btnSaveProfileChanges) {
-            if(validateFormFields())
+            if (validateFormFields()) {
                 checkIfDetailsChanged();
+                try {
+                    createUserJsonObj();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -88,6 +107,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             String json = pref.getString("userDetails", "");
             user = gson.fromJson(json, User.class);
             user.setDateofbirth(LocalDate.parse(user.getDobStringFormat(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+
+            updatedUser = user;
         }
 
     }
@@ -151,6 +172,10 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         RadioButton checkBtn = (RadioButton) findViewById(mRGGenderGrp.getCheckedRadioButtonId());
         String selectedGoal = goalmatch[Arrays.asList(goals).indexOf(mGoalSelect.getSelectedItem().toString())];
         String gender = (checkBtn == mrBtnMale ? "M" : "F");
+        String selectedDob = mbtnDob.getText().toString();
+        String[] dateArray = selectedDob.split("-");
+        selectedDob = dateArray[2] + "-" + dateArray[1] + "-" + dateArray[0];
+        LocalDate convertedDate = LocalDate.parse(selectedDob, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
         if (mtxtName.getText().toString().equals(user.getName()) &&
                 mtxtUsername.getText().toString().equals(user.getUsername()) &&
@@ -161,47 +186,123 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 mtxtWaterIntake.getText().toString().equals(user.getWaterintake_limit_inml().toString())) {
             Toast.makeText(this,
                     "No details changed", Toast.LENGTH_SHORT).show();
-        } else
+        } else {
             Toast.makeText(this,
                     "Details Changed", Toast.LENGTH_SHORT).show();
+            //Setting value to be passed over for saving
+            updatedUser.setId(user.getId());
+            updatedUser.setName(mtxtName.getText().toString());
+            updatedUser.setUsername(mtxtUsername.getText().toString());
+            updatedUser.setPassword(user.getPassword());
+            updatedUser.setDateofbirth(convertedDate);
+            updatedUser.setGender(gender);
+            updatedUser.setGoal(Goal.valueOf(selectedGoal));
+            updatedUser.setCalorieintake_limit_inkcal(Double.parseDouble(mtxtCalorieIntake.getText().toString()));
+            updatedUser.setWaterintake_limit_inml(Double.parseDouble(mtxtWaterIntake.getText().toString()));
+
+        }
+
+    }
+
+    private void createUserJsonObj() throws JSONException {
+        JSONObject userObj = new JSONObject();
+
+        userObj.put("id", updatedUser.getId());
+        userObj.put("name", updatedUser.getName());
+        userObj.put("username", updatedUser.getUsername());
+        userObj.put("password", updatedUser.getPassword());
+        userObj.put("dateofbirth", updatedUser.getDateofbirth());
+        userObj.put("gender", updatedUser.getGender());
+        userObj.put("goal", updatedUser.getGoal());
+        userObj.put("calorieintake_limit_inkcal", updatedUser.getCalorieintake_limit_inkcal());
+        userObj.put("waterintake_limit_inml", updatedUser.getWaterintake_limit_inml());
+
+        updatUserDetails(userObj);
     }
 
     @SuppressLint("ResourceType")
-    private boolean validateFormFields()
-    {
-        if(mtxtName.getText().toString().trim().isEmpty()) {
+    private boolean validateFormFields() {
+        if (mtxtName.getText().toString().trim().isEmpty()) {
             mtxtName.setError("Name cannot be empty");
             return false;
         }
 
-        if(mtxtUsername.getText().toString().trim().isEmpty()) {
+        if (mtxtUsername.getText().toString().trim().isEmpty()) {
             mtxtUsername.setError("Username cannot be empty");
             return false;
         }
 
         //RadioButton checkBtn = (RadioButton) findViewById(mRGGenderGrp.getCheckedRadioButtonId());
-        if(mRGGenderGrp.getCheckedRadioButtonId()  <= 0 )
-        {
+        if (mRGGenderGrp.getCheckedRadioButtonId() <= 0) {
             mrBtnFemale.setError("Select gender");
         }
 
-        if(mGoalSelect.getSelectedItem() == null || mGoalSelect.getSelectedItem().toString().trim().isEmpty())
-        {
+        if (mGoalSelect.getSelectedItem() == null || mGoalSelect.getSelectedItem().toString().trim().isEmpty()) {
             TextView errorText = (TextView) mGoalSelect.getSelectedView();
             errorText.setError("Select goal");
             errorText.setTextColor(Color.RED);
         }
 
-        if(mtxtCalorieIntake.getText().toString().trim().isEmpty()) {
+        if (mtxtCalorieIntake.getText().toString().trim().isEmpty()) {
             mtxtCalorieIntake.setError("Calorie limit cannot be empty");
             return false;
         }
 
-        if(mtxtWaterIntake.getText().toString().trim().isEmpty()) {
+        if (mtxtWaterIntake.getText().toString().trim().isEmpty()) {
             mtxtWaterIntake.setError("water limit cannot be empty");
             return false;
         }
         return true;
+    }
+
+    private void updatUserDetails(JSONObject userObj) {
+        MediaType JsonObj = MediaType.parse("application/json; charset=utf-8");
+        RequestBody requestBody = RequestBody.create(JsonObj, userObj.toString());
+        Request request = new Request.Builder().url("http://192.168.0.111:8080/register/updateUserDetails").post(requestBody).build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                ResponseBody responseBody = response.body();
+
+                if (!response.isSuccessful()) {
+                    throw new IOException("Unexpected code " + response);
+                }
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.registerModule(new JavaTimeModule());
+
+                if (responseBody.contentLength() != 0)
+                    user = objectMapper.readValue(responseBody.string(), User.class);
+                else
+                    user = null;
+
+                if (user == null) {
+                   // displayValidationError(getApplicationContext(), user);
+                }
+
+                if (user != null) {
+                    updateUserinSharedPreference(user);
+                   // startHomeActivity();
+                }
+            }
+        });
+    }
+
+    private void updateUserinSharedPreference(User user) {
+        //https://stackoverflow.com/questions/7145606/how-do-you-save-store-objects-in-sharedpreferences-on-android
+        //Check the above url to retrieve the object from shared pref
+        SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(user);
+        editor.putString("userDetails", json);
+        editor.commit();
     }
 
 }
