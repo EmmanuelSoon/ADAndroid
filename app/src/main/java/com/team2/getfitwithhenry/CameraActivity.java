@@ -27,6 +27,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.team2.getfitwithhenry.model.Ingredient;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -51,12 +55,13 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     private String[] REQUIRED_PERMISSIONS = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
     ActivityResultLauncher<Intent> captureImageResult;
 
-    private ImageView mimageView;
+    private ImageView mImageView;
     private TextView resultsText;
     private Button goToSearchBtn;
     private Button incorrectBtn;
-    private String returnMsg;
 
+    private Ingredient iPredict;
+    //private String returnMsg;
 
     //consider not making this global?
     private String mCurrentPhotoPath;
@@ -69,7 +74,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_camera);
 
-        mimageView = findViewById(R.id.imageView);
+        mImageView = findViewById(R.id.imageView);
         resultsText = findViewById(R.id.resultsText);
 
         goToSearchBtn = findViewById(R.id.goToSearchBtn);
@@ -83,7 +88,6 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         deletePicturesFromPath();
         if (hasPermission)
             startCameraAndWriteToFile();
-
     }
 
     @Override
@@ -91,7 +95,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         Intent intent;
         if (v.getId() == R.id.goToSearchBtn) {
             intent = new Intent(this, SearchFoodActivity.class);
-            intent.putExtra("SearchValue", returnMsg);
+            intent.putExtra("SearchValue", iPredict);
             startActivity(intent);
         } else if (v.getId() == R.id.incorrectBtn) {
             Toast.makeText(this, "Oh no! Classifier got it wrong.", Toast.LENGTH_SHORT).show();
@@ -174,7 +178,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                     if (result.getResultCode() == AppCompatActivity.RESULT_OK) {
                         Intent data = result.getData();
                         bitImage = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
-                        mimageView.setImageBitmap(bitImage);
+                        mImageView.setImageBitmap(bitImage);
                         Toast.makeText(getBaseContext(), "Showing the image", Toast.LENGTH_LONG).show();
                         uploadRequestBody();
                     } else {
@@ -191,7 +195,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
     private void uploadRequestBody() {
         Request request = new Request.Builder()
-                .url("http://192.168.0.111:8080/flask/recieveImgFromAndroid")
+                .url("http://192.168.1.126:8080/flask/recieveImgFromAndroid")
                 .post(RequestBody.create(MEDIA_TYPE_PLAINTEXT, getBytesFromBitmap(bitImage)))
                 .build();
 
@@ -209,8 +213,11 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                         throw new IOException("Unexpected code " + response);
                     }
 
-                    returnMsg = String.valueOf(responseBody.string());
-                    displayResponse(getApplicationContext(), returnMsg);
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    objectMapper.registerModule(new JavaTimeModule());
+                    iPredict = objectMapper.readValue(responseBody.string(), Ingredient.class);
+
+                    displayResponse(getApplicationContext(), iPredict);
 
                     Log.i("data", responseBody.string());
                 } catch (Exception e) {
@@ -218,17 +225,15 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 }
             }
         });
-
-
     }
 
-    public void displayResponse(final Context context, final String msg) {
-        if (context != null && msg != null) {
+    public void displayResponse(final Context context, final Ingredient iPredict) {
+        if (context != null && iPredict != null) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
 
                 @Override
                 public void run() {
-                    resultsText.setText(msg);
+                    resultsText.setText(iPredict.getName() + "\n" + iPredict.getNutritionRecord().getTruncNutrition());
                     goToSearchBtn.setVisibility(View.VISIBLE);
                     incorrectBtn.setVisibility(View.VISIBLE);
                 }
@@ -248,7 +253,6 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
             photo.delete();
         }
     }
-
 }
 
 

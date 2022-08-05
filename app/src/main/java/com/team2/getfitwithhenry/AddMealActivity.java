@@ -1,25 +1,34 @@
 package com.team2.getfitwithhenry;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.gson.Gson;
+import com.team2.getfitwithhenry.adapter.AddMealAdapter;
 import com.team2.getfitwithhenry.adapter.FoodListAdapter;
 import com.team2.getfitwithhenry.model.DietRecord;
 import com.team2.getfitwithhenry.model.Ingredient;
@@ -59,9 +68,12 @@ public class AddMealActivity extends AppCompatActivity {
     EditText mealName;
     EditText cals;
     EditText weight;
+    User user;
+    List<Ingredient> myMeal;
+    ActivityResultLauncher<Intent> rlSearchActivity;
 
     //TODO if you come from search how to enter date? also what about form validations?
-    //TODO fix date
+    //TODO add new listview adapter
 
 
     @Override
@@ -73,10 +85,16 @@ public class AddMealActivity extends AppCompatActivity {
         cals = findViewById(R.id.meal_cals_text);
         weight = findViewById(R.id.meal_weight_text);
 
+        SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = pref.getString("userDetails", "");
+        System.out.println(json);
+        user = gson.fromJson(json, User.class);
+
         Intent intent = getIntent();
         String strDate = intent.getStringExtra("date");
-        User user = (User)intent.getSerializableExtra("user");//save preferences instead
-        List<Ingredient> myMeal = (List<Ingredient>) intent.getSerializableExtra("ingredients");
+        myMeal = (List<Ingredient>) intent.getSerializableExtra("ingredients");
+        registerActivity();
 
         //TODO CHANGE THIS - setting to today's date if coming from search (to give options)
         if (strDate != null) {
@@ -86,26 +104,19 @@ public class AddMealActivity extends AppCompatActivity {
             LocalDate date = LocalDate.now();
         }
 
-        //if list not null set cals
-        if (myMeal != null){
-            setMealCals(myMeal);
-        }
-
-
-        FoodListAdapter myAdapter = new FoodListAdapter(getApplicationContext(), myMeal);
-        mlistView = findViewById(R.id.listView);
-        if(mlistView != null) {
-            mlistView.setAdapter(myAdapter);
-        }
+        setListView(myMeal);
 
         mealTypeSpinner = findViewById(R.id.mealtype_spinner);
         mealTypeSpinner.setAdapter(new ArrayAdapter<MealType>(this, android.R.layout.simple_spinner_item, MealType.values()));
 
+        //TODO change this button name
         addView = findViewById(R.id.addViewButton);
         addView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addIngredient();
+                //addIngredient();
+                Intent intent = new Intent(AddMealActivity.this, SearchFoodActivity.class);
+                rlSearchActivity.launch(intent);
             }
         });
 
@@ -141,6 +152,16 @@ public class AddMealActivity extends AppCompatActivity {
 //        ViewGroup parent = (ViewGroup) findViewById(R.id.linearViewAddMeal);
 //        layInf.inflate(R.layout.add_meal_row, parent);
 
+    }
+
+    public void registerActivity(){
+        rlSearchActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if(result.getResultCode() == AppCompatActivity.RESULT_OK){
+                Intent data = result.getData();
+                myMeal = (List<Ingredient>)data.getSerializableExtra("ingredients");
+                setListView(myMeal);
+            }
+        });
     }
 
     private void postToServer(JSONObject postData){
@@ -190,6 +211,45 @@ public class AddMealActivity extends AppCompatActivity {
         return postData;
     }
 
+    public void setListView(List<Ingredient> myMeal){
+        if (myMeal != null){
+            setMealCals(myMeal);
+            setMealName(myMeal);
+            AddMealAdapter myAdapter = new AddMealAdapter(getApplicationContext(), myMeal);
+            mlistView = findViewById(R.id.listView);
+            if(mlistView != null) {
+                mlistView.setAdapter(myAdapter);
+            }
+
+            mlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Ingredient ing = myMeal.get(position);
+                    Double calsPerG = ing.getCalorie() / ing.getNutritionRecord().getServingSize();
+                    EditText ingWeight = view.findViewById(R.id.foodWeight);
+                    ingWeight.addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable s) {
+                            //errr what should this sequence be mathmatically/??
+                            double weight = Double.parseDouble(s.toString());
+                            cals.setText(String.valueOf(calsPerG * weight));
+                        }
+                    });
+                }
+            });
+        }
+    }
+
     public void setMealCals(List<Ingredient> myMeal){
         double mealCals = 0;
         for (Ingredient ing : myMeal){
@@ -199,6 +259,19 @@ public class AddMealActivity extends AppCompatActivity {
         cals.setText(String.valueOf(mealCals));
 
     }
+
+    public void setMealName(List<Ingredient> myMeal) {
+        String concatMealName = "";
+        if (myMeal.size() <= 2)
+        for (Ingredient ing : myMeal){
+            concatMealName += ing.getName() + " & ";
+        }
+        mealName.setText(concatMealName.substring(0,concatMealName.length()-2));
+    }
+
+
+
+
 
 
 }

@@ -76,6 +76,7 @@ public class MealFragment extends Fragment implements AdapterView.OnItemClickLis
     public void onItemClick(AdapterView<?> av, View v, int pos, long id){
         TextView textView = v.findViewById(R.id.titleView);
         String str = textView.getText().toString();
-        Toast.makeText(this.getContext(), str, Toast.LENGTH_LONG);
+        Toast.makeText(this.getContext(), str, Toast.LENGTH_LONG).show();
+        //TODO meal details
     }
 }

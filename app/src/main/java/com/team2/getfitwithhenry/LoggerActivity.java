@@ -3,13 +3,17 @@ package com.team2.getfitwithhenry;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.OnLifecycleEvent;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -26,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.gson.Gson;
 import com.team2.getfitwithhenry.model.DietRecord;
 import com.team2.getfitwithhenry.model.Goal;
 import com.team2.getfitwithhenry.model.HealthRecord;
@@ -60,18 +65,21 @@ import okhttp3.ResponseBody;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class LoggerActivity extends AppCompatActivity implements LifecycleObserver {
+public class LoggerActivity extends AppCompatActivity implements DefaultLifecycleObserver {
 
     private User tempUser;
     private final OkHttpClient client = new OkHttpClient();
     private DatePickerDialog datePickerDialog;
     private Button dateButton;
     private BottomNavigationView bottomNavView;
+    User user;
 
     //TODO LIST:
-    //date
     //refresh page after adding meal
     //get user's calories for the day
+    //get meal list sorted by meal type (combine meal type)
+    //UI -> show break down of ingredients on click
+
 
 
 
@@ -80,23 +88,26 @@ public class LoggerActivity extends AppCompatActivity implements LifecycleObserv
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logger);
 
-        // Set up Calendar
-        initDatePicker();
-        dateButton = findViewById(R.id.datePickerButton);
-        dateButton.setText(getTodaysDate());
-
         //set up bottom navbar
         setBottomNavBar();
 
+        SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = pref.getString("userDetails", "");
+        System.out.println(json);
+        user = gson.fromJson(json, User.class);
+
+        System.out.println(user.getUsername());
+
+        // Set up Calendar
+        initDatePicker();
+        dateButton = findViewById(R.id.datePickerButton);
+        dateButton.setText(setDate(LocalDate.now()));
 
 
-        //temp user just to add in the logic
-        //int id, String name, String username, String password, Role role, Goal goal
-        tempUser = new User(1, "Henry","Henry@gmail.com" ,"password", Role.NORMAL, Goal.MUSCLE);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
-        //fix date here
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String currDate = LocalDate.now().format(formatter);
-        getDietRecordsFromServer(tempUser, currDate);
+        getDietRecordsFromServer(user, currDate);
 
         //add meal function
         Button addFoodBtn = findViewById(R.id.add_food);
@@ -105,7 +116,6 @@ public class LoggerActivity extends AppCompatActivity implements LifecycleObserv
             String dateSelect = datePicker.getYear() + "-" + String.format("%02d", (datePicker.getMonth() + 1)) + "-" + String.format("%02d", datePicker.getDayOfMonth());
             Intent intent = new Intent(this, AddMealActivity.class);
             intent.putExtra("date", dateSelect);
-            intent.putExtra("user", tempUser);
 
             startActivity(intent);
 
@@ -115,32 +125,31 @@ public class LoggerActivity extends AppCompatActivity implements LifecycleObserv
     }
 
     @Override
-    public void onResume() {
-
+    //TODO why is this not workikng
+    protected void onResume(){
         super.onResume();
+        DatePicker datePicker = datePickerDialog.getDatePicker();
+        String dateSelect = datePicker.getYear() + "-" + String.format("%02d", (datePicker.getMonth() + 1)) + "-" + String.format("%02d", datePicker.getDayOfMonth());
+        getDietRecordsFromServer(user, dateSelect);
+
+
     }
 
 
 
-    public void openDatePicker(View view)
-    {
-        datePickerDialog.show();
-    }
+    public void openDatePicker(View view) {   datePickerDialog.show();    }
 
     private void initDatePicker() {
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                 month = month + 1;
-                String date = makeDateString(day, month, year);
-                dateButton.setText(date);
-                DateTimeFormatter converter = new DateTimeFormatterBuilder()
-                        .parseCaseInsensitive()
-                        .appendPattern("dd-MMM-yyyy")
-                        .toFormatter(Locale.ENGLISH);
+                String date = year + "-" + String.format("%02d", month) + "-" + String.format("%02d", day) ;
+                DateTimeFormatter format2 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                LocalDate parsedDate = LocalDate.parse(date, format2);
+                dateButton.setText(setDate(parsedDate));
 
-                LocalDate curr = LocalDate.parse(date, converter);
-                getDietRecordsFromServer(tempUser, curr.format(DateTimeFormatter.ofPattern("dd-MMM-yyyy")));
+                getDietRecordsFromServer(user, date);
             }
         };
 
@@ -149,56 +158,17 @@ public class LoggerActivity extends AppCompatActivity implements LifecycleObserv
         int month = cal.get(Calendar.MONTH);
         int day = cal.get(Calendar.DAY_OF_MONTH);
 
+
         int style = AlertDialog.THEME_HOLO_LIGHT;
 
         datePickerDialog = new DatePickerDialog(this, style, dateSetListener, year, month, day);
     }
 
-    private String getTodaysDate()
-    {
-        Calendar cal = Calendar.getInstance();
-        int year = cal.get(Calendar.YEAR);
-        int month = cal.get(Calendar.MONTH);
-        month = month + 1;
-        int day = cal.get(Calendar.DAY_OF_MONTH);
-        return makeDateString(day, month, year);
+    private String setDate(LocalDate date){
+        DateTimeFormatter format1 = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
+        return date.format(format1);
     }
 
-    private String makeDateString(int day, int month, int year)
-    {
-        return day + "-" + getMonthFormat(month) + "-" + year;
-    }
-
-    private String getMonthFormat(int month)
-    {
-        if(month == 1)
-            return "JAN";
-        if(month == 2)
-            return "FEB";
-        if(month == 3)
-            return "MAR";
-        if(month == 4)
-            return "APR";
-        if(month == 5)
-            return "MAY";
-        if(month == 6)
-            return "JUN";
-        if(month == 7)
-            return "JUL";
-        if(month == 8)
-            return "AUG";
-        if(month == 9)
-            return "SEP";
-        if(month == 10)
-            return "OCT";
-        if(month == 11)
-            return "NOV";
-        if(month == 12)
-            return "DEC";
-
-        //default should never happen
-        return "JAN";
-    }
 
     private void getDietRecordsFromServer(User user, String date){
         JSONObject postData = new JSONObject();
@@ -230,7 +200,7 @@ public class LoggerActivity extends AppCompatActivity implements LifecycleObserv
                         }
 
                         String msg = String.valueOf(responseBody);
-                        //to do: convert responseBody into list of HealthRecords
+                        //convert responseBody into list of HealthRecords
                         ObjectMapper objectMapper = new ObjectMapper();
                         objectMapper.registerModule(new JavaTimeModule());
                         List <DietRecord> dietRecordList = Arrays.asList(objectMapper.readValue(responseBody.string(), DietRecord[].class));
