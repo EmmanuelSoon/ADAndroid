@@ -1,9 +1,7 @@
 package com.team2.getfitwithhenry.model;
 
-import android.text.LoginFilter;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -16,9 +14,13 @@ public class User implements Serializable {
     private String password;
     private Role role;
     private Goal goal;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateofbirth;
+    private String dobStringFormat;
     private String gender;
     private Double calorieintake_limit_inkcal;
+
+
     private Double waterintake_limit_inml;
     private List<Ingredient> dislike = new ArrayList<>();
 
@@ -32,6 +34,7 @@ public class User implements Serializable {
         this.password = password;
         this.role = role;
         this.dateofbirth = dateofbirth;
+        this.dobStringFormat = dateofbirth.toString();
         this.gender = gender;
         this.calorieintake_limit_inkcal = calorieintake_limit_inkcal;
         this.waterintake_limit_inml = waterintake_limit_inml;
@@ -46,6 +49,7 @@ public class User implements Serializable {
         this.password = password;
         this.role = role;
         this.dateofbirth = dateofbirth;
+        this.dobStringFormat = dateofbirth.toString();
         this.gender = gender;
         this.calorieintake_limit_inkcal = calorieintake_limit_inkcal;
         this.waterintake_limit_inml = waterintake_limit_inml;
@@ -154,5 +158,14 @@ public class User implements Serializable {
 
     public void setGoal(Goal goal) {
         this.goal = goal;
+    }
+
+
+    public String getDobStringFormat() {
+        return dobStringFormat;
+    }
+
+    public void setDobStringFormat(String dobStringFormat) {
+        this.dobStringFormat = dobStringFormat;
     }
 }
