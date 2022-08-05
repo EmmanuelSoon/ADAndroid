@@ -52,16 +52,17 @@
         <entry key="app/src/main/res/layout/activity_camera.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_home.xml" value="0.5" />
         <entry key="app/src/main/res/layout/activity_logger.xml" value="0.5578125" />
+        <entry key="app/src/main/res/layout/activity_login.xml" value="0.32719298245614037" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_receipe.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_search_food.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_test_http.xml" value="0.264945652173913" />
-        <entry key="app/src/main/res/layout/add_meal_row.xml" value="0.2995614035087719" />
+        <entry key="app/src/main/res/layout/add_meal_row.xml" value="0.26941747572815533" />
         <entry key="app/src/main/res/layout/food_list.xml" value="0.24427083333333333" />
         <entry key="app/src/main/res/layout/fragment_bottom_nav.xml" value="0.2848731884057971" />
         <entry key="app/src/main/res/layout/fragment_meal.xml" value="0.3399122807017544" />
         <entry key="app/src/main/res/layout/meal_list.xml" value="0.3092105263157895" />
-        <entry key="app/src/main/res/menu/bottom_nav_bar.xml" value="0.1" />
+        <entry key="app/src/main/res/menu/bottom_nav_bar.xml" value="0.22" />
         <entry key="app/src/main/res/xml/network_security_config.xml" value="0.3453125" />
       </map>
     </option>

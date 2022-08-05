@@ -105,7 +105,7 @@ public class LoggerActivity extends AppCompatActivity implements DefaultLifecycl
         dateButton.setText(setDate(LocalDate.now()));
 
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String currDate = LocalDate.now().format(formatter);
         getDietRecordsFromServer(user, currDate);
 
@@ -144,8 +144,8 @@ public class LoggerActivity extends AppCompatActivity implements DefaultLifecycl
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                 month = month + 1;
-                String date = String.format("%02d", day) + "-" + String.format("%02d", month) + "-" + year;
-                DateTimeFormatter format2 = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                String date = year + "-" + String.format("%02d", month) + "-" + String.format("%02d", day) ;
+                DateTimeFormatter format2 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                 LocalDate parsedDate = LocalDate.parse(date, format2);
                 dateButton.setText(setDate(parsedDate));
 
