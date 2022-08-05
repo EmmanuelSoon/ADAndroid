@@ -69,12 +69,12 @@ public class HomeActivity extends AppCompatActivity {
 
         setBottomNavBar();
 
-        caloriesText=findViewById(R.id.caloriesText);
+        caloriesText = findViewById(R.id.caloriesText);
         waterText = findViewById(R.id.waterText);
         graph = (GraphView) findViewById(R.id.GraphView);
         //temp user just to add in the logic
         //int id, String name, String username, String password, Role role, Goal goal
-        tempUser = new User(1, "Henry","Henry@gmail.com" ,"password", Role.NORMAL, Goal.MUSCLE);
+        tempUser = new User(1, "Henry", "Henry@gmail.com", "password", Role.NORMAL, Goal.MUSCLE);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
         String currDate = LocalDate.now().format(formatter);
         getHealthRecordsbyUserNameAndDateFromServer(tempUser, currDate);
@@ -90,32 +90,33 @@ public class HomeActivity extends AppCompatActivity {
                 editor.clear();
                 editor.commit();
 
-                Toast.makeText(getApplicationContext(),"You have logged out successfully", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "You have logged out successfully", Toast.LENGTH_LONG).show();
                 startLoginActivity();
             }
         });
 
     }
+
     @Override
     protected void onStart() {
         super.onStart();
 
         SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
-        if(!pref.contains("userDetails"))
+        if (!pref.contains("userDetails"))
             startLoginActivity();
     }
 
-    private void showGraphView(List<HealthRecord> healthRecordList){
+    private void showGraphView(List<HealthRecord> healthRecordList) {
         //plot data(curve) on X and Y
         LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>();
         ArrayList<String> xAxisLables = new ArrayList<>();
-        for(int i=0;i<healthRecordList.size();i++){
-            series.appendData(new DataPoint(i,healthRecordList.get(i).getUserWeight()),true,healthRecordList.size());
+        for (int i = 0; i < healthRecordList.size(); i++) {
+            series.appendData(new DataPoint(i, healthRecordList.get(i).getUserWeight()), true, healthRecordList.size());
             xAxisLables.add(healthRecordList.get(i).getDate().toString());
         }
 
         //set the appearance of the curve
-        series.setColor(Color.rgb(0,80,100)); //set the color of the curve
+        series.setColor(Color.rgb(0, 80, 100)); //set the color of the curve
         series.setTitle("Weight Curve"); // set the curve name for the legend
         series.setDrawDataPoints(true); // draw points
         series.setDataPointsRadius(5); // the radius of the data point
@@ -124,8 +125,8 @@ public class HomeActivity extends AppCompatActivity {
         graph.addSeries(series);
 
 
-       // graph.getXAxis().setValueFormatter(new IndexAxisValueFormatter(xAxisLables));
-       // XAxis xAxis = graph.getXAxis();
+        // graph.getXAxis().setValueFormatter(new IndexAxisValueFormatter(xAxisLables));
+        // XAxis xAxis = graph.getXAxis();
 
         //set title for graph
         graph.setTitle("Weight Tracking");
@@ -141,7 +142,7 @@ public class HomeActivity extends AppCompatActivity {
         gridLabel.setVerticalAxisTitle("Weight");
     }
 
-    private void getHealthRecordsbyUserNameFromServer(User user){
+    private void getHealthRecordsbyUserNameFromServer(User user) {
         JSONObject postData = new JSONObject();
         try {
             postData.put("username", user.getUsername());
@@ -158,7 +159,8 @@ public class HomeActivity extends AppCompatActivity {
             client.newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    System.out.println("Error"); e.printStackTrace();
+                    System.out.println("Error");
+                    e.printStackTrace();
                 }
 
                 @Override
@@ -174,10 +176,9 @@ public class HomeActivity extends AppCompatActivity {
                         ObjectMapper objectMapper = new ObjectMapper();
                         objectMapper.registerModule(new JavaTimeModule());
                         List<HealthRecord> hrList = Arrays.asList(objectMapper.readValue(responseBody.string(), HealthRecord[].class));
-                        if(hrList.size()!=0){
-                           showGraphView(hrList);
-                        }
-                        else{
+                        if (hrList.size() != 0) {
+                            showGraphView(hrList);
+                        } else {
                             Toast.makeText(HomeActivity.this, "No weight tracking for this user", Toast.LENGTH_SHORT).show();
                         }
 
@@ -193,7 +194,7 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    private void getHealthRecordsbyUserNameAndDateFromServer(User user,String date){
+    private void getHealthRecordsbyUserNameAndDateFromServer(User user, String date) {
         JSONObject postData = new JSONObject();
         try {
             postData.put("username", user.getUsername());
@@ -211,7 +212,8 @@ public class HomeActivity extends AppCompatActivity {
             client.newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    System.out.println("Error"); e.printStackTrace();
+                    System.out.println("Error");
+                    e.printStackTrace();
                 }
 
                 @Override
@@ -227,15 +229,14 @@ public class HomeActivity extends AppCompatActivity {
                         ObjectMapper objectMapper = new ObjectMapper();
                         objectMapper.registerModule(new JavaTimeModule());
                         List<HealthRecord> healthRecordList = Arrays.asList(objectMapper.readValue(responseBody.string(), HealthRecord[].class));
-                        if(healthRecordList.size()!=0){
+                        if (healthRecordList.size() != 0) {
                             Double calLeft = getClaoriesLeft(healthRecordList);
                             Double waterLeft = getWaterLeft(healthRecordList);
-                            caloriesText.setText(("Calories Left: "+calLeft).toString());
-                            waterText.setText(("Water intake Left: "+waterLeft).toString());
-                        }
-                        else{
-                            caloriesText.setText(("Calories Left: "+dailyCal).toString());
-                            waterText.setText(("Water intake Left: "+dailyWaterIntake).toString());
+                            caloriesText.setText(("Calories Left: " + calLeft).toString());
+                            waterText.setText(("Water intake Left: " + waterLeft).toString());
+                        } else {
+                            caloriesText.setText(("Calories Left: " + dailyCal).toString());
+                            waterText.setText(("Water intake Left: " + dailyWaterIntake).toString());
                         }
 
 
@@ -250,42 +251,42 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    private double getClaoriesLeft(List<HealthRecord> healthRecordList){
+    private double getClaoriesLeft(List<HealthRecord> healthRecordList) {
         Double calTaken = healthRecordList.get(0).getCalIntake();
-        return dailyCal-calTaken;
+        return dailyCal - calTaken;
     }
 
-    private double getWaterLeft(List<HealthRecord> healthRecordList){
+    private double getWaterLeft(List<HealthRecord> healthRecordList) {
         Double waterTaken = healthRecordList.get(0).getWaterIntake();
-        return dailyWaterIntake-waterTaken;
+        return dailyWaterIntake - waterTaken;
     }
 
     public void setBottomNavBar() {
         bottomNavView = findViewById(R.id.bottom_navigation);
         bottomNavView.setSelectedItemId(R.id.nav_home);
-        bottomNavView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener(){
+        bottomNavView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Intent intent;
                 int id = item.getItemId();
-                switch(id){
+                switch (id) {
 
-                    case(R.id.nav_scanner):
+                    case (R.id.nav_scanner):
                         intent = new Intent(getApplicationContext(), CameraActivity.class);
                         startActivity(intent);
                         break;  //or should this be finish?
 
-                    case(R.id.nav_search):
+                    case (R.id.nav_search):
                         intent = new Intent(getApplicationContext(), SearchFoodActivity.class);
                         startActivity(intent);
                         break;
 
-                    case(R.id.nav_log):
+                    case (R.id.nav_log):
                         intent = new Intent(getApplicationContext(), LoggerActivity.class);
                         startActivity(intent);
                         break;
 
-                    case(R.id.nav_recipe):
+                    case (R.id.nav_recipe):
                         intent = new Intent(getApplicationContext(), RecipeActivity.class);
                         startActivity(intent);
                         break;
@@ -300,11 +301,13 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
     }
-    private void startLogoutActivity(){
+
+    private void startLogoutActivity() {
         Intent intent = new Intent(this, LogoutActivity.class);
         startActivity(intent);
     }
-    private void startLoginActivity(){
+
+    private void startLoginActivity() {
         Intent intent = new Intent(this, LoginActivity.class);
 //        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
