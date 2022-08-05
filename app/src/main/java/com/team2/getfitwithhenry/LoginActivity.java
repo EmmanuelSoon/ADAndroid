@@ -24,6 +24,7 @@ import com.team2.getfitwithhenry.model.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 
@@ -44,6 +45,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private TextView mValidationErrorText;
     private final OkHttpClient client = new OkHttpClient();
     private User user;
+    private TextView mForgotPasswordTxt;
+    private TextView mNewUserTxt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,10 +57,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         mPasswordTxt = findViewById(R.id.txtPassword);
         mLoginBtn = findViewById(R.id.loginBtn);
         mValidationErrorText = findViewById(R.id.validationErrorText);
+        mForgotPasswordTxt = findViewById(R.id.forgotPasswordTxt);
+        mNewUserTxt = findViewById(R.id.newUserTxt);
+
 
         mUsernameTxt.addTextChangedListener(loginWatcher);
         mPasswordTxt.addTextChangedListener(loginWatcher);
         mLoginBtn.setOnClickListener(this);
+        mForgotPasswordTxt.setOnClickListener(this);
+        mNewUserTxt.setOnClickListener(this);
 
     }
 
@@ -66,19 +74,23 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onStart();
 
         SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
-        if(pref.contains("userDetails"))
+        if (pref.contains("userDetails"))
             startHomeActivity();
     }
 
     @Override
     public void onClick(View v) {
-
-        if (v.getId() == R.id.loginBtn) {
+        int id = v.getId();
+        if (id == R.id.loginBtn) {
             try {
                 validateUser(mUsernameTxt.getText().toString(), mPasswordTxt.getText().toString());
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        } else if (id == R.id.forgotPasswordTxt) {
+            startRegistrationActivity();
+        } else if (id == R.id.newUserTxt) {
+            startRegistrationActivity();
         }
     }
 
@@ -145,7 +157,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         MediaType JsonObj = MediaType.parse("application/json; charset=utf-8");
         RequestBody requestBody = RequestBody.create(JsonObj, userObj.toString());
 
-        Request request = new Request.Builder().url("http://192.168.10.127:8080/login/validateUserDetails").post(requestBody).build();
+        Request request = new Request.Builder().url("http://192.168.0.111:8080/login/validateUserDetails").post(requestBody).build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -194,6 +206,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             });
         }
 
+    }
+
+    private void startRegistrationActivity() {
+        Intent intent = new Intent(this, RegistrationActivity.class);
+        startActivity(intent);
+    }
+
+    private void startForgotPasswordActivity() {
+        //logic haven't implemented yet
+        Intent intent = new Intent(this, RegistrationActivity.class);
+        startActivity(intent);
     }
 
 }

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <resources>
     <string name="app_name">GetFitWithHenry</string>
     <string name="capture_image">Take Picture</string>
@@ -16,5 +17,6 @@
     <string name="incorrect">Incorrect</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="empty">No Data available</string>
+
 
 </resources>

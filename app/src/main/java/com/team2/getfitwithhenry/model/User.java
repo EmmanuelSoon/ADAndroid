@@ -5,6 +5,7 @@ import android.text.LoginFilter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,18 +16,51 @@ public class User implements Serializable {
     private String password;
     private Role role;
     private Goal goal;
+    private LocalDate dateofbirth;
+    private String gender;
+    private Double calorieintake_limit_inkcal;
+    private Double waterintake_limit_inml;
     private List<Ingredient> dislike = new ArrayList<>();
 
-
-    public User(@JsonProperty("id") int id, @JsonProperty("name") String name, @JsonProperty("username") String username, @JsonProperty("password") String password, @JsonProperty("role") Role role, @JsonProperty("goal") Goal goal, @JsonProperty("dislike") List<Ingredient> dislike) {
+    public User(@JsonProperty("id") int id, @JsonProperty("name") String name, @JsonProperty("username") String username,
+                @JsonProperty("password") String password, @JsonProperty("role") Role role, @JsonProperty("goal") Goal goal,
+                @JsonProperty("dateofbirth") LocalDate dateofbirth, @JsonProperty("gender") String gender,
+                @JsonProperty("calorieintake_limit_inkcal") Double calorieintake_limit_inkcal, @JsonProperty("waterintake_limit_inml") Double waterintake_limit_inml, @JsonProperty("dislike") List<Ingredient> dislike) {
         this.id = id;
         this.name = name;
         this.username = username;
         this.password = password;
         this.role = role;
+        this.dateofbirth = dateofbirth;
+        this.gender = gender;
+        this.calorieintake_limit_inkcal = calorieintake_limit_inkcal;
+        this.waterintake_limit_inml = waterintake_limit_inml;
         this.goal = goal;
         this.dislike = dislike;
     }
+
+    public User(int id, String name, String username, String password, Role role, Goal goal, LocalDate dateofbirth, String gender, Double calorieintake_limit_inkcal, Double waterintake_limit_inml) {
+        this.id = id;
+        this.name = name;
+        this.username = username;
+        this.password = password;
+        this.role = role;
+        this.dateofbirth = dateofbirth;
+        this.gender = gender;
+        this.calorieintake_limit_inkcal = calorieintake_limit_inkcal;
+        this.waterintake_limit_inml = waterintake_limit_inml;
+        this.goal = goal;
+    }
+
+//    public User(@JsonProperty("id") int id, @JsonProperty("name") String name, @JsonProperty("username") String username, @JsonProperty("password") String password, @JsonProperty("role") Role role, @JsonProperty("goal") Goal goal, @JsonProperty("dislike") List<Ingredient> dislike) {
+//        this.id = id;
+//        this.name = name;
+//        this.username = username;
+//        this.password = password;
+//        this.role = role;
+//        this.goal = goal;
+//        this.dislike = dislike;
+//    }
 
     public User(int id, String name, String username, String password, Role role, Goal goal) {
         this.id = id;
@@ -76,6 +110,38 @@ public class User implements Serializable {
 
     public Role getRole() {
         return role;
+    }
+
+    public LocalDate getDateofbirth() {
+        return dateofbirth;
+    }
+
+    public void setDateofbirth(LocalDate dateofbirth) {
+        this.dateofbirth = dateofbirth;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public Double getCalorieintake_limit_inkcal() {
+        return calorieintake_limit_inkcal;
+    }
+
+    public void setCalorieintake_limit_inkcal(Double calorieintake_limit_inkcal) {
+        this.calorieintake_limit_inkcal = calorieintake_limit_inkcal;
+    }
+
+    public Double getWaterintake_limit_inml() {
+        return waterintake_limit_inml;
+    }
+
+    public void setWaterintake_limit_inml(Double waterintake_limit_inml) {
+        this.waterintake_limit_inml = waterintake_limit_inml;
     }
 
     public void setRole(Role role) {
