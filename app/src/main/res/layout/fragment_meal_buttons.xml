@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MealButtonsFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+        <Button
+            android:id="@+id/breakfast_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="left|center_vertical"
+            android:theme="@style/breakfastBtn"
+            android:text="Breakfast \n\n TotalCalories: 1000"
+            android:lines="3"/>
+
+        <Button
+            android:id="@+id/lunch_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="left|center_vertical"
+            android:theme="@style/LunchBtn"
+            android:text="Lunch \n\n TotalCalories: 1000"
+            android:lines="3"/>
+
+        <Button
+            android:id="@+id/dinner_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="left|center_vertical"
+            android:theme="@style/dinnerBtn"
+            android:text="Dinner \n\n TotalCalories: 1000"
+            android:lines="3"/>
+
+        <Button
+            android:id="@+id/extras_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="left|center_vertical"
+            android:theme="@style/extraBtn"
+            android:text="Extras \n\n TotalCalories: 1000"
+            android:lines="3"/>
+
+
+    </LinearLayout>
+</FrameLayout>

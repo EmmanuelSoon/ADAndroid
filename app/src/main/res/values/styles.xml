@@ -16,4 +16,17 @@
     <style name="registerStyle">
         <item name="android:textSize">18sp</item>
     </style>
+
+    <style name="breakfastBtn">
+        <item name="android:backgroundTint">@color/ocean_green</item>
+    </style>
+    <style name="LunchBtn">
+        <item name="android:backgroundTint">@color/colorPrimary</item>
+    </style>
+    <style name="dinnerBtn">
+        <item name="android:backgroundTint">@color/purple_200</item>
+    </style>
+    <style name="extraBtn">
+        <item name="android:backgroundTint">@color/light_blue</item>
+    </style>
 </resources>
