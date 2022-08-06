@@ -10,31 +10,60 @@
         <entry key="..\:/AD project/ADAndroid/app/src/main/res/layout/activity_recipe.xml" value="0.36666666666666664" />
         <entry key="..\:/AD project/ADAndroid/app/src/main/res/layout/food_list.xml" value="0.36666666666666664" />
         <entry key="..\:/AD project/ADAndroid/app/src/main/res/layout/fragment_meal.xml" value="0.36666666666666664" />
+        <entry key="..\:/AD project/ADAndroid/app/src/main/res/layout/fragment_meal_buttons.xml" value="0.36666666666666664" />
         <entry key="..\:/AD project/ADAndroid/app/src/main/res/layout/meal_list.xml" value="0.36666666666666664" />
-        <entry key="..\:/Users/KRISH/AndroidStudioProjects/ADAndroid/app/src/main/res/layout/activity_logger.xml" value="0.20833333333333334" />
+        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.2945" />
+        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/drawable/customborder.xml" value="0.1075" />
+        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/drawable/ic_avatar.xml" value="0.2945" />
+        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/drawable/ic_baseline_image_not_supported_24.xml" value="0.2945" />
+        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/drawable/ic_baseline_lock_24.xml" value="0.2945" />
+        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/drawable/ic_baseline_person_24.xml" value="0.2945" />
+        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/drawable/ic_launcher_background.xml" value="0.2945" />
+        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/drawable/nav_dashboard.xml" value="0.2945" />
+        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/drawable/nav_log.xml" value="0.1075" />
+        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/drawable/nav_recipe.xml" value="0.1075" />
+        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/drawable/nav_scanner.xml" value="0.1075" />
+        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/drawable/nav_search.xml" value="0.1075" />
+        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/drawable/round_border.xml" value="0.2945" />
+        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/layout/activity_home.xml" value="0.30052083333333335" />
+        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/layout/activity_logger.xml" value="0.175" />
+        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/layout/activity_login.xml" value="0.3333333333333333" />
+        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/layout/activity_logout.xml" value="0.30052083333333335" />
+        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/layout/activity_main.xml" value="0.175" />
+        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/layout/activity_recipe.xml" value="0.175" />
+        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/layout/activity_registration.xml" value="0.3333333333333333" />
+        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/layout/activity_search_food.xml" value="0.175" />
+        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/layout/add_meal_row.xml" value="0.175" />
+        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/layout/food_list.xml" value="0.175" />
+        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/layout/fragment_meal.xml" value="0.175" />
+        <entry key="..\:/Users/65834/Documents/GitHub/ADAndroid/app/src/main/res/menu/bottom_nav_bar.xml" value="0.30052083333333335" />
         <entry key="..\:/Users/KRISH/AndroidStudioProjects/ADAndroid/app/src/main/res/layout/activity_login.xml" value="0.20833333333333334" />
-        <entry key="..\:/Users/KRISH/AndroidStudioProjects/ADAndroid/app/src/main/res/layout/activity_profile.xml" value="0.25" />
-        <entry key="..\:/Users/KRISH/AndroidStudioProjects/ADAndroid/app/src/main/res/layout/activity_registration.xml" value="0.25" />
         <entry key="app/src/main/res/drawable-anydpi/nav_scanner.xml" value="0.2655" />
+        <entry key="app/src/main/res/drawable/chooser_normal.xml" value="0.2925" />
         <entry key="app/src/main/res/drawable/customborder.xml" value="0.188" />
         <entry key="app/src/main/res/drawable/nav_dashboard.xml" value="0.2655" />
         <entry key="app/src/main/res/drawable/nav_log.xml" value="0.2655" />
         <entry key="app/src/main/res/drawable/nav_recipe.xml" value="0.2655" />
         <entry key="app/src/main/res/drawable/nav_scanner.xml" value="0.2655" />
         <entry key="app/src/main/res/drawable/nav_search.xml" value="0.2655" />
+        <entry key="app/src/main/res/drawable/pressed.xml" value="0.2925" />
+        <entry key="app/src/main/res/drawable/selected_background.xml" value="0.2925" />
+        <entry key="app/src/main/res/drawable/selected_bg.xml" value="0.2925" />
         <entry key="app/src/main/res/layout/activity_add_meal.xml" value="0.2695187165775401" />
         <entry key="app/src/main/res/layout/activity_camera.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_home.xml" value="0.5" />
         <entry key="app/src/main/res/layout/activity_logger.xml" value="0.5578125" />
+        <entry key="app/src/main/res/layout/activity_login.xml" value="0.32719298245614037" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_receipe.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_search_food.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_test_http.xml" value="0.264945652173913" />
-        <entry key="app/src/main/res/layout/add_meal_row.xml" value="0.2995614035087719" />
+        <entry key="app/src/main/res/layout/add_meal_row.xml" value="0.26941747572815533" />
         <entry key="app/src/main/res/layout/food_list.xml" value="0.24427083333333333" />
         <entry key="app/src/main/res/layout/fragment_bottom_nav.xml" value="0.2848731884057971" />
         <entry key="app/src/main/res/layout/fragment_meal.xml" value="0.3399122807017544" />
-        <entry key="app/src/main/res/menu/bottom_nav_bar.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/meal_list.xml" value="0.3092105263157895" />
+        <entry key="app/src/main/res/menu/bottom_nav_bar.xml" value="0.22" />
         <entry key="app/src/main/res/xml/network_security_config.xml" value="0.3453125" />
       </map>
     </option>

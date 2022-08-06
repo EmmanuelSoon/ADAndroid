@@ -1,5 +1,9 @@
 package com.team2.getfitwithhenry;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
@@ -9,6 +13,7 @@ import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.OnLifecycleEvent;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -68,7 +73,8 @@ import okhttp3.ResponseBody;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class LoggerActivity extends AppCompatActivity implements DefaultLifecycleObserver {
+public class LoggerActivity extends AppCompatActivity implements MealButtonsFragment.IMealButtonsFragment, DefaultLifecycleObserver{
+
 
     private User tempUser;
     private final OkHttpClient client = new OkHttpClient();
@@ -85,6 +91,20 @@ public class LoggerActivity extends AppCompatActivity implements DefaultLifecycl
     // then set on click to each row
     // then inflate each row below with listview for each enum
 
+
+    @Override
+    public void itemClicked(String content){
+        DatePicker datePicker = datePickerDialog.getDatePicker();
+        String dateSelect = datePicker.getYear() + "-" + String.format("%02d", (datePicker.getMonth() + 1)) + "-" + String.format("%02d", datePicker.getDayOfMonth());
+
+        MealFragment mf = new MealFragment();
+        Bundle args = new Bundle();
+        args.putString("meal", content.split(" ")[0].toLowerCase());
+        args.putString("date", dateSelect);
+        args.putString("username", user.getUsername());
+        mf.setArguments(args);
+        mf.show(getSupportFragmentManager(), "Meal Fragment");
+    }
 
 
     @Override
@@ -113,6 +133,24 @@ public class LoggerActivity extends AppCompatActivity implements DefaultLifecycl
         String currDate = LocalDate.now().format(formatter);
         getDietRecordsFromServer(user, currDate);
 
+        //Set up activity result launcher
+        ActivityResultLauncher<Intent> addMealActivityLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+                            // There are no request codes
+                            Intent data = result.getData();
+
+                            // handle results here
+                            DatePicker datePicker = datePickerDialog.getDatePicker();
+                            String dateSelect = datePicker.getYear() + "-" + String.format("%02d", (datePicker.getMonth() + 1)) + "-" + String.format("%02d", datePicker.getDayOfMonth());
+                            getDietRecordsFromServer(user, dateSelect);
+                        }
+                    }
+                });
+
         //add meal function
         Button addFoodBtn = findViewById(R.id.add_food);
         addFoodBtn.setOnClickListener((view -> {
@@ -121,7 +159,7 @@ public class LoggerActivity extends AppCompatActivity implements DefaultLifecycl
             Intent intent = new Intent(this, AddMealActivity.class);
             intent.putExtra("date", dateSelect);
 
-            startActivity(intent);
+            addMealActivityLauncher.launch(intent);
 
 
         }));
@@ -151,7 +189,7 @@ public class LoggerActivity extends AppCompatActivity implements DefaultLifecycl
 
             //need to use your own pc's ip address here, cannot use local host.
             Request request = new Request.Builder()
-                    .url("http://192.168.10.127:8080/user/gethealthrecorddate")
+                    .url("http://192.168.10.122:8080/user/gethealthrecorddate")
                     .post(body)
                     .build();
 
@@ -251,7 +289,7 @@ public class LoggerActivity extends AppCompatActivity implements DefaultLifecycl
 
             //need to use your own pc's ip address here, cannot use local host.
             Request request = new Request.Builder()
-                    .url("http://192.168.10.127:8080/user/getdietrecords")
+                    .url("http://192.168.10.122:8080/user/getdietrecords")
                     .post(body)
                     .build();
 
@@ -279,7 +317,7 @@ public class LoggerActivity extends AppCompatActivity implements DefaultLifecycl
 
                         //do something with FM here
                         FragmentManager fm = getSupportFragmentManager();
-                        MealFragment mealFragment = (MealFragment) fm.findFragmentById(R.id.fragment_meal);
+                        MealButtonsFragment mealFragment = (MealButtonsFragment) fm.findFragmentById(R.id.fragment_meal);
                         mealFragment.setDietRecordList(dietRecordList);
                     } catch (Exception e) {
                         e.printStackTrace();
