@@ -73,7 +73,6 @@ public class AddMealActivity extends AppCompatActivity {
     ActivityResultLauncher<Intent> rlSearchActivity;
 
     //TODO if you come from search how to enter date? also what about form validations?
-    //TODO add new listview adapter
 
 
     @Override

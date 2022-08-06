@@ -16,6 +16,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcel;
 import android.util.Log;
 import android.view.MenuItem;
@@ -34,6 +36,7 @@ import com.google.gson.Gson;
 import com.team2.getfitwithhenry.model.DietRecord;
 import com.team2.getfitwithhenry.model.Goal;
 import com.team2.getfitwithhenry.model.HealthRecord;
+import com.team2.getfitwithhenry.model.Ingredient;
 import com.team2.getfitwithhenry.model.Role;
 import com.team2.getfitwithhenry.model.User;
 
@@ -76,10 +79,11 @@ public class LoggerActivity extends AppCompatActivity implements DefaultLifecycl
 
     //TODO LIST:
     //refresh page after adding meal
-    //get user's calories for the day
     //get meal list sorted by meal type (combine meal type)
     //UI -> show break down of ingredients on click
-
+    // first change logger ui to show the enum types with the cals
+    // then set on click to each row
+    // then inflate each row below with listview for each enum
 
 
 
@@ -122,6 +126,9 @@ public class LoggerActivity extends AppCompatActivity implements DefaultLifecycl
 
         }));
 
+        //set My Records
+        getHealthRecordFromServer(user, currDate);
+
     }
 
     @Override
@@ -131,10 +138,72 @@ public class LoggerActivity extends AppCompatActivity implements DefaultLifecycl
         DatePicker datePicker = datePickerDialog.getDatePicker();
         String dateSelect = datePicker.getYear() + "-" + String.format("%02d", (datePicker.getMonth() + 1)) + "-" + String.format("%02d", datePicker.getDayOfMonth());
         getDietRecordsFromServer(user, dateSelect);
-
-
     }
 
+    public void getHealthRecordFromServer(User user, String date){
+        JSONObject postData = new JSONObject();
+        try {
+            postData.put("username", user.getUsername());
+            postData.put("date", date);
+
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+            RequestBody body = RequestBody.create(postData.toString(), JSON);
+
+            //need to use your own pc's ip address here, cannot use local host.
+            Request request = new Request.Builder()
+                    .url("http://192.168.10.127:8080/user/gethealthrecorddate")
+                    .post(body)
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) {
+                    try {
+                        ResponseBody responseBody = response.body();
+                        if (!response.isSuccessful()) {
+                            throw new IOException("Unexpected code " + response);
+                        }
+
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        objectMapper.registerModule(new JavaTimeModule());
+                        HealthRecord myHr = objectMapper.readValue(responseBody.string(), HealthRecord.class);
+                        setMyRecords(getApplicationContext(), myHr);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setMyRecords(final Context context, final HealthRecord myHr){
+        if (context != null && myHr != null) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+
+                @Override
+                public void run() {
+                    TextView totalCals = findViewById(R.id.total_calories);
+                    TextView currentCals = findViewById(R.id.current_calories);
+                    TextView bmi = findViewById(R.id.BMI);
+
+                    totalCals.setText("Calorie Limit: " + String.valueOf(user.getCalorieintake_limit_inkcal()));
+                    currentCals.setText("Calories consumed: " + String.valueOf(Math.round(myHr.getCalIntake())));
+                    Double myBmi = myHr.getUserWeight() / Math.pow(myHr.getUserHeight()/100, 2.0);
+                    System.out.println(myBmi);
+                    bmi.setText("BMI: " + String.valueOf(Math.round(myBmi)));
+
+                }
+            });
+        }
+    }
 
 
     public void openDatePicker(View view) {   datePickerDialog.show();    }
@@ -150,6 +219,7 @@ public class LoggerActivity extends AppCompatActivity implements DefaultLifecycl
                 dateButton.setText(setDate(parsedDate));
 
                 getDietRecordsFromServer(user, date);
+                getHealthRecordFromServer(user, date);
             }
         };
 
@@ -204,6 +274,10 @@ public class LoggerActivity extends AppCompatActivity implements DefaultLifecycl
                         ObjectMapper objectMapper = new ObjectMapper();
                         objectMapper.registerModule(new JavaTimeModule());
                         List <DietRecord> dietRecordList = Arrays.asList(objectMapper.readValue(responseBody.string(), DietRecord[].class));
+
+
+
+                        //do something with FM here
                         FragmentManager fm = getSupportFragmentManager();
                         MealFragment mealFragment = (MealFragment) fm.findFragmentById(R.id.fragment_meal);
                         mealFragment.setDietRecordList(dietRecordList);

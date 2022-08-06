@@ -1,5 +1,7 @@
 package com.team2.getfitwithhenry.adapter;
 
+import static java.util.stream.Collectors.groupingBy;
+
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -16,7 +18,10 @@ import com.team2.getfitwithhenry.model.DietRecord;
 import com.team2.getfitwithhenry.model.Ingredient;
 import com.team2.getfitwithhenry.model.MealType;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class MealListAdapter extends ArrayAdapter<DietRecord> {
     private Context context;
@@ -28,14 +33,16 @@ public class MealListAdapter extends ArrayAdapter<DietRecord> {
         this.dietRecordList = dietRecordList;
         this.context = context;
 
-
     }
+
 
     public View getView(int pos, View view, @NonNull ViewGroup parent){
         if (view == null){
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.meal_list, parent, false);
         }
+
+        sortListByEnum(dietRecordList);
 
         TextView titleView = view.findViewById(R.id.titleView);
         titleView.setText(dietRecordList.get(pos).getFoodName());
@@ -48,6 +55,13 @@ public class MealListAdapter extends ArrayAdapter<DietRecord> {
         textView.setText(Double.toString(dietRecordList.get(pos).getCalorie()));
 
         return view;
+    }
+
+    public void sortListByEnum(List<DietRecord> drList){
+       Map<MealType, Double> calsByType = drList.stream()
+               .sorted(Comparator.comparing(DietRecord::getMealType))
+               .collect(Collectors.groupingBy(DietRecord::getMealType, Collectors.summingDouble(DietRecord::getCalorie)));
+
     }
 
 
