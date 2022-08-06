@@ -1,5 +1,6 @@
 package com.team2.getfitwithhenry;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ActivityNotFoundException;
@@ -8,6 +9,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -15,6 +17,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 import com.google.gson.Gson;
 import com.team2.getfitwithhenry.model.User;
 
@@ -28,6 +32,8 @@ public class RecipeActivity extends AppCompatActivity {
     private WebView mWebView;
     private String mUrl = "http://192.168.10.122:3000/android";
     private User user;
+    private BottomNavigationView bottomNavView;
+
 
     private ValueCallback<Uri> mUploadMessage;
     public ValueCallback<Uri[]> uploadMessage;
@@ -52,6 +58,8 @@ public class RecipeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe);
+
+        setBottomNavBar();
 
         SharedPreferences mPrefs = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
         Gson gson = new Gson();
@@ -127,5 +135,41 @@ public class RecipeActivity extends AppCompatActivity {
             }
             return true;
         }
+    }
+
+    public void setBottomNavBar() {
+        bottomNavView = findViewById(R.id.bottom_navigation);
+        bottomNavView.setSelectedItemId(R.id.nav_log);
+        bottomNavView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Intent intent;
+                int id = item.getItemId();
+                switch (id) {
+
+                    case (R.id.nav_scanner):
+                        intent = new Intent(getApplicationContext(), CameraActivity.class);
+                        startActivity(intent);
+                        break;  //or should this be finish?
+
+                    case (R.id.nav_search):
+                        intent = new Intent(getApplicationContext(), SearchFoodActivity.class);
+                        startActivity(intent);
+                        break;
+
+                    case (R.id.nav_recipe):
+                        intent = new Intent(getApplicationContext(), RecipeActivity.class);
+                        startActivity(intent);
+                        break;
+
+                    case (R.id.nav_home):
+                        intent = new Intent(getApplicationContext(), HomeActivity.class);
+                        startActivity(intent);
+                        break;
+                }
+
+                return false;
+            }
+        });
     }
 }

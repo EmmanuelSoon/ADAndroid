@@ -72,7 +72,7 @@
 
         <fragment
             android:id="@+id/fragment_meal"
-            android:name="com.team2.getfitwithhenry.MealFragment"
+            android:name="com.team2.getfitwithhenry.MealButtonsFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>

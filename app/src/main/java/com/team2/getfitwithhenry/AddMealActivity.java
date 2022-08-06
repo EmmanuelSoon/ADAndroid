@@ -138,6 +138,9 @@ public class AddMealActivity extends AppCompatActivity {
 
                 postToServer(buildJson(myMap));
 
+                Intent intent = new Intent();
+                setResult(RESULT_OK, intent);
+                finish();
             }
         });
 
@@ -170,7 +173,7 @@ public class AddMealActivity extends AppCompatActivity {
 
         //need to use your own pc's ip address here, cannot use local host.
         Request request = new Request.Builder()
-                .url("http://192.168.10.127:8080/user/adddietrecord")
+                .url("http://192.168.10.122:8080/user/adddietrecord")
                 .post(body)
                 .build();
 
