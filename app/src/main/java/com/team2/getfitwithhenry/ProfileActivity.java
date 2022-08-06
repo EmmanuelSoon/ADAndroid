@@ -258,7 +258,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private void updatUserDetails(JSONObject userObj) {
         MediaType JsonObj = MediaType.parse("application/json; charset=utf-8");
         RequestBody requestBody = RequestBody.create(JsonObj, userObj.toString());
-        Request request = new Request.Builder().url("http://192.168.0.111:8080/register/updateUserDetails").post(requestBody).build();
+        Request request = new Request.Builder().url("http://192.168.1.126:8080/register/updateUserDetails").post(requestBody).build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override

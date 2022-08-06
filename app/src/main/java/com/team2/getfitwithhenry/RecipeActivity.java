@@ -30,7 +30,7 @@ import java.security.NoSuchAlgorithmException;
 public class RecipeActivity extends AppCompatActivity {
 
     private WebView mWebView;
-    private String mUrl = "http://192.168.10.122:3000/android";
+    private String mUrl = "http://192.168.1.126:3000/android";
     private User user;
     private BottomNavigationView bottomNavView;
 

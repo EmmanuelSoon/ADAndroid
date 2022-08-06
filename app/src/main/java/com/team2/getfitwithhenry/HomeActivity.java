@@ -2,12 +2,14 @@ package com.team2.getfitwithhenry;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Menu;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.MenuItem;
@@ -58,6 +60,7 @@ public class HomeActivity extends AppCompatActivity {
     Button scanBtn;
     Button mlogoutBtn;
 
+    private Toolbar mToolbar;
     NavigationBarView bottomNavView;
     private User tempUser;
     private final OkHttpClient client = new OkHttpClient();
@@ -74,6 +77,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        setTopNavBar();
         setBottomNavBar();
 
         SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
@@ -83,22 +87,6 @@ public class HomeActivity extends AppCompatActivity {
         user = gson.fromJson(json, User.class);
 
         getUserHealthRecordHistory(user);
-
-        mlogoutBtn = findViewById(R.id.logoutBtn);
-
-
-        mlogoutBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SharedPreferences.Editor editor = pref.edit();
-                editor.clear();
-                editor.commit();
-
-                Toast.makeText(getApplicationContext(), "You have logged out successfully", Toast.LENGTH_LONG).show();
-                startLoginActivity();
-            }
-        });
-
     }
 
     @Override
@@ -147,9 +135,9 @@ public class HomeActivity extends AppCompatActivity {
         gridLabel.setVerticalAxisTitle("Weight");
     }
 
-    public void setProgressStats(Context context){
+    public void setProgressStats(Context context) {
 
-        caloriesText=findViewById(R.id.caloriesText);
+        caloriesText = findViewById(R.id.caloriesText);
         waterText = findViewById(R.id.waterText);
         calsProg = findViewById(R.id.calories_progress);
         waterProg = findViewById(R.id.water_progress);
@@ -160,8 +148,8 @@ public class HomeActivity extends AppCompatActivity {
         //already sorted by db
         HealthRecord mostRecent = healthRecordList.get(0);
 
-        float calAngle = Math.round((mostRecent.getCalIntake()/calLimit) * 270) > 270? 270f : Math.round((mostRecent.getCalIntake()/calLimit) * 270);
-        float waterAngle = Math.round((mostRecent.getWaterIntake()/waterLimit) * 270) > 270f? 270f : Math.round((mostRecent.getWaterIntake()/waterLimit) * 270);
+        float calAngle = Math.round((mostRecent.getCalIntake() / calLimit) * 270) > 270 ? 270f : Math.round((mostRecent.getCalIntake() / calLimit) * 270);
+        float waterAngle = Math.round((mostRecent.getWaterIntake() / waterLimit) * 270) > 270f ? 270f : Math.round((mostRecent.getWaterIntake() / waterLimit) * 270);
 
         if (context != null) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -179,12 +167,13 @@ public class HomeActivity extends AppCompatActivity {
                     caloriesText.setText("Cals\n" + String.valueOf(Math.round(mostRecent.getCalIntake())));
                     waterText.setText("Water\n" + String.valueOf(Math.round(mostRecent.getWaterIntake())));
 
-                }});
+                }
+            });
 
         }
     }
 
-    private void getUserHealthRecordHistory(User user){
+    private void getUserHealthRecordHistory(User user) {
         JSONObject postData = new JSONObject();
         try {
             postData.put("username", user.getUsername());
@@ -194,7 +183,7 @@ public class HomeActivity extends AppCompatActivity {
 
             //need to use your own pc's ip address here, cannot use local host.
             Request request = new Request.Builder()
-                    .url("http://192.168.10.127:8080/user/gethealthrecords")
+                    .url("http://192.168.1.126:8080/home/gethealthrecords")
                     .post(body)
                     .build();
 
@@ -234,45 +223,59 @@ public class HomeActivity extends AppCompatActivity {
     }
 
 
-    private void startLogoutActivity(){
-        Intent intent = new Intent(this, LogoutActivity.class);
-        startActivity(intent);
-    }
-    private void startLoginActivity(){
-        Intent intent = new Intent(this, LoginActivity.class);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-
+    public void setTopNavBar() {
+        mToolbar = findViewById(R.id.top_navbar);
+        setSupportActionBar(mToolbar);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.top_nav_bar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.editProfile:
+                Toast.makeText(this, "Test Message", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.logout:
+                logout();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
 
     public void setBottomNavBar() {
         bottomNavView = findViewById(R.id.bottom_navigation);
         bottomNavView.setSelectedItemId(R.id.nav_home);
-        bottomNavView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener(){
+        bottomNavView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Intent intent;
                 int id = item.getItemId();
-                switch(id){
+                switch (id) {
 
-                    case(R.id.nav_scanner):
+                    case (R.id.nav_scanner):
                         intent = new Intent(getApplicationContext(), CameraActivity.class);
                         startActivity(intent);
                         break;  //or should this be finish?
 
-                    case(R.id.nav_search):
+                    case (R.id.nav_search):
                         intent = new Intent(getApplicationContext(), SearchFoodActivity.class);
                         startActivity(intent);
                         break;
 
-                    case(R.id.nav_log):
+                    case (R.id.nav_log):
                         intent = new Intent(getApplicationContext(), LoggerActivity.class);
                         startActivity(intent);
                         break;
 
-                    case(R.id.nav_recipe):
+                    case (R.id.nav_recipe):
                         intent = new Intent(getApplicationContext(), RecipeActivity.class);
                         startActivity(intent);
                         break;
@@ -288,5 +291,24 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
+    private void logout() {
+        SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.clear();
+        editor.commit();
 
+        Toast.makeText(getApplicationContext(), "You have logged out successfully", Toast.LENGTH_LONG).show();
+        startLoginActivity();
+    }
+
+    private void startLogoutActivity() {
+        Intent intent = new Intent(this, LogoutActivity.class);
+        startActivity(intent);
+    }
+
+    private void startLoginActivity() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+
+    }
 }

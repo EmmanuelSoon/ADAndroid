@@ -6,6 +6,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.Lifecycle;
@@ -25,6 +26,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcel;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -80,6 +82,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
     private final OkHttpClient client = new OkHttpClient();
     private DatePickerDialog datePickerDialog;
     private Button dateButton;
+    private Toolbar mToolbar;
     private BottomNavigationView bottomNavView;
     User user;
 
@@ -111,6 +114,8 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logger);
+
+        setTopNavBar();
 
         //set up bottom navbar
         setBottomNavBar();
@@ -189,7 +194,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
 
             //need to use your own pc's ip address here, cannot use local host.
             Request request = new Request.Builder()
-                    .url("http://192.168.10.122:8080/user/gethealthrecorddate")
+                    .url("http://192.168.10.127:8080/user/gethealthrecorddate")
                     .post(body)
                     .build();
 
@@ -289,7 +294,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
 
             //need to use your own pc's ip address here, cannot use local host.
             Request request = new Request.Builder()
-                    .url("http://192.168.10.122:8080/user/getdietrecords")
+                    .url("http://192.168.1.126:8080/user/getdietrecords")
                     .post(body)
                     .build();
 
@@ -326,6 +331,31 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
             });
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+    public void setTopNavBar() {
+        mToolbar = findViewById(R.id.top_navbar);
+        setSupportActionBar(mToolbar);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.top_nav_bar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.editProfile:
+                Toast.makeText(this, "Test Message", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.logout:
+                logout();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -365,6 +395,26 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
         });
     }
 
+    private void logout() {
+        SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.clear();
+        editor.commit();
+
+        Toast.makeText(getApplicationContext(), "You have logged out successfully", Toast.LENGTH_LONG).show();
+        startLoginActivity();
+    }
+
+    private void startLogoutActivity() {
+        Intent intent = new Intent(this, LogoutActivity.class);
+        startActivity(intent);
+    }
+
+    private void startLoginActivity() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+
+    }
 
 
 

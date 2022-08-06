@@ -10,7 +10,23 @@
     android:orientation="vertical"
     tools:context=".LoggerActivity">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/top_navbar_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:theme="@style/ThemeOverlay.AppCompat.Light"
+        app:liftOnScroll="true">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/top_navbar"
+            app:titleTextColor="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize" />
+
+    </com.google.android.material.appbar.AppBarLayout>
     <TextView
+        android:paddingTop="10dp"
         android:id="@+id/log_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -18,7 +34,6 @@
         android:textStyle="bold"
         android:textSize="20dp"
         />
-
 
 
     <LinearLayout

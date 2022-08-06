@@ -2,13 +2,16 @@ package com.team2.getfitwithhenry;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethod;
@@ -49,6 +52,7 @@ public class SearchFoodActivity extends AppCompatActivity {
     private ListView mlistView;
     private Button mSearchBtn;
     private EditText mEditText;
+    private Toolbar mToolbar;
     private NavigationBarView bottomNavView;
     private Button mAddMealBtn;
     List<Ingredient> iList;
@@ -63,6 +67,7 @@ public class SearchFoodActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_food);
 
+        setTopNavBar();
         setBottomNavBar();
 
         mSearchBtn = findViewById(R.id.search);
@@ -129,7 +134,7 @@ public class SearchFoodActivity extends AppCompatActivity {
 
             //need to use your own pc's ip address here, cannot use local host.
             Request request = new Request.Builder()
-                    .url("http://192.168.10.122:8080/search/ingredients")
+                    .url("http://192.168.1.126:8080/search/ingredients")
                     .post(body)
                     .build();
 
@@ -218,6 +223,32 @@ public class SearchFoodActivity extends AppCompatActivity {
         }
     }
 
+    public void setTopNavBar() {
+        mToolbar = findViewById(R.id.top_navbar);
+        setSupportActionBar(mToolbar);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.top_nav_bar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.editProfile:
+                Toast.makeText(this, "Test Message", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.logout:
+                logout();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     public void setBottomNavBar() {
         bottomNavView = findViewById(R.id.bottom_navigation);
         bottomNavView.setSelectedItemId(R.id.nav_search);
@@ -254,7 +285,18 @@ public class SearchFoodActivity extends AppCompatActivity {
         });
     }
 
+    private void logout() {
+        SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.clear();
+        editor.commit();
 
+        Toast.makeText(getApplicationContext(), "You have logged out successfully", Toast.LENGTH_LONG).show();
+        startLoginActivity();
+    }
+    private void startLoginActivity() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
 
-
+    }
 }
