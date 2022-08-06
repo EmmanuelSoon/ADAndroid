@@ -3,10 +3,13 @@ package com.team2.getfitwithhenry;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -59,13 +62,12 @@ public class HomeActivity extends AppCompatActivity {
     private User tempUser;
     private final OkHttpClient client = new OkHttpClient();
     List<HealthRecord> healthRecordList;
-    private final double dailyCal = 3000;
-    private final double dailyWaterIntake = 2700;
     TextView caloriesText;
     TextView waterText;
     GraphView graph;
     User user;
     ImageView calsProg;
+    ImageView waterProg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,29 +76,16 @@ public class HomeActivity extends AppCompatActivity {
 
         setBottomNavBar();
 
-        caloriesText=findViewById(R.id.caloriesText);
-        waterText = findViewById(R.id.waterText);
-        graph = (GraphView) findViewById(R.id.GraphView);
-
-        calsProg = findViewById(R.id.calories_progress);
-
-        calsProg.setImageDrawable(new ProgressArcDrawable());
-
         SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
         Gson gson = new Gson();
         String json = pref.getString("userDetails", "");
         System.out.println(json);
         user = gson.fromJson(json, User.class);
 
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
-        String currDate = LocalDate.now().format(formatter);
-        //getHealthRecordbyUserNameAndDateFromServer(tempUser, currDate);
-
         getUserHealthRecordHistory(user);
 
         mlogoutBtn = findViewById(R.id.logoutBtn);
-//        SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
+
 
         mlogoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,6 +111,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void showGraphView(List<HealthRecord> healthRecordList) {
+        graph = (GraphView) findViewById(R.id.GraphView);
         //plot data(curve) on X and Y
         LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>();
         ArrayList<String> xAxisLables = new ArrayList<>();
@@ -157,6 +147,43 @@ public class HomeActivity extends AppCompatActivity {
         gridLabel.setVerticalAxisTitle("Weight");
     }
 
+    public void setProgressStats(Context context){
+
+        caloriesText=findViewById(R.id.caloriesText);
+        waterText = findViewById(R.id.waterText);
+        calsProg = findViewById(R.id.calories_progress);
+        waterProg = findViewById(R.id.water_progress);
+
+        Double calLimit = user.getCalorieintake_limit_inkcal();
+        Double waterLimit = user.getWaterintake_limit_inml();
+
+        //already sorted by db
+        HealthRecord mostRecent = healthRecordList.get(0);
+
+        float waterAngle = Math.round((mostRecent.getCalIntake()/calLimit) * 270);
+        float calAngle = Math.round((mostRecent.getWaterIntake()/waterLimit) * 270);
+
+        if (context != null) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+
+                @Override
+                public void run() {
+
+                    if (calAngle < 243f) {
+                        calsProg.setImageDrawable(new ProgressArcDrawable(calAngle, "green"));
+                    } else {
+                        calsProg.setImageDrawable(new ProgressArcDrawable(calAngle, "red"));
+                    }
+
+                    waterProg.setImageDrawable(new ProgressArcDrawable(waterAngle, "blue"));
+                    caloriesText.setText("Cals\n" + String.valueOf(Math.round(mostRecent.getCalIntake())));
+                    waterText.setText("Water\n" + String.valueOf(Math.round(mostRecent.getWaterIntake())));
+
+                }});
+
+        }
+    }
+
     private void getUserHealthRecordHistory(User user){
         JSONObject postData = new JSONObject();
         try {
@@ -167,7 +194,7 @@ public class HomeActivity extends AppCompatActivity {
 
             //need to use your own pc's ip address here, cannot use local host.
             Request request = new Request.Builder()
-                    .url("http://192.168.10.127:8080/home/gethealthrecords")
+                    .url("http://192.168.10.127:8080/user/gethealthrecords")
                     .post(body)
                     .build();
 
@@ -186,19 +213,16 @@ public class HomeActivity extends AppCompatActivity {
                             throw new IOException("Unexpected code " + response);
                         }
 
-                        String msg = String.valueOf(responseBody);
-                        //to do: convert responseBody into list of HealthRecords
                         ObjectMapper objectMapper = new ObjectMapper();
                         objectMapper.registerModule(new JavaTimeModule());
-                        List<HealthRecord> hrList = Arrays.asList(objectMapper.readValue(responseBody.string(), HealthRecord[].class));
-                        if (hrList.size() != 0) {
-                            showGraphView(hrList);
+                        healthRecordList = Arrays.asList(objectMapper.readValue(responseBody.string(), HealthRecord[].class));
+                        if (healthRecordList.size() != 0) {
+                            showGraphView(healthRecordList);
                         } else {
                             Toast.makeText(HomeActivity.this, "No weight tracking for this user", Toast.LENGTH_SHORT).show();
                         }
+                        setProgressStats(getApplicationContext());
 
-
-//                        Log.i("data", responseBody.string());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -209,72 +233,19 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    private void getHealthRecordbyUserNameAndDateFromServer(User user,String date){
-        JSONObject postData = new JSONObject();
-        try {
-            postData.put("username", user.getUsername());
-            postData.put("date", date);
-            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-            RequestBody body = RequestBody.create(postData.toString(), JSON);
 
+    private void startLogoutActivity(){
+        Intent intent = new Intent(this, LogoutActivity.class);
+        startActivity(intent);
+    }
+    private void startLoginActivity(){
+        Intent intent = new Intent(this, LoginActivity.class);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
 
-            //need to use your own pc's ip address here, cannot use local host.
-            Request request = new Request.Builder()
-                    .url("http://172.29.208.1:8080/home/gethealthrecords")
-                    .post(body)
-                    .build();
-
-            client.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    System.out.println("Error"); e.printStackTrace();
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) {
-                    try {
-                        ResponseBody responseBody = response.body();
-                        if (!response.isSuccessful()) {
-                            throw new IOException("Unexpected code " + response);
-                        }
-
-                        String msg = String.valueOf(responseBody);
-                        //to do: convert responseBody into list of HealthRecords
-                        ObjectMapper objectMapper = new ObjectMapper();
-                        objectMapper.registerModule(new JavaTimeModule());
-                        List<HealthRecord> healthRecordList = Arrays.asList(objectMapper.readValue(responseBody.string(), HealthRecord[].class));
-                        if(healthRecordList.size()!=0){
-                            Double calLeft = getCaloriesLeft(healthRecordList);
-                            Double waterLeft = getWaterLeft(healthRecordList);
-                            caloriesText.setText(("Calories Left: "+calLeft).toString());
-                            waterText.setText(("Water intake Left: "+waterLeft).toString());
-                        }
-                        else{
-                            caloriesText.setText(("Calories Left: "+dailyCal).toString());
-                            waterText.setText(("Water intake Left: "+dailyWaterIntake).toString());
-                        }
-
-
-//                        Log.i("data", responseBody.string());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 
-    private double getCaloriesLeft(List<HealthRecord> healthRecordList){
-        Double calTaken = healthRecordList.get(0).getCalIntake();
-        return dailyCal-calTaken;
-    }
 
-    private double getWaterLeft(List<HealthRecord> healthRecordList){
-        Double waterTaken = healthRecordList.get(0).getWaterIntake();
-        return dailyWaterIntake-waterTaken;
-    }
 
     public void setBottomNavBar() {
         bottomNavView = findViewById(R.id.bottom_navigation);
@@ -316,15 +287,6 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
     }
-    private void startLogoutActivity(){
-        Intent intent = new Intent(this, LogoutActivity.class);
-        startActivity(intent);
-    }
-    private void startLoginActivity(){
-        Intent intent = new Intent(this, LoginActivity.class);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
 
-    }
 
 }
