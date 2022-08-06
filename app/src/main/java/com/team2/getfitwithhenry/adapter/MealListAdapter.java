@@ -53,7 +53,6 @@ public class MealListAdapter extends ArrayAdapter<DietRecord> {
         TextView titleView = view.findViewById(R.id.titleView);
         titleView.setText(className);
 
-        System.out.println(className);
         ImageView imageView = view.findViewById(R.id.foodView);
         try {
             imageView.setImageBitmap(getBitmapFromAssets("seed_images/" + className.trim() + ".jpg"));
