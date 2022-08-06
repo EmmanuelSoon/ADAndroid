@@ -160,8 +160,8 @@ public class HomeActivity extends AppCompatActivity {
         //already sorted by db
         HealthRecord mostRecent = healthRecordList.get(0);
 
-        float waterAngle = Math.round((mostRecent.getCalIntake()/calLimit) * 270);
-        float calAngle = Math.round((mostRecent.getWaterIntake()/waterLimit) * 270);
+        float calAngle = Math.round((mostRecent.getCalIntake()/calLimit) * 270) > 270? 270f : Math.round((mostRecent.getCalIntake()/calLimit) * 270);
+        float waterAngle = Math.round((mostRecent.getWaterIntake()/waterLimit) * 270) > 270f? 270f : Math.round((mostRecent.getWaterIntake()/waterLimit) * 270);
 
         if (context != null) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
