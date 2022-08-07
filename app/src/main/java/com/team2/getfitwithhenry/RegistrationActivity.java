@@ -49,7 +49,7 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class RegistrationActivity extends AppCompatActivity implements View.OnClickListener {
-    EditText mEmailTxt, mPasswordTxt, mConfirmPasswordTxt;
+    EditText mNameTxt, mEmailTxt, mPasswordTxt, mConfirmPasswordTxt;
     String gender = null;
     String goal; LocalDate dateOfBirth;
     Button mDobBtn;
@@ -75,11 +75,20 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         mReturnLogin.setOnClickListener(this);
 
     }
+    @Override
+    public void onStart(){
+        super.onStart();
+
+        SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
+        if(pref.contains("userDetails"))
+            startHomeActivity();
+    }
 
     @Override
     public void onClick(View v){
         int id = v.getId();
 
+        String mName = mNameTxt.getText().toString();
         String mEmail = mEmailTxt.getText().toString();
         String mPassword = mPasswordTxt.getText().toString();
         String mConfirmPassword = mConfirmPasswordTxt.getText().toString();
@@ -88,11 +97,11 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
 
         if(id == R.id.registerBtn){
             try{
-                if(validationAndSeeding(mEmail,mPassword,mConfirmPassword,mDob,gender,mGoal)){
+                if(validation(mName,mEmail,mPassword,mConfirmPassword,mDob,gender,mGoal)){
                     Toast.makeText(getApplicationContext(),"Welcome On Board!",Toast.LENGTH_LONG).show();
                     startHomeActivity();
                 }
-            }catch(JSONException e){
+            }catch(JSONException | InterruptedException e){
                 e.printStackTrace();
             }
         }
@@ -102,6 +111,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void init(){
+        mNameTxt = findViewById(R.id.nameTxt);
         mEmailTxt = findViewById(R.id.emailTxt);
         mPasswordTxt = findViewById(R.id.passwordTxt);
         mConfirmPasswordTxt = findViewById(R.id.confirmPasswordTxt);
@@ -128,38 +138,38 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         ad.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mGoalSelection.setAdapter(ad);
     }
-    private boolean validationAndSeeding(String email, String password, String confirmPassword
-        , LocalDate dob, String gender, Goal goal) throws JSONException {
+    private boolean validation(String name, String email, String password, String confirmPassword
+        , LocalDate dob, String gender, Goal goal) throws JSONException, InterruptedException {
 
         String msg = "";
 
-        if(email.isEmpty()|| password.isEmpty() || confirmPassword.isEmpty() || gender==null || dob==null){
+        if (name.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || gender == null || dob == null) {
             msg = "All Fields Should Be Filled";
             showErrorMsg(msg);
             return false;
-        }
-        else if(!isValidEmail(email)){
+        } else if (!isValidEmail(email)) {
             msg = "Must be valid email address";
             showErrorMsg(msg);
             return false;
-        }
-        else if(!password.equals(confirmPassword)){
+        } else if (!password.equals(confirmPassword)) {
             msg = "Password Didn't Match";
             showErrorMsg(msg);
             return false;
         }
-
         //Creating new user
-         user = new User(email, password, dob, gender, goal);
+        user = new User(name, email, password, dob, gender, goal);
 
         JSONObject userObj = new JSONObject();
+        userObj.put("name", user.getName());
         userObj.put("email", user.getUsername());
         userObj.put("password", user.getPassword());
+        userObj.put("role", user.getRole());
         userObj.put("dob", user.getDateofbirth());
         userObj.put("gender", user.getGender());
         userObj.put("goal", user.getGoal());
 
         validateUserFromDetails(userObj);
+        Thread.sleep(2000);
         if(user == null){
             msg = "Username is already existed";
             showErrorMsg(msg);
@@ -168,7 +178,6 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         else{
             storeUserinSharedPreference(user);
         }
-
         return true;
     }
 
@@ -326,6 +335,5 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
-
 
 }

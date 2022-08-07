@@ -79,12 +79,14 @@ public class User implements Serializable {
         this.username = username;
         this.password = password;
     }
-    public User(String username, String password, LocalDate dob, String gender, Goal goal){
+    public User(String name,String username,String password,LocalDate dob,String gender, Goal goal){
+        this.name = name;
         this.username = username;
         this.password = password;
         this.dateofbirth = dob;
         this.gender = gender;
         this.goal = goal;
+        this.role = Role.NORMAL;
     }
 
     public int getId() {

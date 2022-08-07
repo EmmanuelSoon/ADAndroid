@@ -239,7 +239,7 @@ public class HomeActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.editProfile:
-                Toast.makeText(this, "Test Message", Toast.LENGTH_SHORT).show();
+                startProfileActivity();
                 return true;
             case R.id.logout:
                 logout();
@@ -309,6 +309,10 @@ public class HomeActivity extends AppCompatActivity {
     private void startLoginActivity() {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
+    }
 
+    private void startProfileActivity() {
+        Intent intent = new Intent(this, ProfileActivity.class);
+        startActivity(intent);
     }
 }
