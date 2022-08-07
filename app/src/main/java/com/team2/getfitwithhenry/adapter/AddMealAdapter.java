@@ -15,6 +15,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -72,7 +73,6 @@ public class AddMealAdapter extends ArrayAdapter<Ingredient> {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     double weight = Double.parseDouble(v.getText().toString())/100;
-                    addMealActivity.setCurrentCalories(iList.get(pos).getCalorie() * weight);
                     addMealActivity.setCurrentWeight(Double.parseDouble(v.getText().toString()), iList.get(pos).getId());
                     return false;
                 }
@@ -80,15 +80,22 @@ public class AddMealAdapter extends ArrayAdapter<Ingredient> {
             }
         });
 
-        // WIP
-//        editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-//            @Override
-//            public void onFocusChange(View view, boolean hasFocus) {
-//                if(!hasFocus){
-//                    Toast.makeText(context, editText.getText().toString(), Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
+
+        editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if(!hasFocus){
+                    Double weight = 0.0;
+                    try{
+                        weight = Double.parseDouble(editText.getText().toString());
+                    } catch (Exception ex){
+                        weight = 0.0;
+                    }
+                    addMealActivity.setCurrentWeight(weight , iList.get(pos).getId());
+
+                }
+            }
+        });
 
         return view;
 

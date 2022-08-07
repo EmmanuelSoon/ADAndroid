@@ -3,34 +3,20 @@ package com.team2.getfitwithhenry;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewAnimationUtils;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.gson.Gson;
 import com.team2.getfitwithhenry.adapter.AddMealAdapter;
-import com.team2.getfitwithhenry.adapter.FoodListAdapter;
-import com.team2.getfitwithhenry.model.DietRecord;
 import com.team2.getfitwithhenry.model.Ingredient;
 import com.team2.getfitwithhenry.model.MealType;
 import com.team2.getfitwithhenry.model.User;
@@ -39,10 +25,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -231,18 +215,32 @@ public class AddMealActivity extends AppCompatActivity {
     }
 
 
+    public void setCurrentWeight(double inputWeight, int ingredientId){
+        double currCal = 0;
+        double currWeight = 0;
+        mealMap.put(ingredientId, inputWeight);
 
-    public void setCurrentCalories(double inputCal){
-        double currCal = Double.parseDouble(cals.getText().toString());
-        currCal += inputCal;
+        for (Map.Entry<Integer, Double> entry : mealMap.entrySet()) {
+            Integer key = entry.getKey();
+            Double value = entry.getValue();
+            currWeight += value;
+            Ingredient curr = findIngredientById(key);
+            if(curr != null){
+                currCal += curr.getCalorie() * value/100;
+            }
+        }
+
         cals.setText(String.format("%.2f", currCal));
+        mealweight.setText(String.format("%.2f", currWeight));
     }
 
-    public void setCurrentWeight(double inputWeight, int ingredientId){
-        double currWeight = Double.parseDouble(mealweight.getText().toString());
-        currWeight += inputWeight;
-        mealweight.setText(String.format("%.2f", currWeight));
-        mealMap.put(ingredientId, inputWeight);
+    private Ingredient findIngredientById(int id){
+        for (Ingredient ing : myMeal){
+            if(ing.getId() == id){
+                return ing;
+            }
+        }
+        return null;
     }
 
 }
