@@ -174,14 +174,6 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
 
     }
 
-    @Override
-    //TODO why is this not workikng
-    protected void onResume(){
-        super.onResume();
-        DatePicker datePicker = datePickerDialog.getDatePicker();
-        String dateSelect = datePicker.getYear() + "-" + String.format("%02d", (datePicker.getMonth() + 1)) + "-" + String.format("%02d", datePicker.getDayOfMonth());
-        getDietRecordsFromServer(user, dateSelect);
-    }
 
     public void getHealthRecordFromServer(User user, String date){
         JSONObject postData = new JSONObject();
@@ -194,7 +186,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
 
             //need to use your own pc's ip address here, cannot use local host.
             Request request = new Request.Builder()
-                    .url("http://192.168.10.127:8080/user/gethealthrecorddate")
+                    .url("http://192.168.10.122:8080/user/gethealthrecorddate")
                     .post(body)
                     .build();
 
@@ -294,7 +286,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
 
             //need to use your own pc's ip address here, cannot use local host.
             Request request = new Request.Builder()
-                    .url("http://192.168.1.126:8080/user/getdietrecords")
+                    .url("http://192.168.10.122:8080/user/getdietrecords")
                     .post(body)
                     .build();
 
@@ -333,6 +325,9 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
             e.printStackTrace();
         }
     }
+
+
+
     public void setTopNavBar() {
         mToolbar = findViewById(R.id.top_navbar);
         setSupportActionBar(mToolbar);

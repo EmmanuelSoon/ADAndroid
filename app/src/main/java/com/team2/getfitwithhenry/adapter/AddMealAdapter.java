@@ -5,16 +5,22 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.team2.getfitwithhenry.AddMealActivity;
 import com.team2.getfitwithhenry.R;
 import com.team2.getfitwithhenry.model.Ingredient;
 
@@ -25,12 +31,14 @@ import java.util.List;
 public class AddMealAdapter extends ArrayAdapter<Ingredient> {
     private Context context;
     protected List<Ingredient> iList;
+    private AddMealActivity addMealActivity;
 
-    public AddMealAdapter(Context context, List<Ingredient> ingList)
+    public AddMealAdapter(Context context, List<Ingredient> ingList, AddMealActivity addMealActivity)
     {
         super(context, R.layout.add_meal_row, ingList);
         this.iList = ingList;
         this.context = context;
+        this.addMealActivity = addMealActivity;
 
     }
 
@@ -54,7 +62,33 @@ public class AddMealAdapter extends ArrayAdapter<Ingredient> {
         nameView.setText(iList.get(pos).getName());
 
         TextView cals = view.findViewById(R.id.foodCalories);
-        cals.setText("Calories per " + iList.get(pos).getNutritionRecord().getServingSize() + "g :" + String.valueOf(iList.get(pos).getCalorie()) + " kcals");
+        cals.setText("Calories/100g :" + String.valueOf(iList.get(pos).getCalorie()) + " kcals");
+
+        EditText editText = view.findViewById(R.id.foodWeight);
+        editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+
+        editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    double weight = Double.parseDouble(v.getText().toString())/100;
+                    addMealActivity.setCurrentCalories(iList.get(pos).getCalorie() * weight);
+                    addMealActivity.setCurrentWeight(Double.parseDouble(v.getText().toString()), iList.get(pos).getId());
+                    return false;
+                }
+                return false;
+            }
+        });
+
+        // WIP
+//        editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View view, boolean hasFocus) {
+//                if(!hasFocus){
+//                    Toast.makeText(context, editText.getText().toString(), Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
 
         return view;
 

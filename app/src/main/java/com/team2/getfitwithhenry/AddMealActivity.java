@@ -65,11 +65,12 @@ public class AddMealActivity extends AppCompatActivity {
     Button submitBtn;
     Spinner mealTypeSpinner;
     ListView mlistView;
-    EditText mealName;
-    EditText cals;
-    EditText weight;
+    TextView mealweight;
+    TextView cals;
     User user;
+    String strDate;
     List<Ingredient> myMeal;
+    Map<Integer, Double> mealMap = new HashMap<>();
     ActivityResultLauncher<Intent> rlSearchActivity;
 
     //TODO if you come from search how to enter date? also what about form validations?
@@ -80,9 +81,8 @@ public class AddMealActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_meal);
 
-        mealName = findViewById(R.id.meal_name_text);
         cals = findViewById(R.id.meal_cals_text);
-        weight = findViewById(R.id.meal_weight_text);
+        mealweight = findViewById(R.id.meal_weight_text);
 
         SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
         Gson gson = new Gson();
@@ -91,8 +91,9 @@ public class AddMealActivity extends AppCompatActivity {
         user = gson.fromJson(json, User.class);
 
         Intent intent = getIntent();
-        String strDate = intent.getStringExtra("date");
+        strDate = intent.getStringExtra("date");
         myMeal = (List<Ingredient>) intent.getSerializableExtra("ingredients");
+
         registerActivity();
 
         //TODO CHANGE THIS - setting to today's date if coming from search (to give options)
@@ -101,6 +102,7 @@ public class AddMealActivity extends AppCompatActivity {
         }
         else{
             LocalDate date = LocalDate.now();
+            strDate = date.toString();
         }
 
         setListView(myMeal);
@@ -128,15 +130,8 @@ public class AddMealActivity extends AppCompatActivity {
 
                 String mealType = mealTypeSpinner.getSelectedItem().toString();
 
-                Map<String, String> myMap = new HashMap<>();
-                myMap.put("mealName", mealName.getText().toString());
-                myMap.put("mealType", mealType);
-                myMap.put("calories", cals.getText().toString());
-                myMap.put("weight", weight.getText().toString());
-                myMap.put("date", strDate);
-                myMap.put("username", user.getUsername());
 
-                postToServer(buildJson(myMap));
+                postToServer(buildJson(mealMap));
 
                 Intent intent = new Intent();
                 setResult(RESULT_OK, intent);
@@ -173,7 +168,7 @@ public class AddMealActivity extends AppCompatActivity {
 
         //need to use your own pc's ip address here, cannot use local host.
         Request request = new Request.Builder()
-                .url("http://192.168.1.126:8080/user/adddietrecord")
+                .url("http://192.168.10.122:8080/user/adddietrecord")
                 .post(body)
                 .build();
 
@@ -199,82 +194,56 @@ public class AddMealActivity extends AppCompatActivity {
         });
     }
 
-    private JSONObject buildJson(Map<String, String> toConvert) {
+    private JSONObject buildJson(Map<Integer, Double> toConvert){
         JSONObject postData = new JSONObject();
+        try {
+            postData.put("username", user.getUsername());
+            postData.put("mealType", mealTypeSpinner.getSelectedItem().toString());
+            postData.put("date", strDate);
             toConvert.forEach((k,v)->
             {
                 try {
-                    postData.put(k, v);
+                    postData.put(k.toString(), v);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             });
+        }catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
 
         return postData;
     }
 
     public void setListView(List<Ingredient> myMeal){
         if (myMeal != null){
-            setMealCals(myMeal);
-            setMealName(myMeal);
-            AddMealAdapter myAdapter = new AddMealAdapter(getApplicationContext(), myMeal);
+            AddMealAdapter myAdapter = new AddMealAdapter(getApplicationContext(), myMeal, this);
             mlistView = findViewById(R.id.listView);
             if(mlistView != null) {
                 mlistView.setAdapter(myAdapter);
             }
-
-            mlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Ingredient ing = myMeal.get(position);
-                    Double calsPerG = ing.getCalorie() / ing.getNutritionRecord().getServingSize();
-                    EditText ingWeight = view.findViewById(R.id.foodWeight);
-                    ingWeight.addTextChangedListener(new TextWatcher() {
-                        @Override
-                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                        }
-
-                        @Override
-                        public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                        }
-
-                        @Override
-                        public void afterTextChanged(Editable s) {
-                            //errr what should this sequence be mathmatically/??
-                            double weight = Double.parseDouble(s.toString());
-                            cals.setText(String.valueOf(calsPerG * weight));
-                        }
-                    });
-                }
-            });
+            for (Ingredient ing: myMeal){
+                mealMap.putIfAbsent(ing.getId(), 0.0);
+            }
         }
     }
 
-    public void setMealCals(List<Ingredient> myMeal){
-        double mealCals = 0;
-        for (Ingredient ing : myMeal){
-            mealCals += ing.getCalorie();
-        }
 
-        cals.setText(String.valueOf(mealCals));
 
+    public void setCurrentCalories(double inputCal){
+        double currCal = Double.parseDouble(cals.getText().toString());
+        currCal += inputCal;
+        cals.setText(String.format("%.2f", currCal));
     }
 
-    public void setMealName(List<Ingredient> myMeal) {
-        String concatMealName = "";
-        if (myMeal.size() <= 2)
-        for (Ingredient ing : myMeal){
-            concatMealName += ing.getName() + " & ";
-        }
-        mealName.setText(concatMealName.substring(0,concatMealName.length()-2));
+    public void setCurrentWeight(double inputWeight, int ingredientId){
+        double currWeight = Double.parseDouble(mealweight.getText().toString());
+        currWeight += inputWeight;
+        mealweight.setText(String.format("%.2f", currWeight));
+        mealMap.put(ingredientId, inputWeight);
     }
-
-
-
-
-
 
 }
 

@@ -20,20 +20,38 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="25sp"
+            android:textStyle="bold"
             android:gravity="left"></TextView>
         <TextView
             android:id="@+id/foodCalories"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:gravity="left"></TextView>
 
-        <EditText
-            android:id="@+id/foodWeight"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="left"
-            android:textSize="20sp"></EditText>
+            android:orientation="horizontal">
+            <EditText
+                android:id="@+id/foodWeight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:layout_weight="5"
+                android:hint="Enter Weight here..."
+                android:imeOptions="actionDone"
+                android:inputType="numberDecimal"
+                android:textSize="20sp"></EditText>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="g"
+                android:textSize="20sp"
+                ></TextView>
+
+        </LinearLayout>
 
     </LinearLayout>
 
