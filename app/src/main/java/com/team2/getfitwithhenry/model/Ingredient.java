@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Ingredient implements Serializable {
     private int id;
@@ -61,5 +62,14 @@ public class Ingredient implements Serializable {
     public NutritionRecord getNutritionRecord() { return nutritionRecord; }
 
     public void setNutritionRecord(NutritionRecord nutritionRecord) { this.nutritionRecord = nutritionRecord; }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Ingredient that = (Ingredient) o;
+        return id == that.id;
+    }
 
 }

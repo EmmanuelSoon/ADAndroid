@@ -67,7 +67,9 @@ public class AddMealAdapter extends ArrayAdapter<Ingredient> {
 
         EditText editText = view.findViewById(R.id.foodWeight);
         editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-
+        if(addMealActivity.getMealMap().get(iList.get(pos).getId())!=0) {
+            editText.setText(addMealActivity.getMealMap().get(iList.get(pos).getId()).toString());
+        }
         editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {

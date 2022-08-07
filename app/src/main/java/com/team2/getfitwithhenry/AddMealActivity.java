@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -28,6 +29,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +56,7 @@ public class AddMealActivity extends AppCompatActivity {
     TextView cals;
     User user;
     String strDate;
-    List<Ingredient> myMeal;
+    List<Ingredient> myMeal = new ArrayList<>();
     Map<Integer, Double> mealMap = new HashMap<>();
     ActivityResultLauncher<Intent> rlSearchActivity;
 
@@ -77,7 +79,10 @@ public class AddMealActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         strDate = intent.getStringExtra("date");
-        myMeal = (List<Ingredient>) intent.getSerializableExtra("ingredients");
+        List<Ingredient> listFromActivity = (List<Ingredient>) intent.getSerializableExtra("ingredients");
+        if(listFromActivity != null){
+            myMeal = listFromActivity;
+        }
 
         registerActivity();
 
@@ -140,7 +145,14 @@ public class AddMealActivity extends AppCompatActivity {
         rlSearchActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if(result.getResultCode() == AppCompatActivity.RESULT_OK){
                 Intent data = result.getData();
-                myMeal = (List<Ingredient>)data.getSerializableExtra("ingredients");
+                List<Ingredient> newList = (List<Ingredient>)data.getSerializableExtra("ingredients");
+                for (Ingredient ing: newList){
+                    System.out.println(ing.getName());
+                    if(!myMeal.contains(ing)){
+                        myMeal.add(ing);
+                    }
+                }
+
                 setListView(myMeal);
             }
         });
@@ -244,5 +256,8 @@ public class AddMealActivity extends AppCompatActivity {
         return null;
     }
 
+    public Map<Integer, Double> getMealMap(){
+        return mealMap;
+    }
 }
 
