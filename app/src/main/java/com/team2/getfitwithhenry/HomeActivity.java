@@ -31,6 +31,7 @@ import com.jjoe64.graphview.LegendRenderer;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 import com.team2.getfitwithhenry.helper.ProgressArcDrawable;
+import com.team2.getfitwithhenry.model.Constants;
 import com.team2.getfitwithhenry.model.Goal;
 import com.team2.getfitwithhenry.model.HealthRecord;
 import com.team2.getfitwithhenry.model.Role;
@@ -183,7 +184,7 @@ public class HomeActivity extends AppCompatActivity {
 
             //need to use your own pc's ip address here, cannot use local host.
             Request request = new Request.Builder()
-                    .url("http://192.168.1.126:8080/home/gethealthrecords")
+                    .url(Constants.javaURL +"/home/gethealthrecords")
                     .post(body)
                     .build();
 

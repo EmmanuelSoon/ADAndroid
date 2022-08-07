@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.gson.Gson;
+import com.team2.getfitwithhenry.model.Constants;
 import com.team2.getfitwithhenry.model.Goal;
 import com.team2.getfitwithhenry.model.User;
 
@@ -201,7 +202,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         MediaType JsonObj = MediaType.parse("application/json; charset=utf-8");
         RequestBody requestBody = RequestBody.create(JsonObj, userObj.toString());
 
-        Request request = new Request.Builder().url("http://172.27.64.1:8080/register/validateNewUser").post(requestBody).build();
+        Request request = new Request.Builder().url(Constants.javaURL +"/register/validateNewUser").post(requestBody).build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override

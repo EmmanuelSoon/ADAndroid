@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.gson.Gson;
+import com.team2.getfitwithhenry.model.Constants;
 import com.team2.getfitwithhenry.model.User;
 
 import org.json.JSONException;
@@ -157,7 +158,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         MediaType JsonObj = MediaType.parse("application/json; charset=utf-8");
         RequestBody requestBody = RequestBody.create(JsonObj, userObj.toString());
 
-        Request request = new Request.Builder().url("http://192.168.1.126:8080/login/validateUserDetails").post(requestBody).build();
+        Request request = new Request.Builder().url(Constants.javaURL +"/login/validateUserDetails").post(requestBody).build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
