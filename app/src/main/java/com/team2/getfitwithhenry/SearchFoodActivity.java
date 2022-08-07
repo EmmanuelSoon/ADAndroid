@@ -8,6 +8,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -194,7 +195,22 @@ public class SearchFoodActivity extends AppCompatActivity {
                     mlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            mealBuilder.add(iList.get(position));
+                             if(!mealBuilder.isEmpty()) {
+                                 if (mealBuilder.contains(iList.get(position))) {
+                                     mealBuilder.remove(iList.get(position));
+                                     view.setSelected(false);
+                                     view.setBackgroundColor(Color.WHITE);
+                                 } else {
+                                     mealBuilder.add(iList.get(position));
+                                     view.setSelected(true);
+                                     view.setBackgroundColor(Color.LTGRAY);
+                                 }
+                             } else {
+                                 mealBuilder.add(iList.get(position));
+                                 view.setSelected(true);
+                                 view.setBackgroundColor(Color.GRAY);
+                             }
+
                             view.setSelected(true);
 
                             if(!mealBuilder.isEmpty()){
