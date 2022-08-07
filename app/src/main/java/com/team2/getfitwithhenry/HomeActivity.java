@@ -12,6 +12,11 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.SpannableString;
+import android.text.TextUtils;
+import android.text.style.AbsoluteSizeSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -57,8 +62,6 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class HomeActivity extends AppCompatActivity {
-    Button searchBtn;
-    Button scanBtn;
     Button mlogoutBtn;
 
     private Toolbar mToolbar;
@@ -165,8 +168,29 @@ public class HomeActivity extends AppCompatActivity {
                     }
 
                     waterProg.setImageDrawable(new ProgressArcDrawable(waterAngle, "blue"));
-                    caloriesText.setText("Cals\n" + String.valueOf(Math.round(mostRecent.getCalIntake())));
-                    waterText.setText("Water\n" + String.valueOf(Math.round(mostRecent.getWaterIntake())));
+
+                    //create text strings
+                    String calsLabel = "Cals\n" + String.valueOf(Math.round(mostRecent.getCalIntake()));
+                    String kcals = "kcals";
+
+                    SpannableString ss1 = new SpannableString(calsLabel);
+                    SpannableString ss2 = new SpannableString(kcals);
+                    ss2.setSpan(new RelativeSizeSpan(0.6f), 0, 5, 0);
+                    ss2.setSpan(new ForegroundColorSpan(Color.LTGRAY), 0,5, 0);
+                    CharSequence finalText = TextUtils.concat(ss1,  "\n" , ss2);
+
+                    caloriesText.setText(finalText);
+
+                    String waterLabel = "Water\n" + String.valueOf(Math.round(mostRecent.getWaterIntake()));
+                    String mils = "ml";
+
+                    SpannableString ss3 = new SpannableString(waterLabel);
+                    SpannableString ss4 = new SpannableString(mils);
+                    ss4.setSpan(new RelativeSizeSpan(0.6f), 0, 2, 0);
+                    ss4.setSpan(new ForegroundColorSpan(Color.LTGRAY), 0,2, 0);
+                    CharSequence finalText2 = TextUtils.concat(ss3,  "\n" , ss4);
+
+                    waterText.setText(finalText2);
 
                 }
             });
@@ -184,7 +208,7 @@ public class HomeActivity extends AppCompatActivity {
 
             //need to use your own pc's ip address here, cannot use local host.
             Request request = new Request.Builder()
-                    .url(Constants.javaURL +"/home/gethealthrecords")
+                    .url(Constants.javaURL +"/user/gethealthrecords")
                     .post(body)
                     .build();
 

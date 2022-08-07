@@ -139,7 +139,6 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
         if (captureImageIntent.resolveActivity(getPackageManager()) != null) {
             try {
-                //note to alyssa -> dont set this as global, try to get the file from the intent
                 photoFile = createImageFile();
                 Uri photoURI = FileProvider.getUriForFile(
                         this,
@@ -182,7 +181,10 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                         mImageView.setImageBitmap(bitImage);
                         Toast.makeText(getBaseContext(), "Showing the image", Toast.LENGTH_LONG).show();
                         uploadRequestBody();
-                    } else {
+                    } else if (result.getResultCode() == RESULT_CANCELED) {
+                        finish();
+                    }
+                    else {
                         System.out.println(result.getResultCode());
                     }
                 });
