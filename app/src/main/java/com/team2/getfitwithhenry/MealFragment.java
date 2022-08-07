@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.gson.Gson;
 import com.team2.getfitwithhenry.adapter.MealListAdapter;
+import com.team2.getfitwithhenry.model.Constants;
 import com.team2.getfitwithhenry.model.DietRecord;
 import com.team2.getfitwithhenry.model.HealthRecord;
 import com.team2.getfitwithhenry.model.User;
@@ -115,7 +116,7 @@ public class MealFragment extends DialogFragment  {
 
             //need to use your own pc's ip address here, cannot use local host.
             Request request = new Request.Builder()
-                    .url("http://192.168.10.122:8080/user/getmealrecords")
+                    .url(Constants.javaURL +"/user/getmealrecords")
                     .post(body)
                     .build();
 

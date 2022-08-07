@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.gson.Gson;
+import com.team2.getfitwithhenry.model.Constants;
 import com.team2.getfitwithhenry.model.User;
 
 import java.math.BigInteger;
@@ -30,7 +31,7 @@ import java.security.NoSuchAlgorithmException;
 public class RecipeActivity extends AppCompatActivity {
 
     private WebView mWebView;
-    private String mUrl = "http://192.168.1.126:3000/android";
+    private String mUrl = Constants.reactURL;
     private User user;
     private BottomNavigationView bottomNavView;
 

@@ -40,6 +40,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.gson.Gson;
+import com.team2.getfitwithhenry.model.Constants;
 import com.team2.getfitwithhenry.model.DietRecord;
 import com.team2.getfitwithhenry.model.Goal;
 import com.team2.getfitwithhenry.model.HealthRecord;
@@ -186,7 +187,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
 
             //need to use your own pc's ip address here, cannot use local host.
             Request request = new Request.Builder()
-                    .url("http://192.168.10.122:8080/user/gethealthrecorddate")
+                    .url(Constants.javaURL +"/user/gethealthrecorddate")
                     .post(body)
                     .build();
 
@@ -286,7 +287,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
 
             //need to use your own pc's ip address here, cannot use local host.
             Request request = new Request.Builder()
-                    .url("http://192.168.10.122:8080/user/getdietrecords")
+                    .url(Constants.javaURL +"/user/getdietrecords")
                     .post(body)
                     .build();
 

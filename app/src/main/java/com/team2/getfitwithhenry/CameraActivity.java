@@ -29,6 +29,7 @@ import androidx.core.content.FileProvider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.team2.getfitwithhenry.model.Constants;
 import com.team2.getfitwithhenry.model.Ingredient;
 
 import java.io.ByteArrayOutputStream;
@@ -195,7 +196,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
     private void uploadRequestBody() {
         Request request = new Request.Builder()
-                .url("http://192.168.1.126:8080/flask/recieveImgFromAndroid")
+                .url(Constants.javaURL +"/flask/recieveImgFromAndroid")
                 .post(RequestBody.create(MEDIA_TYPE_PLAINTEXT, getBytesFromBitmap(bitImage)))
                 .build();
 

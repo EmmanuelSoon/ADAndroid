@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.team2.getfitwithhenry.adapter.AddMealAdapter;
+import com.team2.getfitwithhenry.model.Constants;
 import com.team2.getfitwithhenry.model.Ingredient;
 import com.team2.getfitwithhenry.model.MealType;
 import com.team2.getfitwithhenry.model.User;
@@ -152,7 +153,7 @@ public class AddMealActivity extends AppCompatActivity {
 
         //need to use your own pc's ip address here, cannot use local host.
         Request request = new Request.Builder()
-                .url("http://192.168.10.122:8080/user/adddietrecord")
+                .url(Constants.javaURL +"/user/adddietrecord")
                 .post(body)
                 .build();
 

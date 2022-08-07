@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.android.material.navigation.NavigationBarView;
 import com.team2.getfitwithhenry.adapter.FoodListAdapter;
+import com.team2.getfitwithhenry.model.Constants;
 import com.team2.getfitwithhenry.model.Ingredient;
 
 import org.json.JSONException;
@@ -134,7 +135,7 @@ public class SearchFoodActivity extends AppCompatActivity {
 
             //need to use your own pc's ip address here, cannot use local host.
             Request request = new Request.Builder()
-                    .url("http://192.168.10.122:8080/search/ingredients")
+                    .url(Constants.javaURL +"/search/ingredients")
                     .post(body)
                     .build();
 

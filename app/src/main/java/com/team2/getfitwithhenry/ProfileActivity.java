@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.gson.Gson;
+import com.team2.getfitwithhenry.model.Constants;
 import com.team2.getfitwithhenry.model.Goal;
 import com.team2.getfitwithhenry.model.User;
 
@@ -258,7 +259,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private void updatUserDetails(JSONObject userObj) {
         MediaType JsonObj = MediaType.parse("application/json; charset=utf-8");
         RequestBody requestBody = RequestBody.create(JsonObj, userObj.toString());
-        Request request = new Request.Builder().url("http://192.168.1.126:8080/register/updateUserDetails").post(requestBody).build();
+        Request request = new Request.Builder().url(Constants.javaURL +"/register/updateUserDetails").post(requestBody).build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
