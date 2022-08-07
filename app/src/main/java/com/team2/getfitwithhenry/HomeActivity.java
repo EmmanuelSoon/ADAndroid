@@ -3,6 +3,7 @@ package com.team2.getfitwithhenry;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.DialogFragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -50,7 +51,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -61,12 +64,11 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements AddWaterFragment.IAddWater {
     Button mlogoutBtn;
 
     private Toolbar mToolbar;
     NavigationBarView bottomNavView;
-    private User tempUser;
     private final OkHttpClient client = new OkHttpClient();
     List<HealthRecord> healthRecordList;
     TextView caloriesText;
@@ -90,7 +92,9 @@ public class HomeActivity extends AppCompatActivity {
         System.out.println(json);
         user = gson.fromJson(json, User.class);
 
-        getUserHealthRecordHistory(user);
+        Map<String, String> getData = new HashMap<>();
+        getData.put("username", user.getUsername());
+        sendToServer(getData,"/user/gethealthrecords");
     }
 
     @Override
@@ -192,23 +196,36 @@ public class HomeActivity extends AppCompatActivity {
 
                     waterText.setText(finalText2);
 
+                    waterProg.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            showWaterDialog();
+                        }
+                    });
+
                 }
             });
 
         }
     }
 
-    private void getUserHealthRecordHistory(User user) {
+    private void sendToServer(Map<String, ?> dataMap, String url) {
         JSONObject postData = new JSONObject();
         try {
+            for(Map.Entry<String, ?> entry : dataMap.entrySet()){
+                postData.put(entry.getKey(), entry.getValue());
+            }
             postData.put("username", user.getUsername());
+
+
+
             MediaType JSON = MediaType.parse("application/json; charset=utf-8");
             RequestBody body = RequestBody.create(postData.toString(), JSON);
 
 
             //need to use your own pc's ip address here, cannot use local host.
             Request request = new Request.Builder()
-                    .url(Constants.javaURL +"/user/gethealthrecords")
+                    .url(Constants.javaURL + url)
                     .post(body)
                     .build();
 
@@ -247,6 +264,21 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+    public void showWaterDialog(){
+        DialogFragment df = new AddWaterFragment();
+        df.show(getSupportFragmentManager(), "AddWaterFragment");
+    }
+
+    @Override
+    public void onSelectedData(Double selectedMils) {
+        Map<String, Object> waterData = new HashMap<>();
+        waterData.put("hrID", healthRecordList.get(0).getId());
+        waterData.put("addMils", selectedMils);
+
+        sendToServer(waterData, "/user/addwater");
+
+        //TODO need to refresh view here
+    }
 
     public void setTopNavBar() {
         mToolbar = findViewById(R.id.top_navbar);
@@ -340,4 +372,6 @@ public class HomeActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ProfileActivity.class);
         startActivity(intent);
     }
+
+
 }

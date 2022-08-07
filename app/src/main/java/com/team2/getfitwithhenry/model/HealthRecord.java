@@ -45,6 +45,8 @@ public class HealthRecord {
         this.waterIntake = waterIntake;
     }
 
+    public int getId() { return id; }
+
     public double getUserHeight() {
         return userHeight;
     }

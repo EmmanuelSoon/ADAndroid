@@ -14,4 +14,7 @@
     <color name="green">#3db83b</color>
     <color name="red">#e62e2e</color>
     <color name="light_blue">#33bbff</color>
+    <color name="light_grey">#777A7C</color>
+    <color name="water_circle">#E1F2FD</color>
+
 </resources>
