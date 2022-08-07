@@ -134,7 +134,7 @@ public class SearchFoodActivity extends AppCompatActivity {
 
             //need to use your own pc's ip address here, cannot use local host.
             Request request = new Request.Builder()
-                    .url("http://192.168.1.126:8080/search/ingredients")
+                    .url("http://192.168.10.122:8080/search/ingredients")
                     .post(body)
                     .build();
 
