@@ -100,7 +100,8 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
             try{
                 if(validation(mName,mEmail,mPassword,mConfirmPassword,mDob,gender,mGoal)){
                     Toast.makeText(getApplicationContext(),"Welcome On Board!",Toast.LENGTH_LONG).show();
-                    startHomeActivity();
+                    //startHomeActivity();
+                    startQuestionnaireActivity();
                 }
             }catch(JSONException | InterruptedException e){
                 e.printStackTrace();
@@ -170,15 +171,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         userObj.put("goal", user.getGoal());
 
         validateUserFromDetails(userObj);
-        Thread.sleep(2000);
-        if(user == null){
-            msg = "Username is already existed";
-            showErrorMsg(msg);
-            return false;
-        }
-        else{
-            storeUserinSharedPreference(user);
-        }
+        //Thread.sleep(2000);
         return true;
     }
 
@@ -221,10 +214,18 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                 ObjectMapper objectMapper = new ObjectMapper();
                 objectMapper.registerModule(new JavaTimeModule());
 
+
                 if (responseBody.contentLength() != 0)
                     user = objectMapper.readValue(responseBody.string(), User.class);
                 else
                     user = null;
+
+                if(user == null){
+                    showErrorMsg("Username is already existed");
+                }
+                else{
+                    storeUserinSharedPreference(user);
+                }
             }
         });
     }
@@ -336,5 +337,11 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
+
+    private void startQuestionnaireActivity(){
+        Intent intent = new Intent(this, QuestionnaireActivity.class);
+        startActivity(intent);
+    }
+
 
 }
