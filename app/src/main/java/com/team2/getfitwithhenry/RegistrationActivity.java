@@ -98,12 +98,9 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
 
         if(id == R.id.registerBtn){
             try{
-                if(validation(mName,mEmail,mPassword,mConfirmPassword,mDob,gender,mGoal)){
-                    Toast.makeText(getApplicationContext(),"Welcome On Board!",Toast.LENGTH_LONG).show();
-                    //startHomeActivity();
-                    startQuestionnaireActivity();
+                seedUser(mName,mEmail,mPassword,mConfirmPassword,mDob,gender,mGoal);{
                 }
-            }catch(JSONException | InterruptedException e){
+            }catch(JSONException e){
                 e.printStackTrace();
             }
         }
@@ -141,7 +138,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         mGoalSelection.setAdapter(ad);
     }
     private boolean validation(String name, String email, String password, String confirmPassword
-        , LocalDate dob, String gender, Goal goal) throws JSONException, InterruptedException {
+        , LocalDate dob, String gender, Goal goal) throws JSONException {
 
         String msg = "";
 
@@ -158,21 +155,27 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
             showErrorMsg(msg);
             return false;
         }
-        //Creating new user
-        user = new User(name, email, password, dob, gender, goal);
-
-        JSONObject userObj = new JSONObject();
-        userObj.put("name", user.getName());
-        userObj.put("email", user.getUsername());
-        userObj.put("password", user.getPassword());
-        userObj.put("role", user.getRole());
-        userObj.put("dob", user.getDateofbirth());
-        userObj.put("gender", user.getGender());
-        userObj.put("goal", user.getGoal());
-
-        validateUserFromDetails(userObj);
-        //Thread.sleep(2000);
         return true;
+    }
+
+    private void seedUser(String name, String email, String password, String confirmPassword
+            , LocalDate dob, String gender, Goal goal) throws JSONException{
+
+        if(validation(name, email, password, confirmPassword, dob, gender, goal)){
+            //Creating new user
+            user = new User(name, email, password, dob, gender, goal);
+
+            JSONObject userObj = new JSONObject();
+            userObj.put("name", user.getName());
+            userObj.put("email", user.getUsername());
+            userObj.put("password", user.getPassword());
+            userObj.put("role", user.getRole());
+            userObj.put("dob", user.getDateofbirth());
+            userObj.put("gender", user.getGender());
+            userObj.put("goal", user.getGoal());
+
+            validateUserFromDetails(userObj);
+        }
     }
 
     private boolean isValidEmail(String email){
@@ -221,10 +224,22 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                     user = null;
 
                 if(user == null){
-                    showErrorMsg("Username is already existed");
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            showErrorMsg("Username is already existed");
+                        }
+                    });
                 }
                 else{
                     storeUserinSharedPreference(user);
+                    startQuestionnaireActivity();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(),"Welcome On Board!",Toast.LENGTH_LONG).show();
+                        }
+                    });
                 }
             }
         });

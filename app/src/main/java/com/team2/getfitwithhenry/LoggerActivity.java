@@ -17,6 +17,7 @@ import androidx.lifecycle.OnLifecycleEvent;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -32,6 +33,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,6 +59,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.SQLOutput;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -86,6 +89,8 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
     private Button dateButton;
     private Toolbar mToolbar;
     private BottomNavigationView bottomNavView;
+    private Button addWeight;
+    private TextView weightText;
     User user;
 
     //TODO LIST:
@@ -134,7 +139,9 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
         initDatePicker();
         dateButton = findViewById(R.id.datePickerButton);
         dateButton.setText(setDate(LocalDate.now()));
-
+        //
+        addWeight = findViewById(R.id.addWeight);
+        weightText = findViewById(R.id.weight);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String currDate = LocalDate.now().format(formatter);
@@ -236,10 +243,114 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
                     Double myBmi = myHr.getUserWeight() / Math.pow(myHr.getUserHeight() / 100, 2.0);
                     System.out.println(myBmi);
                     bmi.setText("BMI: " + String.valueOf(Math.round(myBmi)));
-
+                    //set weight accordingly here
+                    if (myHr.getUserWeight()  > 0) {
+                        weightText.setText(String.format("Weight: %.2f", myHr.getUserWeight()));
+                        addWeight.setVisibility(View.GONE);
+                    }
+                    else {
+                        if (LocalDate.now().equals(myHr.getDate())) {
+                            weightText.setText("Click the button to add weight record!");
+                            addWeight.setVisibility(View.VISIBLE);
+                            addWeight.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    // add a dialog here for user to add new health record
+                                    showDialogForWeightInput();
+                                }
+                            });
+                        }
+                        else {
+                            //the date should not exceeded today's date
+                            weightText.setText("Invalid Date");
+                            addWeight.setVisibility(View.GONE);
+                        }
+                    }
                 }
             });
         }
+    }
+
+    //show dialog for user to input their latest weight
+    public void showDialogForWeightInput(){
+        Dialog d = new Dialog(this);
+        //d.setTitle("Update Your Weight");
+        d.setContentView(R.layout.weight_input);
+        Button save = d.findViewById(R.id.saveWeight);
+        Button cancel =  d.findViewById(R.id.cancelWeight);
+        NumberPicker npInt = d.findViewById(R.id.weightInt);
+        NumberPicker npDouble = d.findViewById(R.id.weightDouble);
+        npInt.setMaxValue(500); // max value 100
+        npInt.setMinValue(3);
+        npInt.setValue(50);
+        npInt.setWrapSelectorWheel(false);
+        String[] doubleArr = new String[]{".0 Kg", ".1 Kg", ".2 Kg", ".3 Kg", ".4 Kg", ".5 Kg", ".6 Kg", ".7 Kg", ".8 Kg", ".9 Kg"};
+        npDouble.setMaxValue(9);
+        npDouble.setMinValue(0);
+        npDouble.setDisplayedValues(doubleArr);
+        npDouble.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int val1 = npInt.getValue();
+                int val2 = npDouble.getValue();
+                double weight = val1 + val2/10.0;
+                //update the selected value to server then after update the information of weight
+                try{
+                    updateUserWeight(weight);
+                    weightText.setText(String.format("Weight: %.2f", weight));
+                    addWeight.setVisibility(View.GONE);
+                    d.dismiss();
+                }
+                catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                catch (IOException e) {
+                    System.out.printf("");
+                    e.printStackTrace();
+                }
+            }
+        });
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                d.dismiss();
+            }
+        });
+        d.show();
+    }
+
+    private void updateUserWeight(double weight) throws JSONException, IOException {
+        JSONObject postData = new JSONObject();
+        postData.put("username", user.getUsername());
+        //postData.put("date", setDate(LocalDate.now()));
+        DatePicker datePicker = datePickerDialog.getDatePicker();
+        String dateSelect = datePicker.getYear() + "-" + String.format("%02d", (datePicker.getMonth() + 1)) + "-" + String.format("%02d", datePicker.getDayOfMonth());
+        //postData.put("date", setDate(LocalDate.now()));
+        postData.put("date", dateSelect);
+        postData.put("weight", weight);
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        RequestBody body = RequestBody.create(postData.toString(), JSON);
+        //need to use your own pc's ip address here, cannot use local host.
+        Request request = new Request.Builder()
+                .url(Constants.javaURL + "/user/updateweight")
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                ResponseBody responseBody = response.body();
+                if (!response.isSuccessful()) {
+                    throw new IOException("Unexpected code" + response);
+                }
+            }
+        });
+
     }
 
 
@@ -266,8 +377,6 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
         int year = cal.get(Calendar.YEAR);
         int month = cal.get(Calendar.MONTH);
         int day = cal.get(Calendar.DAY_OF_MONTH);
-
-
         int style = AlertDialog.THEME_HOLO_LIGHT;
 
         datePickerDialog = new DatePickerDialog(this, style, dateSetListener, year, month, day);
