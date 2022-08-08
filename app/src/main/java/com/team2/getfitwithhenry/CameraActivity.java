@@ -115,7 +115,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void itemClicked(String content){
-        Toast.makeText(this, content, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, content, Toast.LENGTH_SHORT).show();
         oopsModelGotItWrong(content);
     }
 
@@ -277,10 +277,21 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 try {
                     ResponseBody responseBody = response.body();
                     if (!response.isSuccessful()) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(CameraActivity.this, "Oops! Something went wrong...", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                         throw new IOException("Unexpected code " + response);
                     }
 
-
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(CameraActivity.this, "We received the photo! Thank you for submitting!", Toast.LENGTH_SHORT).show();
+                        }
+                    });
 
                     Log.i("data", responseBody.string());
                 } catch (Exception e) {
