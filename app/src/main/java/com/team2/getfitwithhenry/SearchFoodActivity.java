@@ -63,7 +63,6 @@ public class SearchFoodActivity extends AppCompatActivity {
     List<Ingredient> mealBuilder = new ArrayList<>();
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,7 +77,7 @@ public class SearchFoodActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         query = intent.getStringExtra("SearchValue");
-        if(query != null){
+        if (query != null) {
             getSearchResult(query);
         }
 
@@ -103,16 +102,15 @@ public class SearchFoodActivity extends AppCompatActivity {
                 //check if there is an activity that called search
 
                 ComponentName componentName = getCallingActivity();
-                if (componentName == null){
+                if (componentName == null) {
                     System.out.println("came from nav");
                     Intent intent = new Intent(SearchFoodActivity.this, AddMealActivity.class);
                     intent.putExtra("ingredients", (Serializable) mealBuilder);
                     startActivity(intent);
-                }
-                else {
+                } else {
                     System.out.println("came from log");
                     Intent response = new Intent();
-                    response.putExtra("ingredients", (Serializable)mealBuilder);
+                    response.putExtra("ingredients", (Serializable) mealBuilder);
                     setResult(RESULT_OK, response);
                     finish();
                 }
@@ -121,10 +119,9 @@ public class SearchFoodActivity extends AppCompatActivity {
         });
 
 
-
     }
 
-    public void getSearchResult(String query){
+    public void getSearchResult(String query) {
 
 
         JSONObject postData = new JSONObject();
@@ -136,7 +133,7 @@ public class SearchFoodActivity extends AppCompatActivity {
 
             //need to use your own pc's ip address here, cannot use local host.
             Request request = new Request.Builder()
-                    .url(Constants.javaURL +"/search/ingredients")
+                    .url(Constants.javaURL + "/search/ingredients")
                     .post(body)
                     .build();
 
@@ -179,7 +176,7 @@ public class SearchFoodActivity extends AppCompatActivity {
                 public void run() {
                     FoodListAdapter myAdapter = new FoodListAdapter(context, myList);
                     mlistView = findViewById(R.id.listView);
-                    if(mlistView != null) {
+                    if (mlistView != null) {
                         mlistView.setAdapter(myAdapter);
                     }
 
@@ -195,25 +192,25 @@ public class SearchFoodActivity extends AppCompatActivity {
                     mlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                             if(!mealBuilder.isEmpty()) {
-                                 if (mealBuilder.contains(iList.get(position))) {
-                                     mealBuilder.remove(iList.get(position));
-                                     view.setSelected(false);
-                                     view.setBackgroundColor(Color.WHITE);
-                                 } else {
-                                     mealBuilder.add(iList.get(position));
-                                     view.setSelected(true);
-                                     view.setBackgroundColor(Color.LTGRAY);
-                                 }
-                             } else {
-                                 mealBuilder.add(iList.get(position));
-                                 view.setSelected(true);
-                                 view.setBackgroundColor(Color.GRAY);
-                             }
+                            if (!mealBuilder.isEmpty()) {
+                                if (mealBuilder.contains(iList.get(position))) {
+                                    mealBuilder.remove(iList.get(position));
+                                    view.setSelected(false);
+                                    view.setBackgroundColor(Color.WHITE);
+                                } else {
+                                    mealBuilder.add(iList.get(position));
+                                    view.setSelected(true);
+                                    view.setBackgroundColor(Color.LTGRAY);
+                                }
+                            } else {
+                                mealBuilder.add(iList.get(position));
+                                view.setSelected(true);
+                                view.setBackgroundColor(Color.GRAY);
+                            }
 
                             view.setSelected(true);
 
-                            if(!mealBuilder.isEmpty()){
+                            if (!mealBuilder.isEmpty()) {
                                 mAddMealBtn.setVisibility(View.VISIBLE);
                             }
 
@@ -256,7 +253,7 @@ public class SearchFoodActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.editProfile:
-                Toast.makeText(this, "Test Message", Toast.LENGTH_SHORT).show();
+                startProfileActivity();
                 return true;
             case R.id.logout:
                 logout();
@@ -269,29 +266,29 @@ public class SearchFoodActivity extends AppCompatActivity {
     public void setBottomNavBar() {
         bottomNavView = findViewById(R.id.bottom_navigation);
         bottomNavView.setSelectedItemId(R.id.nav_search);
-        bottomNavView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener(){
+        bottomNavView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Intent intent;
                 int id = item.getItemId();
-                switch(id){
+                switch (id) {
 
-                    case(R.id.nav_scanner):
+                    case (R.id.nav_scanner):
                         intent = new Intent(getApplicationContext(), CameraActivity.class);
                         startActivity(intent);
                         break;  //or should this be finish?
 
-                    case(R.id.nav_log):
+                    case (R.id.nav_log):
                         intent = new Intent(getApplicationContext(), LoggerActivity.class);
                         startActivity(intent);
                         break;
 
-                    case(R.id.nav_recipe):
+                    case (R.id.nav_recipe):
                         intent = new Intent(getApplicationContext(), RecipeActivity.class);
                         startActivity(intent);
                         break;
 
-                    case(R.id.nav_home):
+                    case (R.id.nav_home):
                         intent = new Intent(getApplicationContext(), HomeActivity.class);
                         startActivity(intent);
                         break;
@@ -311,9 +308,14 @@ public class SearchFoodActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "You have logged out successfully", Toast.LENGTH_LONG).show();
         startLoginActivity();
     }
+
     private void startLoginActivity() {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
 
+    }
+    private void startProfileActivity() {
+        Intent intent = new Intent(this, ProfileActivity.class);
+        startActivity(intent);
     }
 }

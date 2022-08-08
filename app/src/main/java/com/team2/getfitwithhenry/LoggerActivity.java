@@ -73,10 +73,11 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+
 import java.util.Calendar;
 import java.util.Locale;
 
-public class LoggerActivity extends AppCompatActivity implements MealButtonsFragment.IMealButtonsFragment, DefaultLifecycleObserver{
+public class LoggerActivity extends AppCompatActivity implements MealButtonsFragment.IMealButtonsFragment, DefaultLifecycleObserver {
 
 
     private User tempUser;
@@ -97,7 +98,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
 
 
     @Override
-    public void itemClicked(String content){
+    public void itemClicked(String content) {
         DatePicker datePicker = datePickerDialog.getDatePicker();
         String dateSelect = datePicker.getYear() + "-" + String.format("%02d", (datePicker.getMonth() + 1)) + "-" + String.format("%02d", datePicker.getDayOfMonth());
 
@@ -176,7 +177,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
     }
 
 
-    public void getHealthRecordFromServer(User user, String date){
+    public void getHealthRecordFromServer(User user, String date) {
         JSONObject postData = new JSONObject();
         try {
             postData.put("username", user.getUsername());
@@ -187,7 +188,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
 
             //need to use your own pc's ip address here, cannot use local host.
             Request request = new Request.Builder()
-                    .url(Constants.javaURL +"/user/gethealthrecorddate")
+                    .url(Constants.javaURL + "/user/gethealthrecorddate")
                     .post(body)
                     .build();
 
@@ -220,7 +221,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
         }
     }
 
-    public void setMyRecords(final Context context, final HealthRecord myHr){
+    public void setMyRecords(final Context context, final HealthRecord myHr) {
         if (context != null && myHr != null) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
 
@@ -232,7 +233,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
 
                     totalCals.setText("Calorie Limit: " + String.valueOf(user.getCalorieintake_limit_inkcal()));
                     currentCals.setText("Calories consumed: " + String.valueOf(Math.round(myHr.getCalIntake())));
-                    Double myBmi = myHr.getUserWeight() / Math.pow(myHr.getUserHeight()/100, 2.0);
+                    Double myBmi = myHr.getUserWeight() / Math.pow(myHr.getUserHeight() / 100, 2.0);
                     System.out.println(myBmi);
                     bmi.setText("BMI: " + String.valueOf(Math.round(myBmi)));
 
@@ -242,14 +243,16 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
     }
 
 
-    public void openDatePicker(View view) {   datePickerDialog.show();    }
+    public void openDatePicker(View view) {
+        datePickerDialog.show();
+    }
 
     private void initDatePicker() {
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                 month = month + 1;
-                String date = year + "-" + String.format("%02d", month) + "-" + String.format("%02d", day) ;
+                String date = year + "-" + String.format("%02d", month) + "-" + String.format("%02d", day);
                 DateTimeFormatter format2 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                 LocalDate parsedDate = LocalDate.parse(date, format2);
                 dateButton.setText(setDate(parsedDate));
@@ -270,13 +273,13 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
         datePickerDialog = new DatePickerDialog(this, style, dateSetListener, year, month, day);
     }
 
-    private String setDate(LocalDate date){
+    private String setDate(LocalDate date) {
         DateTimeFormatter format1 = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
         return date.format(format1);
     }
 
 
-    private void getDietRecordsFromServer(User user, String date){
+    private void getDietRecordsFromServer(User user, String date) {
         JSONObject postData = new JSONObject();
         try {
             postData.put("username", user.getUsername());
@@ -287,7 +290,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
 
             //need to use your own pc's ip address here, cannot use local host.
             Request request = new Request.Builder()
-                    .url(Constants.javaURL +"/user/getdietrecords")
+                    .url(Constants.javaURL + "/user/getdietrecords")
                     .post(body)
                     .build();
 
@@ -309,8 +312,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
                         //convert responseBody into list of HealthRecords
                         ObjectMapper objectMapper = new ObjectMapper();
                         objectMapper.registerModule(new JavaTimeModule());
-                        List <DietRecord> dietRecordList = Arrays.asList(objectMapper.readValue(responseBody.string(), DietRecord[].class));
-
+                        List<DietRecord> dietRecordList = Arrays.asList(objectMapper.readValue(responseBody.string(), DietRecord[].class));
 
 
                         //do something with FM here
@@ -326,7 +328,6 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
             e.printStackTrace();
         }
     }
-
 
 
     public void setTopNavBar() {
@@ -345,7 +346,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.editProfile:
-                Toast.makeText(this, "Test Message", Toast.LENGTH_SHORT).show();
+                startProfileActivity();
                 return true;
             case R.id.logout:
                 logout();
@@ -358,29 +359,29 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
     public void setBottomNavBar() {
         bottomNavView = findViewById(R.id.bottom_navigation);
         bottomNavView.setSelectedItemId(R.id.nav_log);
-        bottomNavView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener(){
+        bottomNavView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Intent intent;
                 int id = item.getItemId();
-                switch(id){
+                switch (id) {
 
-                    case(R.id.nav_scanner):
+                    case (R.id.nav_scanner):
                         intent = new Intent(getApplicationContext(), CameraActivity.class);
                         startActivity(intent);
                         break;  //or should this be finish?
 
-                    case(R.id.nav_search):
+                    case (R.id.nav_search):
                         intent = new Intent(getApplicationContext(), SearchFoodActivity.class);
                         startActivity(intent);
                         break;
 
-                    case(R.id.nav_recipe):
+                    case (R.id.nav_recipe):
                         intent = new Intent(getApplicationContext(), RecipeActivity.class);
                         startActivity(intent);
                         break;
 
-                    case(R.id.nav_home):
+                    case (R.id.nav_home):
                         intent = new Intent(getApplicationContext(), HomeActivity.class);
                         startActivity(intent);
                         break;
@@ -412,6 +413,8 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
 
     }
 
-
-
+    private void startProfileActivity() {
+        Intent intent = new Intent(this, ProfileActivity.class);
+        startActivity(intent);
+    }
 }

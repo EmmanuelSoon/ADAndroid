@@ -372,6 +372,4 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
         Intent intent = new Intent(this, ProfileActivity.class);
         startActivity(intent);
     }
-
-
 }
