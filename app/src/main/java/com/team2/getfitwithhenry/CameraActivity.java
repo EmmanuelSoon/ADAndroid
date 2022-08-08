@@ -27,10 +27,14 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.team2.getfitwithhenry.model.Constants;
 import com.team2.getfitwithhenry.model.Ingredient;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -47,7 +51,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-public class CameraActivity extends AppCompatActivity implements View.OnClickListener {
+public class CameraActivity extends AppCompatActivity implements View.OnClickListener, WrongIngredientFragment.IWrongIngredientFragment {
 
     private final OkHttpClient client = new OkHttpClient();
     private static final MediaType MEDIA_TYPE_PLAINTEXT = MediaType.parse("text/plain; charset=utf-8");
@@ -99,9 +103,22 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
             intent.putExtra("SearchValue", iPredict);
             startActivity(intent);
         } else if (v.getId() == R.id.incorrectBtn) {
-            Toast.makeText(this, "Oh no! Classifier got it wrong.", Toast.LENGTH_SHORT).show();
+//            oopsModelGotItWrong();
+//            Toast.makeText(this, "Oh no! Classifier got it wrong.", Toast.LENGTH_SHORT).show();
+            WrongIngredientFragment wf = new WrongIngredientFragment();
+            Bundle args = new Bundle();
+            args.putString("predicted", iPredict.getName());
+            wf.setArguments(args);
+            wf.show(getSupportFragmentManager(), "Wrong Ingredient Fragment");
         }
     }
+
+    @Override
+    public void itemClicked(String content){
+        Toast.makeText(this, content, Toast.LENGTH_SHORT).show();
+        oopsModelGotItWrong(content);
+    }
+
 
     public void checkPermissions() {
         for (String permission : REQUIRED_PERMISSIONS) {
@@ -229,6 +246,50 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
             }
         });
     }
+
+    private void oopsModelGotItWrong(String actual) {
+        JSONObject postData = new JSONObject();
+        try {
+            postData.put("actual", actual);
+            postData.put("predicted", iPredict.getName());
+            ObjectMapper objectMapper = new ObjectMapper();
+            postData.put("photoString", objectMapper.writeValueAsString(getBytesFromBitmap(bitImage)));
+        }
+        catch (JSONException | JsonProcessingException ex){
+            ex.printStackTrace();
+        }
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        RequestBody body = RequestBody.create(postData.toString(), JSON);
+
+        Request request = new Request.Builder()
+                .url(Constants.javaURL +"/flask/oopsModelGotItWrong")
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) {
+                try {
+                    ResponseBody responseBody = response.body();
+                    if (!response.isSuccessful()) {
+                        throw new IOException("Unexpected code " + response);
+                    }
+
+
+
+                    Log.i("data", responseBody.string());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
 
     public void displayResponse(final Context context, final Ingredient iPredict) {
         if (context != null && iPredict != null) {
