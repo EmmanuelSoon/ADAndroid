@@ -171,7 +171,16 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         userObj.put("goal", user.getGoal());
 
         validateUserFromDetails(userObj);
-        //Thread.sleep(2000);
+        Thread.sleep(2000);
+
+        if(user == null){
+            showErrorMsg("Username is already existed");
+            return false;
+        }
+        else{
+            storeUserinSharedPreference(user);
+        }
+
         return true;
     }
 
@@ -220,12 +229,6 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                 else
                     user = null;
 
-                if(user == null){
-                    showErrorMsg("Username is already existed");
-                }
-                else{
-                    storeUserinSharedPreference(user);
-                }
             }
         });
     }
