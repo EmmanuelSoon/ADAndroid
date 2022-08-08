@@ -89,7 +89,6 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
         SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
         Gson gson = new Gson();
         String json = pref.getString("userDetails", "");
-        System.out.println(json);
         user = gson.fromJson(json, User.class);
 
         Map<String, String> getData = new HashMap<>();
@@ -274,10 +273,33 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
         Map<String, Object> waterData = new HashMap<>();
         waterData.put("hrID", healthRecordList.get(0).getId());
         waterData.put("addMils", selectedMils);
-
         sendToServer(waterData, "/user/addwater");
 
-        //TODO need to refresh view here
+        Double newWaterVal = healthRecordList.get(0).getWaterIntake() + selectedMils;
+
+
+        String waterLabel = "Water\n" + String.valueOf(Math.round(newWaterVal));
+        String mils = "ml";
+        SpannableString ss3 = new SpannableString(waterLabel);
+        SpannableString ss4 = new SpannableString(mils);
+        ss4.setSpan(new RelativeSizeSpan(0.6f), 0, 2, 0);
+        ss4.setSpan(new ForegroundColorSpan(Color.LTGRAY), 0,2, 0);
+        CharSequence finalText2 = TextUtils.concat(ss3,  "\n" , ss4);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                float waterAngle = Math.round((newWaterVal / user.getWaterintake_limit_inml()) * 270) > 270f ? 270f : Math.round((newWaterVal / user.getWaterintake_limit_inml()) * 270);
+                waterProg.setImageDrawable(new ProgressArcDrawable(waterAngle, "blue"));
+
+                waterText.setText(finalText2);
+
+
+            }
+        });
+
+
     }
 
     public void setTopNavBar() {
