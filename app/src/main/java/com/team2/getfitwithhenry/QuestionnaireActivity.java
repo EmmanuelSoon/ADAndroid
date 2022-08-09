@@ -3,15 +3,19 @@ package com.team2.getfitwithhenry;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -41,7 +45,7 @@ import okhttp3.ResponseBody;
 public class QuestionnaireActivity extends AppCompatActivity implements View.OnClickListener {
 
     private final OkHttpClient client = new OkHttpClient();
-    private TextView mtxtName;
+    private TextView mtxtName, mtxtSomethingWentWrong;
     private EditText mtxtUserWeight, mtxtUserHeight;
     private Spinner mGoalSelect;
     private Button mbtnSaveHealthDetails;
@@ -60,6 +64,7 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
         mtxtUserHeight = findViewById(R.id.txtUserHeight);
         mGoalSelect = findViewById(R.id.goalSelectQuestionnaire);
         mbtnSaveHealthDetails = findViewById(R.id.btnSaveHealthDetails);
+        mtxtSomethingWentWrong = findViewById(R.id.txtSomethingWentWrong);
 
         mbtnSaveHealthDetails.setOnClickListener(this);
 
@@ -70,9 +75,12 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.btnSaveHealthDetails) {
-            setDetailstoUpdate();
             try {
-                createUserJsonObj();
+                if (!validateFields()) {
+                    setDetailstoUpdate();
+                    createUserJsonObj();
+                }
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -129,10 +137,10 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
 
         if (gender.equals("M")) {
             //13.397W + 4.799H - 5.677A + 88.362
-            calculatedCalorie = (13.397 * Double.parseDouble(userWeight)) + (4.799 * Double.parseDouble(userHeight)) - (5.667 * calculateAge()) + 88.362;
+            calculatedCalorie = Math.ceil((13.397 * Double.parseDouble(userWeight)) + (4.799 * Double.parseDouble(userHeight)) - (5.667 * calculateAge()) + 88.362);
         } else if (gender.equals("F")) {
             //9.247W + 3.098H - 4.330A + 447.593
-            calculatedCalorie = (9.247 * Double.parseDouble(userWeight)) + (3.098 * Double.parseDouble(userHeight)) - (4.330 * calculateAge()) + 447.593;
+            calculatedCalorie = Math.ceil((9.247 * Double.parseDouble(userWeight)) + (3.098 * Double.parseDouble(userHeight)) - (4.330 * calculateAge()) + 447.593);
         }
 
         return calculatedCalorie.toString();
@@ -190,7 +198,7 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
                     user = null;
 
                 if (user == null) {
-                    // displayValidationError(getApplicationContext(), user);
+                    somethingWentWrongError(getApplicationContext(), user);
                 }
 
                 if (user != null) {
@@ -210,5 +218,37 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
         String json = gson.toJson(user);
         editor.putString("userDetails", json);
         editor.commit();
+    }
+
+    private boolean validateFields()
+    {
+        if(mtxtUserWeight.getText().toString().trim().equals("") || Double.parseDouble(mtxtUserWeight.getText().toString()) <= 0)
+        {
+            mtxtUserWeight.setError("Weight should be greater than 0");
+            return true;
+        }
+
+        if(mtxtUserHeight.getText().toString().trim().equals("") || Double.parseDouble(mtxtUserHeight.getText().toString()) <= 0)
+        {
+            mtxtUserHeight.setError("Height should be greater than 0");
+            return true;
+        }
+
+        return false;
+    }
+
+    private void somethingWentWrongError(Context context, User user) {
+
+        if (context != null && user != null) {
+            new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_LONG).show());
+        } else {
+            new Handler(Looper.getMainLooper()).post(() -> {
+
+                mtxtSomethingWentWrong.setText("Something Went Wrong. Please try again!");
+                mtxtSomethingWentWrong.setVisibility(View.VISIBLE);
+                Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_LONG).show();
+            });
+        }
+
     }
 }
