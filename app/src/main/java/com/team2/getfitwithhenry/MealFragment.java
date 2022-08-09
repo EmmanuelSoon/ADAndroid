@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -29,6 +30,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -42,7 +44,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-public class MealFragment extends DialogFragment  {
+public class MealFragment extends DialogFragment {
 
     private ListView mMealView;
     private List<DietRecord> dietRecordList;
@@ -50,12 +52,12 @@ public class MealFragment extends DialogFragment  {
     private String date;
     private String username;
     private final OkHttpClient client = new OkHttpClient();
+    private MealListAdapter mlAdaptor;
 
 
     public MealFragment() {
         // Required empty public constructor
     }
-
 
 
     @Override
@@ -73,9 +75,18 @@ public class MealFragment extends DialogFragment  {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        View myView = inflater.inflate(R.layout.fragment_meal, container, false);
 
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_meal, container, false);
+        Button editMeal = myView.findViewById(R.id.edit_meal_btn);
+        editMeal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+
+        return myView;
     }
 
     private void updateDietRecords(){
@@ -90,6 +101,12 @@ public class MealFragment extends DialogFragment  {
                     ListView listView = view.findViewById(R.id.mealView);
                     if(listView != null){
                         listView.setAdapter(mlAdaptor);
+                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                            }
+                        });
                     }
                     TextView empty = view.findViewById(R.id.empty);
                     if(empty != null){
@@ -99,6 +116,17 @@ public class MealFragment extends DialogFragment  {
                     }
                     TextView title = (TextView) view.findViewById(R.id.mealTitleView);
                     title.setText(meal.toUpperCase());
+
+                    mlAdaptor.setListener(new MealListAdapter.AdapterListener() {
+                        @Override
+                        public void removeDiet(DietRecord dr) {
+                            removeDietRecordFromServer(dr.getId());
+                            dietRecordList.remove(dr);
+                            updateDietRecords();
+                        }
+                    });
+
+
                 }
             });
         }
@@ -138,7 +166,7 @@ public class MealFragment extends DialogFragment  {
                         //convert responseBody into list of HealthRecords
                         ObjectMapper objectMapper = new ObjectMapper();
                         objectMapper.registerModule(new JavaTimeModule());
-                        dietRecordList = Arrays.asList(objectMapper.readValue(responseBody.string(), DietRecord[].class));
+                        dietRecordList = new ArrayList<>(Arrays.asList(objectMapper.readValue(responseBody.string(), DietRecord[].class)));
                         updateDietRecords();
 
                     } catch (Exception e) {
@@ -152,4 +180,43 @@ public class MealFragment extends DialogFragment  {
     }
 
 
+
+    public void removeDietRecordFromServer(int drId) {
+        JSONObject postData = new JSONObject();
+        try {
+            postData.put("dietRecordId", drId);
+
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+            RequestBody body = RequestBody.create(postData.toString(), JSON);
+
+            //need to use your own pc's ip address here, cannot use local host.
+            Request request = new Request.Builder()
+                    .url(Constants.javaURL +"/user/deletedietrecord")
+                    .post(body)
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) {
+                    try {
+                        ResponseBody responseBody = response.body();
+                        if (!response.isSuccessful()) {
+                            throw new IOException("Unexpected code " + response);
+                        }
+
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 }

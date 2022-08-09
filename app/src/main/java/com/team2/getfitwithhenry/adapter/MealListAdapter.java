@@ -12,11 +12,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.team2.getfitwithhenry.AddWaterFragment;
+import com.team2.getfitwithhenry.LoggerActivity;
+import com.team2.getfitwithhenry.MealFragment;
 import com.team2.getfitwithhenry.R;
 import com.team2.getfitwithhenry.model.DietRecord;
 import com.team2.getfitwithhenry.model.Ingredient;
@@ -33,6 +38,8 @@ public class MealListAdapter extends ArrayAdapter<DietRecord> {
     private Context context;
     protected List<DietRecord> dietRecordList;
     final int THUMBSIZE = 64;
+    private AdapterListener mListener;
+
 
     public MealListAdapter(Context context, List<DietRecord> dietRecordList)
     {
@@ -40,6 +47,15 @@ public class MealListAdapter extends ArrayAdapter<DietRecord> {
         this.dietRecordList = dietRecordList;
         this.context = context;
 
+    }
+
+    //Creating adapter listener interface here to allow me to pass back the onclick to the fragment
+    public interface AdapterListener {
+        void removeDiet(DietRecord dr);
+    }
+    //constructor for AdapterListener
+    public void setListener(AdapterListener listener) {
+        this.mListener = listener;
     }
 
 
@@ -64,16 +80,19 @@ public class MealListAdapter extends ArrayAdapter<DietRecord> {
         TextView textView = view.findViewById(R.id.caloriesView);
         textView.setText(String.format("%.1f", dietRecordList.get(pos).getCalorie()) + " kcal \n (" + Double.toString(dietRecordList.get(pos).getWeight()) + " g)");
 
+        ImageButton deleteBtn = view.findViewById(R.id.deleteBtn);
+        deleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "Meal deleted!", Toast.LENGTH_SHORT).show();
+                mListener.removeDiet(dietRecordList.get(pos));
+            }
+        });
+
         //String.format("%.2f", 1.23456)
         return view;
     }
 
-    public void sortListByEnum(List<DietRecord> drList){
-       Map<MealType, Double> calsByType = drList.stream()
-               .sorted(Comparator.comparing(DietRecord::getMealType))
-               .collect(Collectors.groupingBy(DietRecord::getMealType, Collectors.summingDouble(DietRecord::getCalorie)));
-
-    }
 
     public Bitmap getBitmapFromAssets(String filename) throws IOException {
         AssetManager assetManager = context.getAssets();
@@ -84,6 +103,8 @@ public class MealListAdapter extends ArrayAdapter<DietRecord> {
 
         return thumbImage;
     }
+
+
 
 
 }

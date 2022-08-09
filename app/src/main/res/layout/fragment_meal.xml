@@ -54,6 +54,15 @@
                 android:textSize="18sp"
                 android:text="Calories">
             </TextView>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:text="Delete">
+            </TextView>
         </LinearLayout>
         <RelativeLayout
             android:layout_width="match_parent"
@@ -74,6 +83,13 @@
         </RelativeLayout>
 
     </LinearLayout>
+
+    <Button
+        android:id="@+id/edit_meal_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:text="Edit Meal"/>
 
 
 </FrameLayout>

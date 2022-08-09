@@ -130,10 +130,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
         SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
         Gson gson = new Gson();
         String json = pref.getString("userDetails", "");
-        System.out.println(json);
         user = gson.fromJson(json, User.class);
-
-        System.out.println(user.getUsername());
 
         // Set up Calendar
         initDatePicker();
@@ -438,6 +435,14 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
         }
     }
 
+    public static void removeMeal(DietRecord dr){
+
+    }
+
+
+
+
+
 
     public void setTopNavBar() {
         mToolbar = findViewById(R.id.top_navbar);
@@ -511,10 +516,6 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
         startLoginActivity();
     }
 
-    private void startLogoutActivity() {
-        Intent intent = new Intent(this, LogoutActivity.class);
-        startActivity(intent);
-    }
 
     private void startLoginActivity() {
         Intent intent = new Intent(this, LoginActivity.class);
