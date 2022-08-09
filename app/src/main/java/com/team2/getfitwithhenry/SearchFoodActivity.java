@@ -103,12 +103,10 @@ public class SearchFoodActivity extends AppCompatActivity {
 
                 ComponentName componentName = getCallingActivity();
                 if (componentName == null) {
-                    System.out.println("came from nav");
                     Intent intent = new Intent(SearchFoodActivity.this, AddMealActivity.class);
                     intent.putExtra("ingredients", (Serializable) mealBuilder);
                     startActivity(intent);
                 } else {
-                    System.out.println("came from log");
                     Intent response = new Intent();
                     response.putExtra("ingredients", (Serializable) mealBuilder);
                     setResult(RESULT_OK, response);

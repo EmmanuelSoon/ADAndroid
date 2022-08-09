@@ -160,7 +160,8 @@
             android:background="@null"
             android:ems="15"
             android:gravity="center"
-            android:inputType="numberDecimal"/>
+            android:inputType="numberDecimal"
+            android:enabled="false" />
     </LinearLayout>
 
     <LinearLayout
@@ -186,8 +187,19 @@
             android:background="@null"
             android:ems="15"
             android:gravity="center"
-            android:inputType="numberDecimal"/>
+            android:inputType="numberDecimal"
+            android:enabled="false" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/txtprofileInvalidError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:text=" "
+        android:textColor="@color/red"
+        android:visibility="invisible" />
 
     <Button
         android:id="@+id/btnSaveProfileChanges"

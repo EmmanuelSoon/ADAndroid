@@ -101,7 +101,7 @@ public class AddMealActivity extends AppCompatActivity {
         mealTypeSpinner.setAdapter(new ArrayAdapter<MealType>(this, android.R.layout.simple_spinner_item, MealType.values()));
 
         //TODO change this button name
-        addView = findViewById(R.id.addViewButton);
+        addView = findViewById(R.id.search_ingredientsBtn);
         addView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -128,16 +128,6 @@ public class AddMealActivity extends AppCompatActivity {
                 finish();
             }
         });
-
-
-
-    }
-
-//commented out for now, to improve on in future revisions
-    public void addIngredient(){
-//        LayoutInflater layInf = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//        ViewGroup parent = (ViewGroup) findViewById(R.id.linearViewAddMeal);
-//        layInf.inflate(R.layout.add_meal_row, parent);
 
     }
 
@@ -220,6 +210,7 @@ public class AddMealActivity extends AppCompatActivity {
             mlistView = findViewById(R.id.listView);
             if(mlistView != null) {
                 mlistView.setAdapter(myAdapter);
+                mlistView.setEnabled(true);
             }
             for (Ingredient ing: myMeal){
                 mealMap.putIfAbsent(ing.getId(), 0.0);

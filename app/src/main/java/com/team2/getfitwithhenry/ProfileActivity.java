@@ -34,6 +34,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -55,6 +57,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private RadioGroup mRGGenderGrp;
     private Spinner mGoalSelect;
     private DatePickerDialog mdobDatePicker;
+    private TextView mtxtprofileInvalidError;
     private Button mbtnDob;
     private Button mbtnSaveChanges;
     private String[] goalmatch = {"WEIGHTLOSS", "WEIGHTGAIN", "WEIGHTMAINTAIN", "MUSCLE"};
@@ -77,6 +80,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         mtxtWaterIntake = findViewById(R.id.txtWaterIntake);
         mGoalSelect = findViewById(R.id.goalSelect);
         mbtnSaveChanges = findViewById(R.id.btnSaveProfileChanges);
+        mtxtprofileInvalidError = findViewById(R.id.txtprofileInvalidError);
 
         mbtnSaveChanges.setOnClickListener(this);
 
@@ -233,15 +237,24 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             return false;
         }
 
+        String userNameFormat = "^[A-Za-z0-9+_.-]+@(.+)$";
+        Pattern pattern = Pattern.compile(userNameFormat);
+        if (!pattern.matcher(mtxtUsername.getText().toString()).matches()) {
+            mtxtUsername.setError("Invalid Email Format");
+            return false;
+        }
+
         //RadioButton checkBtn = (RadioButton) findViewById(mRGGenderGrp.getCheckedRadioButtonId());
         if (mRGGenderGrp.getCheckedRadioButtonId() <= 0) {
             mrBtnFemale.setError("Select gender");
+            return false;
         }
 
         if (mGoalSelect.getSelectedItem() == null || mGoalSelect.getSelectedItem().toString().trim().isEmpty()) {
             TextView errorText = (TextView) mGoalSelect.getSelectedView();
             errorText.setError("Select goal");
             errorText.setTextColor(Color.RED);
+            return false;
         }
 
         if (mtxtCalorieIntake.getText().toString().trim().isEmpty()) {
@@ -259,7 +272,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private void updatUserDetails(JSONObject userObj) {
         MediaType JsonObj = MediaType.parse("application/json; charset=utf-8");
         RequestBody requestBody = RequestBody.create(JsonObj, userObj.toString());
-        Request request = new Request.Builder().url(Constants.javaURL +"/register/updateUserDetails").post(requestBody).build();
+        Request request = new Request.Builder().url(Constants.javaURL + "/userprofile/updateUserDetails").post(requestBody).build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -284,12 +297,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     user = null;
 
                 if (user == null) {
-                   // displayValidationError(getApplicationContext(), user);
+                    // displayValidationError(getApplicationContext(), user);
                 }
 
                 if (user != null) {
                     updateUserinSharedPreference(user);
-                   // startHomeActivity();
+                    // startHomeActivity();
                 }
             }
         });

@@ -49,6 +49,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.2'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.2'
+    implementation 'commons-codec:commons-codec:1.14'
 
     //add okHttp
     implementation 'com.squareup.okhttp3:okhttp:4.9.2'

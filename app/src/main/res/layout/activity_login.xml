@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,25 +9,25 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/app_name"
-        android:textSize="30dp"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
-        android:layout_marginBottom="70dp"/>
+        android:layout_marginBottom="70dp"
+        android:text="@string/app_name"
+        android:textSize="30dp" />
 
     <EditText
+        android:id="@+id/txtUsername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/txtUsername"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
-        android:drawablePadding="10dp"
         android:background="@drawable/round_border"
-        android:padding="15dp"
+        android:drawableLeft="@drawable/ic_baseline_person_24"
+        android:drawablePadding="10dp"
+        android:ems="15"
         android:hint="Username"
         android:inputType="text"
-        android:drawableLeft="@drawable/ic_baseline_person_24"
-        android:ems="15"></EditText>
+        android:padding="15dp" />
 
     <EditText
         android:id="@+id/txtPassword"
@@ -42,49 +41,49 @@
         android:ems="15"
         android:hint="Password"
         android:inputType="textPassword"
-        android:padding="15dp"></EditText>
+        android:padding="15dp" />
 
     <TextView
         android:id="@+id/validationErrorText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
         android:text=" "
         android:textColor="@color/red"
-        android:layout_gravity="center"
-        android:visibility="invisible"
-        android:layout_marginTop="20dp">
-    </TextView>
+        android:visibility="invisible" />
 
     <Button
+        android:id="@+id/loginBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/loginBtn"
+        android:layout_gravity="center"
+        android:backgroundTint="#0000FF"
+        android:ems="10"
         android:enabled="false"
         android:text="Login"
-        android:layout_gravity="center"
-        android:ems="10"
         android:textAllCaps="true"
         android:backgroundTint="#0000FF"
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="@color/white"
-        ></Button>
+        android:textSize="18dp"
+        android:textStyle="bold" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/forgotPasswordTxt"
         style="@style/loginTextStyle"
-        android:layout_marginTop="20dp"
-        android:text="Forgot Password?"
-></TextView>
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Forgot Password?" />
+
+    <TextView
         android:id="@+id/newUserTxt"
         style="@style/loginTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="New User? Regeister Now"
- ></TextView>
+        android:text="New User? Register Now" />
 
 </LinearLayout>
