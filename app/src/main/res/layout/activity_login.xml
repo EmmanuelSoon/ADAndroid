@@ -65,7 +65,7 @@
         android:ems="10"
         android:textAllCaps="true"
         android:backgroundTint="#0000FF"
-        android:textSize="18dp"
+        android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="@color/white"
         ></Button>

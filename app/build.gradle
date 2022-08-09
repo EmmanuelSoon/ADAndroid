@@ -29,6 +29,11 @@ android {
     buildFeatures {
         viewBinding true
     }
+    // for sending email
+    packagingOptions{
+        exclude 'META-INF/NOTICE.md'
+        exclude 'META-INF/LICENSE.md'
+    }
 
 }
 
@@ -63,6 +68,9 @@ dependencies {
     // add graphview
     implementation 'com.jjoe64:graphview:4.2.2'
 
+    // for sending email
+    implementation 'com.sun.mail:android-mail:1.6.6'
+    implementation 'com.sun.mail:android-activation:1.6.6'
 
 
 

@@ -89,7 +89,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 e.printStackTrace();
             }
         } else if (id == R.id.forgotPasswordTxt) {
-            startRegistrationActivity();
+            startForgotPasswordActivity();
         } else if (id == R.id.newUserTxt) {
             startRegistrationActivity();
         }
@@ -216,7 +216,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void startForgotPasswordActivity() {
         //logic haven't implemented yet
-        Intent intent = new Intent(this, RegistrationActivity.class);
+        Intent intent = new Intent(this, ForgotPasswordActivity.class);
         startActivity(intent);
     }
 
