@@ -103,6 +103,8 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
         SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
         if (!pref.contains("userDetails"))
             startLoginActivity();
+        else if (pref.contains("userDetails") && (user.getCalorieintake_limit_inkcal() == null || user.getCalorieintake_limit_inkcal() <= 0))
+            startQuestionnaireActivity();
     }
 
     private void showGraphView(List<HealthRecord> healthRecordList) {
@@ -380,8 +382,8 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
         startLoginActivity();
     }
 
-    private void startLogoutActivity() {
-        Intent intent = new Intent(this, LogoutActivity.class);
+    private void startQuestionnaireActivity() {
+        Intent intent = new Intent(this, QuestionnaireActivity.class);
         startActivity(intent);
     }
 

@@ -127,6 +127,16 @@
             app:layout_constraintBottom_toTopOf="@id/txtUserHeight" />
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/txtSomethingWentWrong"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:text=" "
+        android:textColor="@color/red"
+        android:visibility="invisible" />
+
     <Button
         android:id="@+id/btnSaveHealthDetails"
         android:layout_width="241dp"
