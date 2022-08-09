@@ -173,7 +173,7 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
     private void inserHealthRecordonRegistration(JSONObject userObj) {
         MediaType JsonObj = MediaType.parse("application/json; charset=utf-8");
         RequestBody requestBody = RequestBody.create(JsonObj, userObj.toString());
-        Request request = new Request.Builder().url(Constants.javaURL + "/register/insertHealthRecordonRegistration").post(requestBody).build();
+        Request request = new Request.Builder().url(Constants.javaURL + "/questionnaire/insertHealthRecordonRegistration").post(requestBody).build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
