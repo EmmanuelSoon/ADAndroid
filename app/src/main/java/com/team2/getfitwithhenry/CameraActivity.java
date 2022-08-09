@@ -33,6 +33,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.team2.getfitwithhenry.model.Constants;
 import com.team2.getfitwithhenry.model.Ingredient;
 
+import org.apache.commons.codec.binary.StringUtils;
+import org.apache.commons.codec.binary.Base64;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -252,10 +254,14 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         try {
             postData.put("actual", actual);
             postData.put("predicted", iPredict.getName());
-            ObjectMapper objectMapper = new ObjectMapper();
-            postData.put("photoString", objectMapper.writeValueAsString(getBytesFromBitmap(bitImage)));
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("data:image/png;base64,");
+            sb.append(StringUtils.newStringUtf8(Base64.encodeBase64(getBytesFromBitmap(bitImage), false)));
+            postData.put("photoString", sb.toString());
+
         }
-        catch (JSONException | JsonProcessingException ex){
+        catch (JSONException ex){
             ex.printStackTrace();
         }
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
