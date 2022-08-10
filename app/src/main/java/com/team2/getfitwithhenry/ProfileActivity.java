@@ -3,9 +3,12 @@ package com.team2.getfitwithhenry;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -92,6 +95,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.btnSaveProfileChanges) {
+            mtxtprofileInvalidError.setText(" ");
+            mtxtprofileInvalidError.setVisibility(View.INVISIBLE);
             if (validateFormFields()) {
                 checkIfDetailsChanged();
                 try {
@@ -294,11 +299,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 if (responseBody.contentLength() != 0)
                     user = objectMapper.readValue(responseBody.string(), User.class);
                 else
-                    user = null;
-
-                if (user == null) {
-                    // displayValidationError(getApplicationContext(), user);
-                }
+                    displayprofileInvalidError(getApplicationContext());
 
                 if (user != null) {
                     updateUserinSharedPreference(user);
@@ -317,6 +318,16 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         String json = gson.toJson(user);
         editor.putString("userDetails", json);
         editor.commit();
+    }
+
+    private void displayprofileInvalidError(Context context) {
+
+        new Handler(Looper.getMainLooper()).post(() -> {
+
+            mtxtprofileInvalidError.setText("Username already Exists!");
+            mtxtprofileInvalidError.setVisibility(View.VISIBLE);
+            Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_LONG).show();
+        });
     }
 
 }
