@@ -58,13 +58,14 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private EditText mtxtWaterIntake;
     private RadioButton mrBtnMale, mrBtnFemale;
     private RadioGroup mRGGenderGrp;
-    private Spinner mGoalSelect;
+    private Spinner mGoalSelect, mactivityLevelSelector;
     private DatePickerDialog mdobDatePicker;
     private TextView mtxtprofileInvalidError;
     private Button mbtnDob;
     private Button mbtnSaveChanges;
     private String[] goalmatch = {"WEIGHTLOSS", "WEIGHTGAIN", "WEIGHTMAINTAIN", "MUSCLE"};
     private String[] goals = {"Weight Loss", "Weight Gain", "Weight Maintain", "Muscle"};
+    private String[] activityLevels = {"Lightly Active", "Moderately Active", "Very Active", "Extra Active"};
     private User user;
     private User updatedUser;
 
@@ -82,6 +83,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         mtxtCalorieIntake = findViewById(R.id.txtCalorieIntake);
         mtxtWaterIntake = findViewById(R.id.txtWaterIntake);
         mGoalSelect = findViewById(R.id.goalSelect);
+        mactivityLevelSelector = findViewById(R.id.continuous_slider);
         mbtnSaveChanges = findViewById(R.id.btnSaveProfileChanges);
         mtxtprofileInvalidError = findViewById(R.id.txtprofileInvalidError);
 
@@ -146,6 +148,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         mGoalSelect.setAdapter(adapter);
         mGoalSelect.setSelection(position);
 
+        position = Arrays.asList(activityLevels).indexOf(user.getActivitylevel());
+        ArrayAdapter<String> activityLevelAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, activityLevels);
+        activityLevelAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mactivityLevelSelector.setAdapter(activityLevelAdapter);
+        mactivityLevelSelector.setSelection(position);
+
     }
 
     private void initDatePicker() {
@@ -186,6 +194,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         String[] dateArray = selectedDob.split("-");
         selectedDob = dateArray[2] + "-" + dateArray[1] + "-" + dateArray[0];
         LocalDate convertedDate = LocalDate.parse(selectedDob, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String selectedActivity = mactivityLevelSelector.getSelectedItem().toString();
 
         if (mtxtName.getText().toString().equals(user.getName()) &&
                 mtxtUsername.getText().toString().equals(user.getUsername()) &&
@@ -193,7 +202,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 gender.equals(user.getGender()) &&
                 selectedGoal.equals(user.getGoal().toString()) &&
                 mtxtCalorieIntake.getText().toString().equals(user.getCalorieintake_limit_inkcal().toString()) &&
-                mtxtWaterIntake.getText().toString().equals(user.getWaterintake_limit_inml().toString())) {
+                mtxtWaterIntake.getText().toString().equals(user.getWaterintake_limit_inml().toString()) &&
+                selectedActivity.equals(user.getActivitylevel())) {
             Toast.makeText(this,
                     "No details changed", Toast.LENGTH_SHORT).show();
         } else {
@@ -207,6 +217,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             updatedUser.setDateofbirth(convertedDate);
             updatedUser.setGender(gender);
             updatedUser.setGoal(Goal.valueOf(selectedGoal));
+            updatedUser.setActivitylevel(mactivityLevelSelector.getSelectedItem().toString());
             updatedUser.setCalorieintake_limit_inkcal(Double.parseDouble(mtxtCalorieIntake.getText().toString()));
             updatedUser.setWaterintake_limit_inml(Double.parseDouble(mtxtWaterIntake.getText().toString()));
 
@@ -224,6 +235,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         userObj.put("dateofbirth", updatedUser.getDateofbirth());
         userObj.put("gender", updatedUser.getGender());
         userObj.put("goal", updatedUser.getGoal());
+        userObj.put("activitylevel", updatedUser.getActivitylevel());
         userObj.put("calorieintake_limit_inkcal", updatedUser.getCalorieintake_limit_inkcal());
         userObj.put("waterintake_limit_inml", updatedUser.getWaterintake_limit_inml());
 
@@ -302,8 +314,14 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     displayprofileInvalidError(getApplicationContext());
 
                 if (user != null) {
-                    updateUserinSharedPreference(user);
-                    // startHomeActivity();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateUserinSharedPreference(user);
+                            onInitialDataBind();
+                        }
+                    });
+
                 }
             }
         });

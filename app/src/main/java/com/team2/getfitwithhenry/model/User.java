@@ -18,6 +18,8 @@ public class User implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateofbirth;
     private String dobStringFormat;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate dateCreated;
     private String gender;
     private Double calorieintake_limit_inkcal;
     private Double waterintake_limit_inml;
@@ -26,7 +28,7 @@ public class User implements Serializable {
 
     public User(@JsonProperty("id") int id, @JsonProperty("name") String name, @JsonProperty("username") String username,
                 @JsonProperty("password") String password, @JsonProperty("role") Role role, @JsonProperty("goal") Goal goal,
-                @JsonProperty("dateofbirth") LocalDate dateofbirth, @JsonProperty("gender") String gender,
+                @JsonProperty("dateofbirth") LocalDate dateofbirth,@JsonProperty("dateCreated") LocalDate dateCreated, @JsonProperty("gender") String gender,
                 @JsonProperty("calorieintake_limit_inkcal") Double calorieintake_limit_inkcal, @JsonProperty("waterintake_limit_inml") Double waterintake_limit_inml,
                 @JsonProperty("activitylevel") String activitylevel, @JsonProperty("dislike") List<Ingredient> dislike) {
         this.id = id;
@@ -36,6 +38,7 @@ public class User implements Serializable {
         this.role = role;
         this.dateofbirth = dateofbirth;
         this.dobStringFormat = dateofbirth.toString();
+        this.dateCreated = dateCreated;
         this.gender = gender;
         this.calorieintake_limit_inkcal = calorieintake_limit_inkcal;
         this.waterintake_limit_inml = waterintake_limit_inml;
@@ -44,7 +47,7 @@ public class User implements Serializable {
         this.dislike = dislike;
     }
 
-    public User(int id, String name, String username, String password, Role role, Goal goal, LocalDate dateofbirth, String gender, Double calorieintake_limit_inkcal, Double waterintake_limit_inml, String activitylevel) {
+    public User(int id, String name, String username, String password, Role role, Goal goal, LocalDate dateofbirth, String gender, Double calorieintake_limit_inkcal, Double waterintake_limit_inml, String activitylevel, LocalDate dateCreated) {
         this.id = id;
         this.name = name;
         this.username = username;
@@ -52,6 +55,7 @@ public class User implements Serializable {
         this.role = role;
         this.dateofbirth = dateofbirth;
         this.dobStringFormat = dateofbirth.toString();
+        this.dateCreated = dateCreated;
         this.gender = gender;
         this.calorieintake_limit_inkcal = calorieintake_limit_inkcal;
         this.waterintake_limit_inml = waterintake_limit_inml;
