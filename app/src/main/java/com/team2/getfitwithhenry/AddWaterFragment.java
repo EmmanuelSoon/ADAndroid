@@ -44,9 +44,14 @@ public class AddWaterFragment extends DialogFragment {
 
     private List<Double> cupValues = Arrays.asList(236.0, 330.0, 500.0);
     private IAddWater mCallBack;
+    private boolean isAdding;
 
     public AddWaterFragment() {
         // Required empty public constructor
+    }
+
+    public AddWaterFragment(boolean isAdding) {
+        this.isAdding = isAdding;
     }
 
     @NonNull
@@ -55,11 +60,11 @@ public class AddWaterFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         builder.setView(inflater.inflate(R.layout.fragment_add_water, null))
-                .setTitle("Add water")
+                .setTitle(isAdding == true? "Add water": "Remove water")
                 .setItems(new String[]{"Small cup - 236ml", "Medium cup - 330ml", "Large cup - 500ml"}, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mCallBack.onSelectedData(cupValues.get(which));
+                        mCallBack.onSelectedData(isAdding == true? cupValues.get(which): cupValues.get(which)*-1);
                     }
                 })
 //                .setPositiveButton("Add", new DialogInterface.OnClickListener() {

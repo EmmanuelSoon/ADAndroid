@@ -76,33 +76,43 @@ public class CalAndWaterFragment extends Fragment {
 
         //create text strings
         String calsLabel = "Cals\n" + String.valueOf(Math.round(calIntake));
-        String kcals = "kcals";
+        String kcals =  "/" + String.valueOf(Math.round(calLimit)) + "kcals";
 
         SpannableString ss1 = new SpannableString(calsLabel);
         SpannableString ss2 = new SpannableString(kcals);
-        ss2.setSpan(new RelativeSizeSpan(0.6f), 0, 5, 0);
-        ss2.setSpan(new ForegroundColorSpan(Color.LTGRAY), 0,5, 0);
+        ss2.setSpan(new RelativeSizeSpan(0.6f), 0, kcals.length(), 0);
+        ss2.setSpan(new ForegroundColorSpan(Color.GRAY), 0,kcals.length(), 0);
         CharSequence finalText = TextUtils.concat(ss1,  "\n" , ss2);
 
         caloriesText.setText(finalText);
 
         String waterLabel = "Water\n" + String.valueOf(Math.round(waterIntake));
-        String mils = "ml";
+        String hydLimit = "/" + String.valueOf(Math.round(waterLimit)) + "ml";
 
         SpannableString ss3 = new SpannableString(waterLabel);
-        SpannableString ss4 = new SpannableString(mils);
-        ss4.setSpan(new RelativeSizeSpan(0.6f), 0, 2, 0);
-        ss4.setSpan(new ForegroundColorSpan(Color.LTGRAY), 0,2, 0);
-        CharSequence finalText2 = TextUtils.concat(ss3,  "\n" , ss4);
+        SpannableString ss4 = new SpannableString(hydLimit);
+
+        ss4.setSpan(new RelativeSizeSpan(0.6f), 0, hydLimit.length(), 0);
+        ss4.setSpan(new ForegroundColorSpan(Color.GRAY), 0,hydLimit.length(), 0);
+        CharSequence finalText2 = TextUtils.concat(ss3, "\n", ss4);
 
         waterText.setText(finalText2);
 
         waterProg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    DialogFragment df = new AddWaterFragment();
+                    DialogFragment df = new AddWaterFragment(true);
                     df.show(getChildFragmentManager(), "AddWaterFragment");
 
+            }
+        });
+
+        waterProg.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                DialogFragment df = new AddWaterFragment(false);
+                df.show(getChildFragmentManager(), "AddWaterFragment");
+                return true;
             }
         });
     }
