@@ -468,14 +468,6 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
         }
     }
 
-    public static void removeMeal(DietRecord dr){
-
-    }
-
-
-
-
-
 
     public void setTopNavBar() {
         mToolbar = findViewById(R.id.top_navbar);

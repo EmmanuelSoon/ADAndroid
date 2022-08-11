@@ -190,6 +190,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     storeUserinSharedPreference(user);
                     startHomeActivity();
                 }
+
+                response.body().close();
             }
         });
     }

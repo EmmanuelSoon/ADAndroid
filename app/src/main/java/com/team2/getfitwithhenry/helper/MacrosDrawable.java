@@ -44,7 +44,7 @@ public class MacrosDrawable extends Drawable {
 
         canvas.drawArc(oval, 0F, proteinAngle, true, proteinRed);
         canvas.drawArc(oval, proteinAngle, carbAngle, true, carbsGreen);
-        canvas.drawArc(oval, carbAngle+proteinAngle, fatAngle, true, fatYellow);
+        canvas.drawArc(oval, proteinAngle+carbAngle, fatAngle, true, fatYellow);
 
     }
 

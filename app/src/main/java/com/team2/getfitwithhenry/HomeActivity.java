@@ -133,6 +133,9 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
                 vp2 = findViewById(R.id.pager);
                 vp2.setAdapter(myAdapter);
                 TabLayout tabLayout = findViewById(R.id.tab_layout);
+                if(tabLayout != null){
+                    tabLayout.removeAllTabs();
+                }
                 tabLayout.addTab(tabLayout.newTab().setText("Overall"));
                 tabLayout.addTab(tabLayout.newTab().setText("Macros"));
 
@@ -212,6 +215,7 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
                         }
                         //setProgressStats(getApplicationContext());
                         setUpTabview();
+                        response.body().close();
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -255,6 +259,7 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
                         if (!response.isSuccessful()) {
                             throw new IOException("Unexpected code " + response);
                         }
+                        response.body().close();
 
                     } catch (Exception e) {
                         e.printStackTrace();

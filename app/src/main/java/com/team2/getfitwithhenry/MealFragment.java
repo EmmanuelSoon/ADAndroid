@@ -168,6 +168,7 @@ public class MealFragment extends DialogFragment {
                         objectMapper.registerModule(new JavaTimeModule());
                         dietRecordList = new ArrayList<>(Arrays.asList(objectMapper.readValue(responseBody.string(), DietRecord[].class)));
                         updateDietRecords();
+                        response.body().close();
 
                     } catch (Exception e) {
                         e.printStackTrace();

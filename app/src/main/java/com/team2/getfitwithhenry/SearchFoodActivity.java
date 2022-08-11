@@ -154,7 +154,7 @@ public class SearchFoodActivity extends AppCompatActivity {
                         iList = Arrays.asList(objectMapper.readValue(responseBody.string(), Ingredient[].class));
                         displaySearchResult(getApplicationContext(), iList);
 
-
+                        response.body().close();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -178,55 +178,21 @@ public class SearchFoodActivity extends AppCompatActivity {
                         mlistView.setAdapter(myAdapter);
                     }
 
-                    //testing, to delete once happy
-                    String name = myList.get(0).getName() + " size: " + myList.size();
-                    Toast toast = Toast.makeText(context, name, Toast.LENGTH_SHORT);
-                    toast.show();
-
                     mlistView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
                     mlistView.setItemsCanFocus(false);
 
-                    // add checkable instead
                     mlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            if (!mealBuilder.isEmpty()) {
-                                if (mealBuilder.contains(iList.get(position))) {
-                                    mealBuilder.remove(iList.get(position));
-                                    view.setSelected(false);
-                                    view.setBackgroundColor(Color.WHITE);
-                                } else {
-                                    mealBuilder.add(iList.get(position));
-                                    view.setSelected(true);
-                                    view.setBackgroundColor(Color.LTGRAY);
-                                }
-                            } else {
+                            mAddMealBtn.setVisibility(View.VISIBLE);
+                            if (mealBuilder.isEmpty() | !mealBuilder.contains(iList.get(position))) {
                                 mealBuilder.add(iList.get(position));
-                                view.setSelected(true);
-                                view.setBackgroundColor(Color.GRAY);
+                                view.setBackgroundColor(Color.LTGRAY);
                             }
-
-                            view.setSelected(true);
-
-                            if (!mealBuilder.isEmpty()) {
-                                mAddMealBtn.setVisibility(View.VISIBLE);
+                            else {
+                                mealBuilder.remove(iList.get(position));
+                                view.setBackgroundColor(Color.WHITE);
                             }
-
-                        }
-                    });
-
-                    mlistView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                        @Override
-                        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                            Ingredient selectedIng = iList.get(position);
-                            //maybe change to show more details widget
-                            Intent intent = new Intent(context, LoggerActivity.class);
-                            intent.putExtra("ingredient", selectedIng);
-                            startActivity(intent);
-
-
-                            view.setSelected(true);
-                            return true;
                         }
                     });
 

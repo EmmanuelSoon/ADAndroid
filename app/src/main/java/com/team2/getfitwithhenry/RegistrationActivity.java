@@ -240,6 +240,8 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                         }
                     });
                 }
+
+                response.body().close();
             }
         });
     }

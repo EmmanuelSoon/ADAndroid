@@ -238,10 +238,10 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                     ObjectMapper objectMapper = new ObjectMapper();
                     objectMapper.registerModule(new JavaTimeModule());
                     iPredict = objectMapper.readValue(responseBody.string(), Ingredient.class);
-
                     displayResponse(getApplicationContext(), iPredict);
 
                     Log.i("data", responseBody.string());
+                    response.body().close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

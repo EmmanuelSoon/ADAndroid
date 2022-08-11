@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +42,6 @@ public class FoodListAdapter extends ArrayAdapter<Ingredient> {
 
 
         String className = iList.get(pos).getName();
-
         ImageView imageView = view.findViewById(R.id.imageView);
         try {
             imageView.setImageBitmap(getBitmapFromAssets("seed_images/" + className + ".jpg"));
@@ -54,6 +54,7 @@ public class FoodListAdapter extends ArrayAdapter<Ingredient> {
 
         TextView nutriView = view.findViewById(R.id.queryNutrition);
         nutriView.setText(iList.get(pos).getNutritionRecord().getTruncNutrition());
+        view.setBackgroundColor(Color.WHITE);
 
         return view;
 

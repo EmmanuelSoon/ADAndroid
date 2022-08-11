@@ -103,7 +103,6 @@ public class CalAndWaterFragment extends Fragment {
                     DialogFragment df = new AddWaterFragment();
                     df.show(getChildFragmentManager(), "AddWaterFragment");
 
-                //showWaterDialog();
             }
         });
     }
