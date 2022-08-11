@@ -35,10 +35,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.tabs.TabLayout;
 import com.github.mikephil.charting.data.Entry;
@@ -85,12 +87,13 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
     private User user;
     private AutoCompleteTextView autoCompleteTextView;
     private ArrayAdapter<String> adapterItem;
-    private String[] itemLists = {"Weight","Calories","Water Intake"};
+    private String[] itemLists = {"Weight", "Calories", "Water Intake"};
     private String dropdownItem = null;
     private LineChart mpLineChart;
     private ViewPager2 vp2;
     private static final int TIME_INTERVAL = 2000;
     private long mBackPressed;
+    public List<String> getXAxisData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,7 +111,7 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
         Map<String, String> getData = new HashMap<>();
         getData.put("username", user.getUsername());
         getData.put("date", String.valueOf(LocalDate.now()));
-        getFromServer(getData,"/user/getuserrecords");
+        getFromServer(getData, "/user/getuserrecords", "daily");
 
     }
 
@@ -124,8 +127,7 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
     }
 
 
-
-    public void setUpTabview(){
+    public void setUpTabview() {
 
         runOnUiThread(new Runnable() {
             @Override
@@ -135,7 +137,7 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
                 vp2 = findViewById(R.id.pager);
                 vp2.setAdapter(myAdapter);
                 TabLayout tabLayout = findViewById(R.id.tab_layout);
-                if(tabLayout != null){
+                if (tabLayout != null) {
                     tabLayout.removeAllTabs();
                 }
                 tabLayout.addTab(tabLayout.newTab().setText("Overall"));
@@ -167,14 +169,14 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
     }
 
 
-
-    private void getFromServer(Map<String, ?> dataMap, String url) {
+    private void getFromServer(Map<String, ?> dataMap, String url, String graphFilter) {
         JSONObject postData = new JSONObject();
         try {
-            for(Map.Entry<String, ?> entry : dataMap.entrySet()){
+            for (Map.Entry<String, ?> entry : dataMap.entrySet()) {
                 postData.put(entry.getKey(), entry.getValue());
             }
             postData.put("username", user.getUsername());
+            postData.put("graphFilter",graphFilter);
 
             MediaType JSON = MediaType.parse("application/json; charset=utf-8");
             RequestBody body = RequestBody.create(postData.toString(), JSON);
@@ -207,8 +209,8 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
                         healthRecordList = ucd.getMyHrList();
                         dietRecordList = ucd.getMyDietRecord();
                         if (healthRecordList.size() != 0) {
-                            showLineGraph(healthRecordList,"Weight");
-                           // showGraphView(healthRecordList);
+                            showLineGraph(healthRecordList, "Weight");
+                            // showGraphView(healthRecordList);
                         } else {
                             Toast.makeText(HomeActivity.this, "No weight tracking for this user", Toast.LENGTH_SHORT).show();
                         }
@@ -229,7 +231,7 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
     private void sendToServer(Map<String, ?> dataMap, String url) {
         JSONObject postData = new JSONObject();
         try {
-            for(Map.Entry<String, ?> entry : dataMap.entrySet()){
+            for (Map.Entry<String, ?> entry : dataMap.entrySet()) {
                 postData.put(entry.getKey(), entry.getValue());
             }
             postData.put("username", user.getUsername());
@@ -296,10 +298,18 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
         });
     }
 
-    private void showLineGraph(List<HealthRecord> healthRecordList,String item){
+    private void showLineGraph(List<HealthRecord> healthRecordList, String item) {
         mpLineChart = findViewById(R.id.LineChart);
-        LineDataSet lineDataSet1= new LineDataSet(dataValuesforChart(healthRecordList,item),item+ " tracking");
+        LineDataSet lineDataSet1 = new LineDataSet(dataValuesforChart(healthRecordList, item, "daily"), item + "tracking");
+        lineDataSet1.setCubicIntensity(3f);
+        lineDataSet1.setAxisDependency(YAxis.AxisDependency.LEFT);
+        // lineDataSet1.setColor(Color.RED);
+        lineDataSet1.setCircleColor(Color.YELLOW);
+        lineDataSet1.setLineWidth(2f);
+        lineDataSet1.setCircleSize(4f);
 
+        lineDataSet1.setFillColor(ColorTemplate.getHoloBlue());
+        lineDataSet1.setHighLightColor(Color.rgb(244, 117, 117));
         ArrayList<ILineDataSet> dataSets = new ArrayList<>();
         dataSets.add(lineDataSet1);
 
@@ -309,170 +319,200 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
         mpLineChart.setBorderColor(Color.LTGRAY);
         LineData data = new LineData(dataSets);
         mpLineChart.setData(data);
-//            final ArrayList<String> xAxisLabel = new ArrayList<>();
-//            for(HealthRecord hr: healthRecordList){
-//                xAxisLabel.add(hr.getDate().toString());
-//            }
-        List<String> xAxisLabel = getXAxisLabels(healthRecordList);
+        mpLineChart.setViewPortOffsets(50, 30, 50, 200);
+        mpLineChart.setDragEnabled(true);
+        mpLineChart.setTouchEnabled(true);
+
+        //enable pinch zoom to avoid scalling x and y seperately
+        mpLineChart.setPinchZoom(true);
+
+
+        // styling Dataset Value
+        lineDataSet1.setValueTextSize(10);
+        lineDataSet1.setValueTextColor(Color.BLUE);
+        // lineDataSet1.setAxisDependency(YAxis.AxisDependency.RIGHT);
+
+//        List<String> xAxisLabel = getXAxisLabels(healthRecordList);
         XAxis xAxis = mpLineChart.getXAxis();
         xAxis.setGranularity(1f);
         xAxis.setGranularityEnabled(true);
-        xAxis.setLabelCount(xAxisLabel.size(),false); // yes, false. This is intentional
-        xAxis.setValueFormatter(new IndexAxisValueFormatter(xAxisLabel));
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setLabelCount(getXAxisData.size(), false); // yes, false. This is intentional
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(getXAxisData));
 //        xAxis.mAxisMaximum = 3;
+
+        xAxis.setLabelRotationAngle(-60f);
+
+        // changing yAxis label
+        YAxis yAxisLeft = mpLineChart.getAxisLeft();
+        yAxisLeft.setGranularity(1f);
+        yAxisLeft.setGranularityEnabled(true);
+        //yAxisLeft.setEnabled(false);
+        YAxis yAxisRight = mpLineChart.getAxisRight();
+        yAxisRight.setGranularity(5f);
+        yAxisRight.setGranularityEnabled(true);
+        // yAxisRight.setEnabled(true);
+
+
+        mpLineChart.setVisibleXRangeMaximum(7f);
         mpLineChart.invalidate();
 
     }
 
-    private ArrayList<String> getXAxisLabels(List<HealthRecord> hrList){
-        ArrayList<String> xAxisLabel = new ArrayList<>();
-        for(HealthRecord hr: healthRecordList){
-            xAxisLabel.add(hr.getDate().toString());
-        }
-        return xAxisLabel;
-    }
+//    private ArrayList<String> getXAxisLabels(List<HealthRecord> hrList){
+//        ArrayList<String> xAxisLabel = new ArrayList<>();
+//        for(HealthRecord hr: healthRecordList){
+//            xAxisLabel.add(hr.getDate().toString());
+//        }
+//        return xAxisLabel;
+//    }
 
-    private ArrayList<Entry> dataValuesforChart(List<HealthRecord> hrList,String itemName){
+    private ArrayList<Entry> dataValuesforChart(List<HealthRecord> hrList, String itemName, String filter) {
 
         ArrayList<Entry> dataVals = new ArrayList<Entry>();
-        switch (itemName){
-            case "Weight":
-                for(int i=0;i<hrList.size();i++){
-                    dataVals.add(new Entry(i,(float) hrList.get(i).getUserWeight()));
-                };
-                break;
-            case "Calories":
-                for(int i=0;i<hrList.size();i++){
-                    dataVals.add(new Entry(i,(float) hrList.get(i).getCalIntake()));
-                };
-                break;
-            case "Water Intake":
-                for(int i=0;i<hrList.size();i++){
-                    dataVals.add(new Entry(i,(float) hrList.get(i).getWaterIntake()));
-                };
-                break;
-            default:
-                for(int i=0;i<hrList.size();i++){
-                    dataVals.add(new Entry(i,(float) hrList.get(i).getUserWeight()));
-                };
-                break;
+        getXAxisData = new ArrayList<String>();
+        int count = 0;
+        if (filter == "daily") {
+            switch (itemName) {
+                case "Weight":
+                    for (int i = hrList.size() - 1; i >= 0; i--) {
+                        HealthRecord testing1 = hrList.get(i);
+                        getXAxisData.add(hrList.get(i).getDate().toString());
+                        dataVals.add(new Entry(count, (float) hrList.get(i).getUserWeight()));
+                        count++;
+                    }
+                    break;
+                case "Calories":
+                    for (int i = hrList.size() - 1; i >= 0; i--) {
+                        HealthRecord testing1 = hrList.get(i);
+                        getXAxisData.add(hrList.get(i).getDate().toString());
+                        dataVals.add(new Entry(count, (float) hrList.get(i).getCalIntake()));
+                        count++;
+                    }
+                    break;
+                case "Water Intake":
+                    for (int i = hrList.size() - 1; i >= 0; i--) {
+                        HealthRecord testing1 = hrList.get(i);
+                        getXAxisData.add(hrList.get(i).getDate().toString());
+                        dataVals.add(new Entry(count, (float) hrList.get(i).getWaterIntake()));
+                        count++;
+                    }
+                    break;
+                default:
+                    for (int i = hrList.size() - 1; i >= 0; i--) {
+                        HealthRecord testing1 = hrList.get(i);
+                        getXAxisData.add(hrList.get(i).getDate().toString());
+                        dataVals.add(new Entry(count, (float) hrList.get(i).getUserWeight()));
+                        count++;
+                    }
+                    break;
+            }
+        }
+            return dataVals;
+
+    }
+
+        public void setTopNavBar () {
+            mToolbar = findViewById(R.id.top_navbar);
+            setSupportActionBar(mToolbar);
         }
 
-//        dataVals.add(new Entry(0,10));
-//        dataVals.add(new Entry(1,20));
-//        dataVals.add(new Entry(3,30));
-//        dataVals.add(new Entry(4,40));
-//        dataVals.add(new Entry(5,50));
-
-//        for(int i=0;i<hrList.size();i++){
-//            dataVals.add(new Entry(i, (float)hrList.get(i).getUserWeight()));
-//        };
-        return dataVals;
-    }
-
-    public void setTopNavBar() {
-        mToolbar = findViewById(R.id.top_navbar);
-        setSupportActionBar(mToolbar);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.top_nav_bar, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.editProfile:
-                startProfileActivity();
-                return true;
-            case R.id.logout:
-                logout();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        @Override
+        public boolean onCreateOptionsMenu (Menu menu){
+            super.onCreateOptionsMenu(menu);
+            getMenuInflater().inflate(R.menu.top_nav_bar, menu);
+            return true;
         }
-    }
+
+        @Override
+        public boolean onOptionsItemSelected (@NonNull MenuItem item){
+            switch (item.getItemId()) {
+                case R.id.editProfile:
+                    startProfileActivity();
+                    return true;
+                case R.id.logout:
+                    logout();
+                    return true;
+                default:
+                    return super.onOptionsItemSelected(item);
+            }
+        }
 
 
-    public void setBottomNavBar() {
-        bottomNavView = findViewById(R.id.bottom_navigation);
-        bottomNavView.setSelectedItemId(R.id.nav_home);
-        bottomNavView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                Intent intent;
-                int id = item.getItemId();
-                switch (id) {
+        public void setBottomNavBar () {
+            bottomNavView = findViewById(R.id.bottom_navigation);
+            bottomNavView.setSelectedItemId(R.id.nav_home);
+            bottomNavView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                    Intent intent;
+                    int id = item.getItemId();
+                    switch (id) {
 
-                    case (R.id.nav_scanner):
-                        intent = new Intent(getApplicationContext(), CameraActivity.class);
-                        startActivity(intent);
-                        break;  //or should this be finish?
+                        case (R.id.nav_scanner):
+                            intent = new Intent(getApplicationContext(), CameraActivity.class);
+                            startActivity(intent);
+                            break;  //or should this be finish?
 
-                    case (R.id.nav_search):
-                        intent = new Intent(getApplicationContext(), SearchFoodActivity.class);
-                        startActivity(intent);
-                        break;
+                        case (R.id.nav_search):
+                            intent = new Intent(getApplicationContext(), SearchFoodActivity.class);
+                            startActivity(intent);
+                            break;
 
-                    case (R.id.nav_log):
-                        intent = new Intent(getApplicationContext(), LoggerActivity.class);
-                        startActivity(intent);
-                        break;
+                        case (R.id.nav_log):
+                            intent = new Intent(getApplicationContext(), LoggerActivity.class);
+                            startActivity(intent);
+                            break;
 
-                    case (R.id.nav_recipe):
-                        intent = new Intent(getApplicationContext(), RecipeActivity.class);
-                        startActivity(intent);
-                        break;
+                        case (R.id.nav_recipe):
+                            intent = new Intent(getApplicationContext(), RecipeActivity.class);
+                            startActivity(intent);
+                            break;
 
 //                    case(R.id.nav_home):
 //                        intent = new Intent(getApplicationContext(), HomeActivity.class);
 //                        startActivity(intent);
 //                        break;
-                }
+                    }
 
-                return false;
+                    return false;
             }
         });
     }
 
-    private void logout() {
-        SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
-        editor.clear();
-        editor.commit();
+        private void logout() {
+            SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
+            SharedPreferences.Editor editor = pref.edit();
+            editor.clear();
+            editor.commit();
 
-        Toast.makeText(getApplicationContext(), "You have logged out successfully", Toast.LENGTH_LONG).show();
-        startLoginActivity();
-    }
-
-    private void startQuestionnaireActivity() {
-        Intent intent = new Intent(this, QuestionnaireActivity.class);
-        startActivity(intent);
-    }
-
-    private void startLoginActivity() {
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-    }
-
-    private void startProfileActivity() {
-        Intent intent = new Intent(this, ProfileActivity.class);
-        startActivity(intent);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mBackPressed + TIME_INTERVAL > System.currentTimeMillis()) {
-            finishAffinity();
-            System.exit(0);
+            Toast.makeText(getApplicationContext(), "You have logged out successfully", Toast.LENGTH_LONG).show();
+            startLoginActivity();
         }
-        else {
-            Toast.makeText(getBaseContext(), "Press BACK again to exit", Toast.LENGTH_SHORT).show();
+
+        private void startQuestionnaireActivity () {
+            Intent intent = new Intent(this, QuestionnaireActivity.class);
+            startActivity(intent);
         }
-        mBackPressed = System.currentTimeMillis();
-    }
+
+        private void startLoginActivity () {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+        }
+
+        private void startProfileActivity () {
+            Intent intent = new Intent(this, ProfileActivity.class);
+            startActivity(intent);
+        }
+
+        @Override
+        public void onBackPressed() {
+            if (mBackPressed + TIME_INTERVAL > System.currentTimeMillis()) {
+                finishAffinity();
+                System.exit(0);
+            } else {
+                Toast.makeText(getBaseContext(), "Press BACK again to exit", Toast.LENGTH_SHORT).show();
+            }
+            mBackPressed = System.currentTimeMillis();
+        }
 }
