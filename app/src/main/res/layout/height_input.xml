@@ -4,35 +4,29 @@
     android:orientation="vertical"
     android:layout_height="match_parent">
     <TextView
-        android:id="@+id/weightText"
+        android:id="@+id/heightText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:textSize="25dp"
+        android:textSize="25sp"
         android:layout_margin="10dp"
         android:textColor="@color/black"
-        android:text="Update your weight" />
+        android:text="Update your height" />
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <NumberPicker
-            android:id="@+id/weightInt"
+            android:id="@+id/heightInt"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"/>
         <NumberPicker
-            android:id="@+id/weightDouble"
+            android:id="@+id/heightDouble"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"/>
-<!--        <TextView-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_weight="0.5"-->
-<!--            android:layout_gravity="center"-->
-<!--            android:text="Kg"/>-->
     </LinearLayout>
 
     <LinearLayout
@@ -40,7 +34,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <Button
-            android:id="@+id/saveWeight"
+            android:id="@+id/saveHeight"
             android:text="Save"
             android:backgroundTint="#D3D3D3"
             android:textColor="@color/black"
@@ -50,7 +44,7 @@
             android:layout_marginRight="20dp"
             android:layout_marginLeft="5dp"/>
         <Button
-            android:id="@+id/cancelWeight"
+            android:id="@+id/cancelHeight"
             android:backgroundTint="#D3D3D3"
             android:text="Cancel"
             android:textColor="@color/black"
@@ -58,7 +52,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginRight="5dp"/>
-
     </LinearLayout>
 
 </LinearLayout>

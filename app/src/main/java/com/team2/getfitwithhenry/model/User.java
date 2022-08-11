@@ -20,6 +20,7 @@ public class User implements Serializable {
     private String dobStringFormat;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateCreated;
+    private String dateCreatedStringFormat;
     private String gender;
     private Double calorieintake_limit_inkcal;
     private Double waterintake_limit_inml;
@@ -39,6 +40,7 @@ public class User implements Serializable {
         this.dateofbirth = dateofbirth;
         this.dobStringFormat = dateofbirth.toString();
         this.dateCreated = dateCreated;
+        this.dateCreatedStringFormat = dateCreated.toString();
         this.gender = gender;
         this.calorieintake_limit_inkcal = calorieintake_limit_inkcal;
         this.waterintake_limit_inml = waterintake_limit_inml;
@@ -56,6 +58,7 @@ public class User implements Serializable {
         this.dateofbirth = dateofbirth;
         this.dobStringFormat = dateofbirth.toString();
         this.dateCreated = dateCreated;
+        this.dateCreatedStringFormat = dateCreated.toString();
         this.gender = gender;
         this.calorieintake_limit_inkcal = calorieintake_limit_inkcal;
         this.waterintake_limit_inml = waterintake_limit_inml;
@@ -145,6 +148,10 @@ public class User implements Serializable {
         this.dateofbirth = dateofbirth;
     }
 
+    public LocalDate getDateCreated() { return dateCreated; }
+
+    public void setDateCreated(LocalDate dateCreated) { this.dateCreated  = dateCreated; }
+
     public String getGender() {
         return gender;
     }
@@ -181,13 +188,18 @@ public class User implements Serializable {
         this.goal = goal;
     }
 
-
     public String getDobStringFormat() {
         return dobStringFormat;
     }
 
     public void setDobStringFormat(String dobStringFormat) {
         this.dobStringFormat = dobStringFormat;
+    }
+
+    public String getDateCreatedStringFormat() { return dateCreatedStringFormat; }
+
+    public void setDateCreatedStringFormat(String dateCreatedStringFormat){
+        this.dateCreatedStringFormat = dateCreatedStringFormat;
     }
 
     public String getActivitylevel() {
