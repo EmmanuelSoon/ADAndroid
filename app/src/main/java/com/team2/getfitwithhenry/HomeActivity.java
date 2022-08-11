@@ -89,6 +89,8 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
     private String dropdownItem = null;
     private LineChart mpLineChart;
     private ViewPager2 vp2;
+    private static final int TIME_INTERVAL = 2000;
+    private long mBackPressed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -460,5 +462,17 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
     private void startProfileActivity() {
         Intent intent = new Intent(this, ProfileActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mBackPressed + TIME_INTERVAL > System.currentTimeMillis()) {
+            finishAffinity();
+            System.exit(0);
+        }
+        else {
+            Toast.makeText(getBaseContext(), "Press BACK again to exit", Toast.LENGTH_SHORT).show();
+        }
+        mBackPressed = System.currentTimeMillis();
     }
 }
