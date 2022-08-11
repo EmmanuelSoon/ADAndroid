@@ -160,11 +160,8 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
                         tabLayout.selectTab(tabLayout.getTabAt(position));
                     }
                 });
-
             }
         });
-
-
     }
 
 
@@ -279,8 +276,7 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
         sendToServer(waterData, "/user/addwater");
 
         Double newWaterVal = healthRecordList.get(0).getWaterIntake() + selectedMils;
-        healthRecordList.get(0).setWaterIntake(newWaterVal);
-
+        healthRecordList.get(0).setWaterIntake(newWaterVal < 0 ? 0 : newWaterVal);
         setUpTabview();
     }
 
