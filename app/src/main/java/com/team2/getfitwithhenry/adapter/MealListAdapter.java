@@ -64,7 +64,7 @@ public class MealListAdapter extends ArrayAdapter<DietRecord> {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.meal_list, parent, false);
         }
-        String className = dietRecordList.get(pos).getFoodName();
+        String className = dietRecordList.get(pos).getIngredient().getName();
 
         TextView titleView = view.findViewById(R.id.titleView);
         titleView.setText(className);

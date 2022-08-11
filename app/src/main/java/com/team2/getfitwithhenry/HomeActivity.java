@@ -4,6 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Context;
 import android.content.Intent;
@@ -30,18 +33,22 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.android.material.tabs.TabLayout;
 import com.google.gson.Gson;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GridLabelRenderer;
 import com.jjoe64.graphview.LegendRenderer;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
+import com.team2.getfitwithhenry.adapter.DashboardProgressAdapter;
 import com.team2.getfitwithhenry.helper.ProgressArcDrawable;
 import com.team2.getfitwithhenry.model.Constants;
+import com.team2.getfitwithhenry.model.DietRecord;
 import com.team2.getfitwithhenry.model.Goal;
 import com.team2.getfitwithhenry.model.HealthRecord;
 import com.team2.getfitwithhenry.model.Role;
 import com.team2.getfitwithhenry.model.User;
+import com.team2.getfitwithhenry.model.UserCombinedData;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -71,12 +78,16 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
     NavigationBarView bottomNavView;
     private final OkHttpClient client = new OkHttpClient();
     List<HealthRecord> healthRecordList;
+    List<DietRecord> dietRecordList;
+
+
     TextView caloriesText;
     TextView waterText;
     GraphView graph;
     User user;
     ImageView calsProg;
     ImageView waterProg;
+    ViewPager2 vp2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,9 +102,11 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
         String json = pref.getString("userDetails", "");
         user = gson.fromJson(json, User.class);
 
-        Map<String, String> getData = new HashMap<>();
+        Map<String, Object> getData = new HashMap<>();
         getData.put("username", user.getUsername());
-        sendToServer(getData,"/user/gethealthrecords");
+        getData.put("date", LocalDate.now());
+        getFromServer(getData,"/user/getuserrecords");
+
     }
 
     @Override
@@ -144,81 +157,56 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
         gridLabel.setVerticalAxisTitle("Weight");
     }
 
-    public void setProgressStats(Context context) {
+    public void setUpTabview(){
 
-        caloriesText = findViewById(R.id.caloriesText);
-        waterText = findViewById(R.id.waterText);
-        calsProg = findViewById(R.id.calories_progress);
-        waterProg = findViewById(R.id.water_progress);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                FragmentManager fm = getSupportFragmentManager();
+                DashboardProgressAdapter myAdapter = new DashboardProgressAdapter(fm, getLifecycle(), user, healthRecordList.get(0), dietRecordList);
+                vp2 = findViewById(R.id.pager);
+                vp2.setAdapter(myAdapter);
+                TabLayout tabLayout = findViewById(R.id.tab_layout);
+                tabLayout.addTab(tabLayout.newTab().setText("Overall"));
+                tabLayout.addTab(tabLayout.newTab().setText("Macros"));
 
-        Double calLimit = user.getCalorieintake_limit_inkcal();
-        Double waterLimit = user.getWaterintake_limit_inml();
-
-        //already sorted by db
-        HealthRecord mostRecent = healthRecordList.get(0);
-
-        float calAngle = Math.round((mostRecent.getCalIntake() / calLimit) * 270) > 270 ? 270f : Math.round((mostRecent.getCalIntake() / calLimit) * 270);
-        float waterAngle = Math.round((mostRecent.getWaterIntake() / waterLimit) * 270) > 270f ? 270f : Math.round((mostRecent.getWaterIntake() / waterLimit) * 270);
-
-        if (context != null) {
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-
-                @Override
-                public void run() {
-
-                    if (calAngle < 243f) {
-                        calsProg.setImageDrawable(new ProgressArcDrawable(calAngle, "green"));
-                    } else {
-                        calsProg.setImageDrawable(new ProgressArcDrawable(calAngle, "red"));
+                tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                    @Override
+                    public void onTabSelected(TabLayout.Tab tab) {
+                        vp2.setCurrentItem(tab.getPosition());
                     }
 
-                    waterProg.setImageDrawable(new ProgressArcDrawable(waterAngle, "blue"));
+                    @Override
+                    public void onTabUnselected(TabLayout.Tab tab) {
+                    }
 
-                    //create text strings
-                    String calsLabel = "Cals\n" + String.valueOf(Math.round(mostRecent.getCalIntake()));
-                    String kcals = "kcals";
+                    @Override
+                    public void onTabReselected(TabLayout.Tab tab) {
+                    }
+                });
+                //allows swipe gesture for tabs
+                vp2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+                    @Override
+                    public void onPageSelected(int position) {
+                        tabLayout.selectTab(tabLayout.getTabAt(position));
+                    }
+                });
 
-                    SpannableString ss1 = new SpannableString(calsLabel);
-                    SpannableString ss2 = new SpannableString(kcals);
-                    ss2.setSpan(new RelativeSizeSpan(0.6f), 0, 5, 0);
-                    ss2.setSpan(new ForegroundColorSpan(Color.LTGRAY), 0,5, 0);
-                    CharSequence finalText = TextUtils.concat(ss1,  "\n" , ss2);
+            }
+        });
 
-                    caloriesText.setText(finalText);
 
-                    String waterLabel = "Water\n" + String.valueOf(Math.round(mostRecent.getWaterIntake()));
-                    String mils = "ml";
-
-                    SpannableString ss3 = new SpannableString(waterLabel);
-                    SpannableString ss4 = new SpannableString(mils);
-                    ss4.setSpan(new RelativeSizeSpan(0.6f), 0, 2, 0);
-                    ss4.setSpan(new ForegroundColorSpan(Color.LTGRAY), 0,2, 0);
-                    CharSequence finalText2 = TextUtils.concat(ss3,  "\n" , ss4);
-
-                    waterText.setText(finalText2);
-
-                    waterProg.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            showWaterDialog();
-                        }
-                    });
-
-                }
-            });
-
-        }
     }
 
-    private void sendToServer(Map<String, ?> dataMap, String url) {
+
+
+    private void getFromServer(Map<String, ?> dataMap, String url) {
         JSONObject postData = new JSONObject();
         try {
             for(Map.Entry<String, ?> entry : dataMap.entrySet()){
                 postData.put(entry.getKey(), entry.getValue());
             }
             postData.put("username", user.getUsername());
-
-
 
             MediaType JSON = MediaType.parse("application/json; charset=utf-8");
             RequestBody body = RequestBody.create(postData.toString(), JSON);
@@ -247,13 +235,16 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
 
                         ObjectMapper objectMapper = new ObjectMapper();
                         objectMapper.registerModule(new JavaTimeModule());
-                        healthRecordList = Arrays.asList(objectMapper.readValue(responseBody.string(), HealthRecord[].class));
+                        UserCombinedData ucd = objectMapper.readValue(responseBody.string(), UserCombinedData.class);
+                        healthRecordList = ucd.getMyHrList();
+                        dietRecordList = ucd.getMyDietRecord();
                         if (healthRecordList.size() != 0) {
                             showGraphView(healthRecordList);
                         } else {
                             Toast.makeText(HomeActivity.this, "No weight tracking for this user", Toast.LENGTH_SHORT).show();
                         }
-                        setProgressStats(getApplicationContext());
+                        //setProgressStats(getApplicationContext());
+                        setUpTabview();
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -265,10 +256,49 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
         }
     }
 
-    public void showWaterDialog(){
-        DialogFragment df = new AddWaterFragment();
-        df.show(getSupportFragmentManager(), "AddWaterFragment");
+    private void sendToServer(Map<String, ?> dataMap, String url) {
+        JSONObject postData = new JSONObject();
+        try {
+            for(Map.Entry<String, ?> entry : dataMap.entrySet()){
+                postData.put(entry.getKey(), entry.getValue());
+            }
+            postData.put("username", user.getUsername());
+
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+            RequestBody body = RequestBody.create(postData.toString(), JSON);
+
+
+            //need to use your own pc's ip address here, cannot use local host.
+            Request request = new Request.Builder()
+                    .url(Constants.javaURL + url)
+                    .post(body)
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    System.out.println("Error");
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) {
+                    try {
+                        ResponseBody responseBody = response.body();
+                        if (!response.isSuccessful()) {
+                            throw new IOException("Unexpected code " + response);
+                        }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
+
 
     @Override
     public void onSelectedData(Double selectedMils) {
@@ -278,28 +308,20 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
         sendToServer(waterData, "/user/addwater");
 
         Double newWaterVal = healthRecordList.get(0).getWaterIntake() + selectedMils;
+        healthRecordList.get(0).setWaterIntake(newWaterVal);
+
+        setUpTabview();
+
+//
+//        String waterLabel = "Water\n" + String.valueOf(Math.round(newWaterVal));
+//        String mils = "ml";
+//        SpannableString ss3 = new SpannableString(waterLabel);
+//        SpannableString ss4 = new SpannableString(mils);
+//        ss4.setSpan(new RelativeSizeSpan(0.6f), 0, 2, 0);
+//        ss4.setSpan(new ForegroundColorSpan(Color.LTGRAY), 0,2, 0);
+//        CharSequence finalText2 = TextUtils.concat(ss3,  "\n" , ss4);
 
 
-        String waterLabel = "Water\n" + String.valueOf(Math.round(newWaterVal));
-        String mils = "ml";
-        SpannableString ss3 = new SpannableString(waterLabel);
-        SpannableString ss4 = new SpannableString(mils);
-        ss4.setSpan(new RelativeSizeSpan(0.6f), 0, 2, 0);
-        ss4.setSpan(new ForegroundColorSpan(Color.LTGRAY), 0,2, 0);
-        CharSequence finalText2 = TextUtils.concat(ss3,  "\n" , ss4);
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-
-                float waterAngle = Math.round((newWaterVal / user.getWaterintake_limit_inml()) * 270) > 270f ? 270f : Math.round((newWaterVal / user.getWaterintake_limit_inml()) * 270);
-                waterProg.setImageDrawable(new ProgressArcDrawable(waterAngle, "blue"));
-
-                waterText.setText(finalText2);
-
-
-            }
-        });
 
 
     }

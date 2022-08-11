@@ -25,11 +25,11 @@
             app:collapsedTitleTextColor="@color/white"
             >
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:src="@mipmap/fitness_man_silhouette"
-                android:scaleType="centerCrop"/>
+<!--            <ImageView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="250dp"-->
+<!--                android:src="@mipmap/fitness_man_silhouette"-->
+<!--                android:scaleType="centerCrop" />-->
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/top_navbar"
@@ -42,6 +42,7 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scroll"
         android:layout_width="match_parent"
@@ -49,7 +50,7 @@
         android:fillViewport="true"
         android:orientation="vertical"
         android:paddingTop="15dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" >
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -70,54 +71,33 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Today's stats"
+                android:layout_marginLeft="10dp"
                 android:textSize="30sp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/GraphView" />
 
-            <ImageView
-                android:id="@+id/calories_progress"
-                android:layout_width="0dp"
-                android:layout_height="150dp"
-                android:layout_margin="10dp"
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tab_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/text_yourStats"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toLeftOf="@id/water_progress"
-                app:layout_constraintTop_toBottomOf="@+id/text_yourStats"
-                app:layout_constraintWidth_percent="0.40" />
-
-            <ImageView
-                android:id="@+id/water_progress"
-                android:layout_width="0dp"
-                android:layout_height="150dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="10dp"
-                app:layout_constraintLeft_toRightOf="@+id/calories_progress"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text_yourStats"
-                app:layout_constraintWidth_percent="0.40" />
+                app:layout_constraintBottom_toTopOf="@+id/pager"/>
 
-            <TextView
-                android:id="@+id/caloriesText"
-                android:layout_width="wrap_content"
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/pager"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:textAlignment="center"
-                android:textSize="28dp"
-                app:layout_constraintLeft_toLeftOf="@id/calories_progress"
-                app:layout_constraintRight_toRightOf="@id/calories_progress"
-                app:layout_constraintTop_toTopOf="@+id/calories_progress"></TextView>
+                app:layout_constraintTop_toBottomOf="@+id/tab_layout"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                />
 
-            <TextView
-                android:id="@+id/waterText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:textAlignment="center"
-                android:textSize="28dp"
-                app:layout_constraintLeft_toLeftOf="@id/water_progress"
-                app:layout_constraintRight_toRightOf="@id/water_progress"
-                app:layout_constraintTop_toTopOf="@+id/water_progress"></TextView>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView

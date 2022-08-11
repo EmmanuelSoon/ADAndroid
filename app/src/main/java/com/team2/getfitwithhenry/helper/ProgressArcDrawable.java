@@ -16,9 +16,6 @@ public class ProgressArcDrawable extends Drawable {
     Paint BgPaint;
     RectF oval;
     float angleTo;
-//    RectF mInnerBoundsF;
-//    final float START_ANGLE = 0.f;
-//    float mDrawTo;
 
     public ProgressArcDrawable(float angleTo, String color) {
         BgPaint = new Paint();

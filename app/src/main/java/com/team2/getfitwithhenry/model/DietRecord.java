@@ -7,16 +7,16 @@ import java.time.LocalDate;
 public class DietRecord {
     private int id;
     private LocalDate date;
-    private String foodName;
+    private Ingredient ingredient;
     private double calorie;
     private double weight;
     private MealType mealType;
     private User user;
 
-    public DietRecord(@JsonProperty("id") int id, @JsonProperty("date") LocalDate date,@JsonProperty("foodName") String foodName,@JsonProperty("calorie") double calorie,@JsonProperty("weight") double weight, @JsonProperty("mealType") MealType mealType,@JsonProperty("user") User user) {
+    public DietRecord(@JsonProperty("id") int id, @JsonProperty("date") LocalDate date,@JsonProperty("ingredient") Ingredient ingredient,@JsonProperty("calorie") double calorie,@JsonProperty("weight") double weight, @JsonProperty("mealType") MealType mealType,@JsonProperty("user") User user) {
         this.id = id;
         this.date = date;
-        this.foodName = foodName;
+        this.ingredient = ingredient;
         this.calorie = calorie;
         this.weight = weight;
         this.mealType = mealType;
@@ -41,12 +41,12 @@ public class DietRecord {
         this.date = date;
     }
 
-    public String getFoodName() {
-        return foodName;
+    public Ingredient getIngredient() {
+        return ingredient;
     }
 
-    public void setFoodName(String foodName) {
-        this.foodName = foodName;
+    public void setIngredient(Ingredient ingredient) {
+        this.ingredient = ingredient;
     }
 
     public double getCalorie() {
