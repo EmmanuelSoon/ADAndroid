@@ -3,9 +3,12 @@ package com.team2.getfitwithhenry;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -55,13 +58,14 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private EditText mtxtWaterIntake;
     private RadioButton mrBtnMale, mrBtnFemale;
     private RadioGroup mRGGenderGrp;
-    private Spinner mGoalSelect;
+    private Spinner mGoalSelect, mactivityLevelSelector;
     private DatePickerDialog mdobDatePicker;
     private TextView mtxtprofileInvalidError;
     private Button mbtnDob;
     private Button mbtnSaveChanges;
     private String[] goalmatch = {"WEIGHTLOSS", "WEIGHTGAIN", "WEIGHTMAINTAIN", "MUSCLE"};
     private String[] goals = {"Weight Loss", "Weight Gain", "Weight Maintain", "Muscle"};
+    private String[] activityLevels = {"Lightly Active", "Moderately Active", "Very Active", "Extra Active"};
     private User user;
     private User updatedUser;
 
@@ -79,6 +83,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         mtxtCalorieIntake = findViewById(R.id.txtCalorieIntake);
         mtxtWaterIntake = findViewById(R.id.txtWaterIntake);
         mGoalSelect = findViewById(R.id.goalSelect);
+        mactivityLevelSelector = findViewById(R.id.continuous_slider);
         mbtnSaveChanges = findViewById(R.id.btnSaveProfileChanges);
         mtxtprofileInvalidError = findViewById(R.id.txtprofileInvalidError);
 
@@ -92,6 +97,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.btnSaveProfileChanges) {
+            mtxtprofileInvalidError.setText(" ");
+            mtxtprofileInvalidError.setVisibility(View.INVISIBLE);
             if (validateFormFields()) {
                 checkIfDetailsChanged();
                 try {
@@ -141,6 +148,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         mGoalSelect.setAdapter(adapter);
         mGoalSelect.setSelection(position);
 
+        position = Arrays.asList(activityLevels).indexOf(user.getActivitylevel());
+        ArrayAdapter<String> activityLevelAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, activityLevels);
+        activityLevelAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mactivityLevelSelector.setAdapter(activityLevelAdapter);
+        mactivityLevelSelector.setSelection(position);
+
     }
 
     private void initDatePicker() {
@@ -181,6 +194,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         String[] dateArray = selectedDob.split("-");
         selectedDob = dateArray[2] + "-" + dateArray[1] + "-" + dateArray[0];
         LocalDate convertedDate = LocalDate.parse(selectedDob, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String selectedActivity = mactivityLevelSelector.getSelectedItem().toString();
 
         if (mtxtName.getText().toString().equals(user.getName()) &&
                 mtxtUsername.getText().toString().equals(user.getUsername()) &&
@@ -188,7 +202,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 gender.equals(user.getGender()) &&
                 selectedGoal.equals(user.getGoal().toString()) &&
                 mtxtCalorieIntake.getText().toString().equals(user.getCalorieintake_limit_inkcal().toString()) &&
-                mtxtWaterIntake.getText().toString().equals(user.getWaterintake_limit_inml().toString())) {
+                mtxtWaterIntake.getText().toString().equals(user.getWaterintake_limit_inml().toString()) &&
+                selectedActivity.equals(user.getActivitylevel())) {
             Toast.makeText(this,
                     "No details changed", Toast.LENGTH_SHORT).show();
         } else {
@@ -202,6 +217,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             updatedUser.setDateofbirth(convertedDate);
             updatedUser.setGender(gender);
             updatedUser.setGoal(Goal.valueOf(selectedGoal));
+            updatedUser.setActivitylevel(mactivityLevelSelector.getSelectedItem().toString());
             updatedUser.setCalorieintake_limit_inkcal(Double.parseDouble(mtxtCalorieIntake.getText().toString()));
             updatedUser.setWaterintake_limit_inml(Double.parseDouble(mtxtWaterIntake.getText().toString()));
 
@@ -219,6 +235,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         userObj.put("dateofbirth", updatedUser.getDateofbirth());
         userObj.put("gender", updatedUser.getGender());
         userObj.put("goal", updatedUser.getGoal());
+        userObj.put("activitylevel", updatedUser.getActivitylevel());
         userObj.put("calorieintake_limit_inkcal", updatedUser.getCalorieintake_limit_inkcal());
         userObj.put("waterintake_limit_inml", updatedUser.getWaterintake_limit_inml());
 
@@ -272,7 +289,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private void updatUserDetails(JSONObject userObj) {
         MediaType JsonObj = MediaType.parse("application/json; charset=utf-8");
         RequestBody requestBody = RequestBody.create(JsonObj, userObj.toString());
-        Request request = new Request.Builder().url(Constants.javaURL + "/register/updateUserDetails").post(requestBody).build();
+        Request request = new Request.Builder().url(Constants.javaURL + "/userprofile/updateUserDetails").post(requestBody).build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -294,15 +311,17 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 if (responseBody.contentLength() != 0)
                     user = objectMapper.readValue(responseBody.string(), User.class);
                 else
-                    user = null;
-
-                if (user == null) {
-                    // displayValidationError(getApplicationContext(), user);
-                }
+                    displayprofileInvalidError(getApplicationContext());
 
                 if (user != null) {
-                    updateUserinSharedPreference(user);
-                    // startHomeActivity();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateUserinSharedPreference(user);
+                            onInitialDataBind();
+                        }
+                    });
+
                 }
             }
         });
@@ -317,6 +336,16 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         String json = gson.toJson(user);
         editor.putString("userDetails", json);
         editor.commit();
+    }
+
+    private void displayprofileInvalidError(Context context) {
+
+        new Handler(Looper.getMainLooper()).post(() -> {
+
+            mtxtprofileInvalidError.setText("Username already Exists!");
+            mtxtprofileInvalidError.setVisibility(View.VISIBLE);
+            Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_LONG).show();
+        });
     }
 
 }

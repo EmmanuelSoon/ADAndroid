@@ -123,18 +123,37 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingLeft="40dp">
+
         <TextView
+            style="@style/registerStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Choose Your Goal"
-            style="@style/registerStyle"></TextView>
+            android:text="Choose Your Goal" />
+
         <Spinner
+            android:id="@+id/goalSelect"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/goalSelect"
-            android:gravity="center"
-            >
-        </Spinner>
+            android:gravity="center" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingLeft="40dp">
+
+        <TextView
+            style="@style/registerStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Weekly Activity Level" />
+
+        <Spinner
+            android:id="@+id/continuous_slider"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center" />
     </LinearLayout>
 
     <LinearLayout
@@ -159,9 +178,9 @@
             android:layout_marginRight="10dp"
             android:background="@null"
             android:ems="15"
+            android:enabled="false"
             android:gravity="center"
-            android:inputType="numberDecimal"
-            android:enabled="false" />
+            android:inputType="numberDecimal" />
     </LinearLayout>
 
     <LinearLayout
@@ -186,9 +205,9 @@
             android:layout_marginRight="10dp"
             android:background="@null"
             android:ems="15"
+            android:enabled="false"
             android:gravity="center"
-            android:inputType="numberDecimal"
-            android:enabled="false" />
+            android:inputType="numberDecimal" />
     </LinearLayout>
 
     <TextView

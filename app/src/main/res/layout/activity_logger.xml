@@ -78,10 +78,10 @@
                 android:id="@+id/addWeight"
                 android:layout_width="0dp"
                 android:layout_height="32dp"
-                android:layout_weight="1"
+                android:layout_weight="2.2"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
-                android:text="add" />
+                android:text="Update Weight" />
         </LinearLayout>
 
         <Button

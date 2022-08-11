@@ -51,8 +51,8 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:gravity="center"
+        android:orientation="vertical"
         android:paddingStart="40dp"
         tools:ignore="RtlSymmetry">
 
@@ -60,7 +60,7 @@
             style="@style/registerStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Enter Your Wieght (kg) : " />
+            android:text="Enter Your Weight (kg) : " />
 
         <EditText
             android:id="@+id/txtUserWeight"
@@ -78,9 +78,9 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:orientation="vertical"
         android:paddingStart="40dp"
-        android:gravity="center"
         tools:ignore="RtlSymmetry">
 
         <TextView
@@ -105,26 +105,22 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:orientation="vertical"
         android:paddingStart="40dp"
-        android:gravity="center"
         tools:ignore="RtlSymmetry">
 
-    <TextView
-        style="@style/registerStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingBottom="15dp"
-        android:text="Your Level of physical activity \n (Nil, Low, Moderate, Intense)" />
-
-        <com.google.android.material.slider.Slider
-            android:id="@+id/continuous_slider"
-            android:layout_width="337dp"
+        <TextView
+            style="@style/registerStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:stepSize="1"
-            android:valueFrom="0"
-            android:valueTo="3"
-            app:layout_constraintBottom_toTopOf="@id/txtUserHeight" />
+            android:paddingBottom="15dp"
+            android:text="Your Level of physical activity \n (Nil, Low, Moderate, Intense)" />
+
+        <Spinner
+            android:id="@+id/continuous_slider"
+            android:layout_width="336dp"
+            android:layout_height="40dp" />
     </LinearLayout>
 
     <TextView

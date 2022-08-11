@@ -47,10 +47,11 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
     private final OkHttpClient client = new OkHttpClient();
     private TextView mtxtName, mtxtSomethingWentWrong;
     private EditText mtxtUserWeight, mtxtUserHeight;
-    private Spinner mGoalSelect;
+    private Spinner mGoalSelect, mactivityLevelSelector;
     private Button mbtnSaveHealthDetails;
     private String[] goalmatch = {"WEIGHTLOSS", "WEIGHTGAIN", "WEIGHTMAINTAIN", "MUSCLE"};
     private String[] goals = {"Weight Loss", "Weight Gain", "Weight Maintain", "Muscle"};
+    private String[] activityLevels = {"Lightly Active", "Moderately Active", "Very Active", "Extra Active"};
     private User user;
     private User updatedUser;
 
@@ -63,6 +64,7 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
         mtxtUserWeight = findViewById(R.id.txtUserWeight);
         mtxtUserHeight = findViewById(R.id.txtUserHeight);
         mGoalSelect = findViewById(R.id.goalSelectQuestionnaire);
+        mactivityLevelSelector = findViewById(R.id.continuous_slider);
         mbtnSaveHealthDetails = findViewById(R.id.btnSaveHealthDetails);
         mtxtSomethingWentWrong = findViewById(R.id.txtSomethingWentWrong);
 
@@ -105,12 +107,16 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
         mtxtName.setText(user.getName());
 
         int position = Arrays.asList(goalmatch).indexOf(user.getGoal().toString());
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, goals);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mGoalSelect.setAdapter(adapter);
+        ArrayAdapter<String> goalAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, goals);
+        goalAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mGoalSelect.setAdapter(goalAdapter);
         mGoalSelect.setSelection(position);
         mGoalSelect.setEnabled(false);
 
+        ArrayAdapter<String> activityLevelAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, activityLevels);
+        activityLevelAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mactivityLevelSelector.setAdapter(activityLevelAdapter);
+        mactivityLevelSelector.setSelection(0);
     }
 
     private void startHomeActivity() {
@@ -128,20 +134,51 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
         updatedUser.setDateofbirth(user.getDateofbirth());
         updatedUser.setGender(user.getGender());
         updatedUser.setGoal(user.getGoal());
-        updatedUser.setCalorieintake_limit_inkcal(Double.parseDouble(performCalculation(updatedUser.getGender(), mtxtUserWeight.getText().toString(), mtxtUserHeight.getText().toString())));
+        updatedUser.setActivitylevel(mactivityLevelSelector.getSelectedItem().toString());
+        updatedUser.setCalorieintake_limit_inkcal(Double.parseDouble(performCalculation(updatedUser.getGender(), mtxtUserWeight.getText().toString(), mtxtUserHeight.getText().toString(), mactivityLevelSelector.getSelectedItem().toString())));
         updatedUser.setWaterintake_limit_inml(updatedUser.getGender().equals(gender) ? 3700.0 : 2700.0);
     }
 
-    private String performCalculation(String gender, String userWeight, String userHeight) {
+    private String performCalculation(String gender, String userWeight, String userHeight, String activityLevel) {
         Double calculatedCalorie = 0.0;
 
         if (gender.equals("M")) {
             //13.397W + 4.799H - 5.677A + 88.362
-            calculatedCalorie = Math.ceil((13.397 * Double.parseDouble(userWeight)) + (4.799 * Double.parseDouble(userHeight)) - (5.667 * calculateAge()) + 88.362);
+            //new: 10 x weight (kg) + 6.25 x height (cm) – 5 x age (y) + 5 (kcal / day)
+            calculatedCalorie = (10 * Double.parseDouble(userWeight)) + (6.25 * Double.parseDouble(userHeight)) - (5 * calculateAge()) + 5;
         } else if (gender.equals("F")) {
             //9.247W + 3.098H - 4.330A + 447.593
-            calculatedCalorie = Math.ceil((9.247 * Double.parseDouble(userWeight)) + (3.098 * Double.parseDouble(userHeight)) - (4.330 * calculateAge()) + 447.593);
+            //new: 10 x weight (kg) + 6.25 x height (cm) – 5 x age (y) -161 (kcal / day)
+            calculatedCalorie = (10 * Double.parseDouble(userWeight)) + (6.25 * Double.parseDouble(userHeight)) - (5 * calculateAge()) - 161;
         }
+
+        switch (activityLevel) {
+            case "Lightly Active":
+                calculatedCalorie = calculatedCalorie * 1.375;
+                break;
+            case "Moderately Active":
+                calculatedCalorie = calculatedCalorie * 1.550;
+                break;
+            case "Very Active":
+                calculatedCalorie = calculatedCalorie * 1.725;
+                break;
+            case "Extra Active":
+                calculatedCalorie = calculatedCalorie * 1.9;
+                break;
+            default:
+                calculatedCalorie = calculatedCalorie * 1.2;
+        }
+
+        if(updatedUser.getGoal().equals(Goal.WEIGHTLOSS))
+        {
+            calculatedCalorie -= (0.15 * calculatedCalorie);
+        }
+        else if(updatedUser.getGoal().equals(Goal.WEIGHTGAIN))
+        {
+            calculatedCalorie += 500;
+        }
+
+        calculatedCalorie = Math.ceil(calculatedCalorie);
 
         return calculatedCalorie.toString();
     }
@@ -163,6 +200,7 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
         userHealthObj.put("goal", updatedUser.getGoal());
         userHealthObj.put("calorieintake_limit_inkcal", updatedUser.getCalorieintake_limit_inkcal());
         userHealthObj.put("waterintake_limit_inml", updatedUser.getWaterintake_limit_inml());
+        userHealthObj.put("activitylevel", updatedUser.getActivitylevel());
         userHealthObj.put("user_height", Double.parseDouble(mtxtUserHeight.getText().toString()));
         userHealthObj.put("user_weight", Double.parseDouble(mtxtUserWeight.getText().toString()));
         userHealthObj.put("date", LocalDate.now());
@@ -173,7 +211,7 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
     private void inserHealthRecordonRegistration(JSONObject userObj) {
         MediaType JsonObj = MediaType.parse("application/json; charset=utf-8");
         RequestBody requestBody = RequestBody.create(JsonObj, userObj.toString());
-        Request request = new Request.Builder().url(Constants.javaURL + "/register/insertHealthRecordonRegistration").post(requestBody).build();
+        Request request = new Request.Builder().url(Constants.javaURL + "/questionnaire/insertHealthRecordonRegistration").post(requestBody).build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -220,16 +258,13 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
         editor.commit();
     }
 
-    private boolean validateFields()
-    {
-        if(mtxtUserWeight.getText().toString().trim().equals("") || Double.parseDouble(mtxtUserWeight.getText().toString()) <= 0)
-        {
+    private boolean validateFields() {
+        if (mtxtUserWeight.getText().toString().trim().equals("") || Double.parseDouble(mtxtUserWeight.getText().toString()) <= 0) {
             mtxtUserWeight.setError("Weight should be greater than 0");
             return true;
         }
 
-        if(mtxtUserHeight.getText().toString().trim().equals("") || Double.parseDouble(mtxtUserHeight.getText().toString()) <= 0)
-        {
+        if (mtxtUserHeight.getText().toString().trim().equals("") || Double.parseDouble(mtxtUserHeight.getText().toString()) <= 0) {
             mtxtUserHeight.setError("Height should be greater than 0");
             return true;
         }

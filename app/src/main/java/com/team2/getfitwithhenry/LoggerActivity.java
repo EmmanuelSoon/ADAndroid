@@ -61,6 +61,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.SQLOutput;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
@@ -131,6 +132,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
         Gson gson = new Gson();
         String json = pref.getString("userDetails", "");
         user = gson.fromJson(json, User.class);
+        user.setDateofbirth(LocalDate.parse(user.getDobStringFormat(),DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
         // Set up Calendar
         initDatePicker();
@@ -240,26 +242,42 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
                     Double myBmi = myHr.getUserWeight() / Math.pow(myHr.getUserHeight() / 100, 2.0);
                     System.out.println(myBmi);
                     bmi.setText("BMI: " + String.valueOf(Math.round(myBmi)));
+                    System.out.println(myHr.getUserWeight());
                     //set weight accordingly here
-                    if (myHr.getUserWeight()  > 0) {
-                        weightText.setText(String.format("Weight: %.2f", myHr.getUserWeight()));
+                    if(myHr.getUserWeight() <= 0){
+                        weightText.setText("N.A");
                         addWeight.setVisibility(View.GONE);
-                    }
-                    else {
-                        if (LocalDate.now().equals(myHr.getDate())) {
-                            weightText.setText("Click the button to add weight record!");
+                        if(LocalDate.now().equals(myHr.getDate())){
+                            weightText.setText(String.format("Weight: %.2f", myHr.getUserWeight()));
                             addWeight.setVisibility(View.VISIBLE);
                             addWeight.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
                                     // add a dialog here for user to add new health record
-                                    showDialogForWeightInput();
+                                    int intWeight = 50;
+                                    // int decimalWeight = Integer.parseInt(arr[1]);
+                                    showDialogForWeightInput(intWeight);
+                                }
+                            });
+                        }
+                    }
+                    else{
+                        if(LocalDate.now().equals(myHr.getDate())){
+                            weightText.setText(String.format("Weight: %.2f", myHr.getUserWeight()));
+                            addWeight.setVisibility(View.VISIBLE);
+                            addWeight.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    // add a dialog here for user to add new health record
+                                    String[] arr = String.valueOf(myHr.getUserWeight()).split("\\.");
+                                    int intWeight = Integer.parseInt(arr[0]);
+                                    // int decimalWeight = Integer.parseInt(arr[1]);
+                                    showDialogForWeightInput(intWeight);
                                 }
                             });
                         }
                         else {
-                            //the date should not exceeded today's date
-                            weightText.setText("Invalid Date");
+                            weightText.setText(String.format("Weight: %.2f", myHr.getUserWeight()));
                             addWeight.setVisibility(View.GONE);
                         }
                     }
@@ -269,7 +287,8 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
     }
 
     //show dialog for user to input their latest weight
-    public void showDialogForWeightInput(){
+    public void showDialogForWeightInput(int intWeight){
+
         Dialog d = new Dialog(this);
         //d.setTitle("Update Your Weight");
         d.setContentView(R.layout.weight_input);
@@ -279,7 +298,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
         NumberPicker npDouble = d.findViewById(R.id.weightDouble);
         npInt.setMaxValue(500); // max value 100
         npInt.setMinValue(3);
-        npInt.setValue(50);
+        npInt.setValue(intWeight);
         npInt.setWrapSelectorWheel(false);
         String[] doubleArr = new String[]{".0 Kg", ".1 Kg", ".2 Kg", ".3 Kg", ".4 Kg", ".5 Kg", ".6 Kg", ".7 Kg", ".8 Kg", ".9 Kg"};
         npDouble.setMaxValue(9);
@@ -296,7 +315,9 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
                 try{
                     updateUserWeight(weight);
                     weightText.setText(String.format("Weight: %.2f", weight));
-                    addWeight.setVisibility(View.GONE);
+                    addWeight.setText("Edit Weight");
+                    Toast.makeText(getApplicationContext(),"You have successfully updated your weight",Toast.LENGTH_LONG).show();
+//                    addWeight.setVisibility(View.GONE);
                     d.dismiss();
                 }
                 catch (JSONException e) {
@@ -375,8 +396,11 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
         int month = cal.get(Calendar.MONTH);
         int day = cal.get(Calendar.DAY_OF_MONTH);
         int style = AlertDialog.THEME_HOLO_LIGHT;
+        LocalDate minDate = user.getDateofbirth();
 
         datePickerDialog = new DatePickerDialog(this, style, dateSetListener, year, month, day);
+        datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+        datePickerDialog.getDatePicker().setMinDate(setMinDate(minDate).getTimeInMillis());
     }
 
     private String setDate(LocalDate date) {
@@ -384,6 +408,15 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
         return date.format(format1);
     }
 
+    private Calendar setMinDate(LocalDate date){
+        Calendar cal = Calendar.getInstance();
+        int year = date.getYear();
+        int month = date.getMonthValue();
+        int day = date.getDayOfMonth();
+
+        cal.set(year, month, day);
+        return cal;
+    }
 
     private void getDietRecordsFromServer(User user, String date) {
         JSONObject postData = new JSONObject();

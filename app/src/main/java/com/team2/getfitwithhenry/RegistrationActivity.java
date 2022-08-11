@@ -98,8 +98,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
 
         if(id == R.id.registerBtn){
             try{
-                seedUser(mName,mEmail,mPassword,mConfirmPassword,mDob,gender,mGoal);{
-                }
+                seedUser(mName,mEmail,mPassword,mConfirmPassword,mDob,gender,mGoal);
             }catch(JSONException e){
                 e.printStackTrace();
             }

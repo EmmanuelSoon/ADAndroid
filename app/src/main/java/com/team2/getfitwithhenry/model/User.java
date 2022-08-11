@@ -2,6 +2,7 @@ package com.team2.getfitwithhenry.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -17,17 +18,19 @@ public class User implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateofbirth;
     private String dobStringFormat;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate dateCreated;
     private String gender;
     private Double calorieintake_limit_inkcal;
-
-
     private Double waterintake_limit_inml;
+    private String activitylevel;
     private List<Ingredient> dislike = new ArrayList<>();
 
     public User(@JsonProperty("id") int id, @JsonProperty("name") String name, @JsonProperty("username") String username,
                 @JsonProperty("password") String password, @JsonProperty("role") Role role, @JsonProperty("goal") Goal goal,
-                @JsonProperty("dateofbirth") LocalDate dateofbirth, @JsonProperty("gender") String gender,
-                @JsonProperty("calorieintake_limit_inkcal") Double calorieintake_limit_inkcal, @JsonProperty("waterintake_limit_inml") Double waterintake_limit_inml, @JsonProperty("dislike") List<Ingredient> dislike) {
+                @JsonProperty("dateofbirth") LocalDate dateofbirth,@JsonProperty("dateCreated") LocalDate dateCreated, @JsonProperty("gender") String gender,
+                @JsonProperty("calorieintake_limit_inkcal") Double calorieintake_limit_inkcal, @JsonProperty("waterintake_limit_inml") Double waterintake_limit_inml,
+                @JsonProperty("activitylevel") String activitylevel, @JsonProperty("dislike") List<Ingredient> dislike) {
         this.id = id;
         this.name = name;
         this.username = username;
@@ -35,14 +38,16 @@ public class User implements Serializable {
         this.role = role;
         this.dateofbirth = dateofbirth;
         this.dobStringFormat = dateofbirth.toString();
+        this.dateCreated = dateCreated;
         this.gender = gender;
         this.calorieintake_limit_inkcal = calorieintake_limit_inkcal;
         this.waterintake_limit_inml = waterintake_limit_inml;
+        this.activitylevel = activitylevel;
         this.goal = goal;
         this.dislike = dislike;
     }
 
-    public User(int id, String name, String username, String password, Role role, Goal goal, LocalDate dateofbirth, String gender, Double calorieintake_limit_inkcal, Double waterintake_limit_inml) {
+    public User(int id, String name, String username, String password, Role role, Goal goal, LocalDate dateofbirth, String gender, Double calorieintake_limit_inkcal, Double waterintake_limit_inml, String activitylevel, LocalDate dateCreated) {
         this.id = id;
         this.name = name;
         this.username = username;
@@ -50,9 +55,11 @@ public class User implements Serializable {
         this.role = role;
         this.dateofbirth = dateofbirth;
         this.dobStringFormat = dateofbirth.toString();
+        this.dateCreated = dateCreated;
         this.gender = gender;
         this.calorieintake_limit_inkcal = calorieintake_limit_inkcal;
         this.waterintake_limit_inml = waterintake_limit_inml;
+        this.activitylevel = activitylevel;
         this.goal = goal;
     }
 
@@ -75,11 +82,16 @@ public class User implements Serializable {
         this.goal = goal;
     }
 
+    public User(String username) {
+        this.username = username;
+    }
+
     public User(String username, String password) {
         this.username = username;
         this.password = password;
     }
-    public User(String name,String username,String password,LocalDate dob,String gender, Goal goal){
+
+    public User(String name, String username, String password, LocalDate dob, String gender, Goal goal) {
         this.name = name;
         this.username = username;
         this.password = password;
@@ -176,5 +188,13 @@ public class User implements Serializable {
 
     public void setDobStringFormat(String dobStringFormat) {
         this.dobStringFormat = dobStringFormat;
+    }
+
+    public String getActivitylevel() {
+        return activitylevel;
+    }
+
+    public void setActivitylevel(String activitylevel) {
+        this.activitylevel = activitylevel;
     }
 }
