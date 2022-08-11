@@ -89,6 +89,12 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        redirectToLogin();
+    }
+
     private void getUserFromSharedPreference() {
 
         SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
@@ -169,12 +175,9 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
                 calculatedCalorie = calculatedCalorie * 1.2;
         }
 
-        if(updatedUser.getGoal().equals(Goal.WEIGHTLOSS))
-        {
+        if (updatedUser.getGoal().equals(Goal.WEIGHTLOSS)) {
             calculatedCalorie -= (0.15 * calculatedCalorie);
-        }
-        else if(updatedUser.getGoal().equals(Goal.WEIGHTGAIN))
-        {
+        } else if (updatedUser.getGoal().equals(Goal.WEIGHTGAIN)) {
             calculatedCalorie += 500;
         }
 
@@ -284,6 +287,21 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
                 Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_LONG).show();
             });
         }
+    }
+
+    private void redirectToLogin() {
+        SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.clear();
+        editor.commit();
+
+        startLoginActivity();
+    }
+
+
+    private void startLoginActivity() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
 
     }
 }
