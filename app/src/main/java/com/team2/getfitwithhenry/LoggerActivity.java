@@ -418,7 +418,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
         return cal;
     }
 
-    private void getDietRecordsFromServer(User user, String date) {
+    public void getDietRecordsFromServer(User user, String date) {
         JSONObject postData = new JSONObject();
         try {
             postData.put("username", user.getUsername());
