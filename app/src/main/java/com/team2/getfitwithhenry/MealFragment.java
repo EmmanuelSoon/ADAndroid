@@ -1,10 +1,13 @@
 package com.team2.getfitwithhenry;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import android.view.LayoutInflater;
@@ -30,10 +33,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Logger;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -51,6 +57,8 @@ public class MealFragment extends DialogFragment {
     private String meal;
     private String date;
     private String username;
+    private User user;
+    private Context context;
     private final OkHttpClient client = new OkHttpClient();
     private MealListAdapter mlAdaptor;
 
@@ -84,13 +92,25 @@ public class MealFragment extends DialogFragment {
 
             }
         });
-
-
         return myView;
     }
 
-    private void updateDietRecords(){
-        if(getActivity() != null){
+    private void getUserFromSharedPreference() {
+
+        SharedPreferences pref = getActivity().getSharedPreferences("UserDetailsObj", Context.MODE_PRIVATE);
+
+        if (pref.contains("userDetails")) {
+            Gson gson = new Gson();
+            String json = pref.getString("userDetails", "");
+            user = gson.fromJson(json, User.class);
+            user.setDateofbirth(LocalDate.parse(user.getDobStringFormat(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+
+        }
+
+    }
+
+    private void updateDietRecords() {
+        if (getActivity() != null) {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -99,7 +119,7 @@ public class MealFragment extends DialogFragment {
                     MealListAdapter mlAdaptor = new MealListAdapter(getContext(), dietRecordList);
                     View view = getView();
                     ListView listView = view.findViewById(R.id.mealView);
-                    if(listView != null){
+                    if (listView != null) {
                         listView.setAdapter(mlAdaptor);
                         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
@@ -109,8 +129,8 @@ public class MealFragment extends DialogFragment {
                         });
                     }
                     TextView empty = view.findViewById(R.id.empty);
-                    if(empty != null){
-                        if (dietRecordList.size() != 0){
+                    if (empty != null) {
+                        if (dietRecordList.size() != 0) {
                             empty.setText("");
                         }
                     }
@@ -123,6 +143,8 @@ public class MealFragment extends DialogFragment {
                             removeDietRecordFromServer(dr.getId());
                             dietRecordList.remove(dr);
                             updateDietRecords();
+                            getUserFromSharedPreference();
+                            ((LoggerActivity) getActivity()).getDietRecordsFromServer(user, date);
                         }
                     });
 
@@ -132,7 +154,7 @@ public class MealFragment extends DialogFragment {
         }
     }
 
-    private void getMealRecordsFromServer(String username, String date, String meal){
+    private void getMealRecordsFromServer(String username, String date, String meal) {
         JSONObject postData = new JSONObject();
         try {
             postData.put("username", username);
@@ -144,7 +166,7 @@ public class MealFragment extends DialogFragment {
 
             //need to use your own pc's ip address here, cannot use local host.
             Request request = new Request.Builder()
-                    .url(Constants.javaURL +"/user/getmealrecords")
+                    .url(Constants.javaURL + "/user/getmealrecords")
                     .post(body)
                     .build();
 
@@ -181,7 +203,6 @@ public class MealFragment extends DialogFragment {
     }
 
 
-
     public void removeDietRecordFromServer(int drId) {
         JSONObject postData = new JSONObject();
         try {
@@ -192,7 +213,7 @@ public class MealFragment extends DialogFragment {
 
             //need to use your own pc's ip address here, cannot use local host.
             Request request = new Request.Builder()
-                    .url(Constants.javaURL +"/user/deletedietrecord")
+                    .url(Constants.javaURL + "/user/deletedietrecord")
                     .post(body)
                     .build();
 
