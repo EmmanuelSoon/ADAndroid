@@ -41,8 +41,11 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -66,6 +69,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     private TextView resultsText;
     private Button goToSearchBtn;
     private Button incorrectBtn;
+    private Button retakeBtn;
 
     private Ingredient iPredict;
     //private String returnMsg;
@@ -86,9 +90,11 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
         goToSearchBtn = findViewById(R.id.goToSearchBtn);
         incorrectBtn = findViewById(R.id.incorrectBtn);
+        retakeBtn = findViewById(R.id.retake_photo);
 
         goToSearchBtn.setOnClickListener(this);
         incorrectBtn.setOnClickListener(this);
+        retakeBtn.setOnClickListener(this);
 
         registerActivityResult();
         checkPermissions();
@@ -101,17 +107,18 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View v) {
         Intent intent;
         if (v.getId() == R.id.goToSearchBtn) {
-            intent = new Intent(this, SearchFoodActivity.class);
-            intent.putExtra("SearchValue", iPredict);
+            List<Ingredient> iList = Arrays.asList(iPredict);
+            intent = new Intent(this, AddMealActivity.class);
+            intent.putExtra("ingredients", (Serializable) iList);
             startActivity(intent);
         } else if (v.getId() == R.id.incorrectBtn) {
-//            oopsModelGotItWrong();
-//            Toast.makeText(this, "Oh no! Classifier got it wrong.", Toast.LENGTH_SHORT).show();
             WrongIngredientFragment wf = new WrongIngredientFragment();
             Bundle args = new Bundle();
             args.putString("predicted", iPredict.getName());
             wf.setArguments(args);
             wf.show(getSupportFragmentManager(), "Wrong Ingredient Fragment");
+        } else if (v.getId() == R.id.retake_photo) {
+            startCameraAndWriteToFile();
         }
     }
 
@@ -317,6 +324,8 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                     resultsText.setText(iPredict.getName() + "\n" + iPredict.getNutritionRecord().getTruncNutrition());
                     goToSearchBtn.setVisibility(View.VISIBLE);
                     incorrectBtn.setVisibility(View.VISIBLE);
+                    retakeBtn.setVisibility(View.VISIBLE);
+
                 }
             });
         }
