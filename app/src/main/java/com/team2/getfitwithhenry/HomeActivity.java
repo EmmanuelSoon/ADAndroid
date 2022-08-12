@@ -211,7 +211,6 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
                         UserCombinedData ucd = objectMapper.readValue(responseBody.string(), UserCombinedData.class);
                         healthRecordList = ucd.getMyHrList();
                         dietRecordList = ucd.getMyDietRecord();
-                        String dditem = dropdownItem;
                         if (healthRecordList.size() != 0) {
                             showLineGraph(healthRecordList, dropdownItem);
                             // showGraphView(healthRecordList);
@@ -324,7 +323,7 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
         mpLineChart.setBorderColor(Color.LTGRAY);
         LineData data = new LineData(dataSets);
         mpLineChart.setData(data);
-        mpLineChart.setViewPortOffsets(50, 30, 50, 200);
+        mpLineChart.setViewPortOffsets(100, 30, 100, 200);
         mpLineChart.setDragEnabled(true);
         mpLineChart.setTouchEnabled(true);
 
@@ -354,7 +353,7 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
         yAxisLeft.setGranularityEnabled(true);
         //yAxisLeft.setEnabled(false);
         YAxis yAxisRight = mpLineChart.getAxisRight();
-        yAxisRight.setGranularity(5f);
+        yAxisRight.setGranularity(1f);
         yAxisRight.setGranularityEnabled(true);
         // yAxisRight.setEnabled(true);
 
