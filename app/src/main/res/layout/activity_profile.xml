@@ -1,230 +1,291 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_margin="0dp"
+    android:orientation="vertical"
+    android:padding="0dp"
+    tools:context=".LoggerActivity">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingStart="40dp"
-        tools:ignore="RtlSymmetry">
-
-        <TextView
-            style="@style/registerStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Name : " />
-
-        <EditText
-            android:id="@+id/txtName"
-            style="@style/registerStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:background="@null"
-            android:ems="15"
-            android:gravity="center" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingStart="40dp"
-        tools:ignore="RtlSymmetry">
-
-        <TextView
-            style="@style/registerStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Email/Username : " />
-
-        <EditText
-            android:id="@+id/txtUsername"
-            style="@style/registerStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:background="@null"
-            android:ems="15"
-            android:gravity="center" />
-    </LinearLayout>
-
-    <LinearLayout
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/top_navbar_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20sp"
-        android:orientation="horizontal"
-        android:paddingLeft="40dp">
+        android:layout_gravity="top"
+        android:theme="@style/ThemeOverlay.AppCompat.Light"
+        app:layout_constraintBottom_toTopOf="@id/scrollable"
+        app:layout_constraintTop_toTopOf="parent"
+        app:liftOnScroll="true">
 
-        <TextView
-            style="@style/registerStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Date of Birth : " />
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/top_navbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:text="Edit Profile"
+            app:titleTextColor="@color/white" />
 
-        <Button
-            android:id="@+id/btnDob"
-            style="?android:spinnerStyle"
-            android:layout_width="185dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="40dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="10dp"
-            android:onClick="openDatePicker"
-            android:paddingLeft="40dp"
-            android:text="01 01 2020"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView" />
-    </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <RadioGroup
-        android:id="@+id/rgGenderGrp"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollable"
         android:layout_width="match_parent"
-        android:layout_height="59dp"
-        android:orientation="horizontal"
-        android:paddingLeft="40dp">
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+        app:layout_constraintTop_toBottomOf="@id/top_navbar_container">
 
-        <TextView
-            style="@style/registerStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="35dp"
-            android:text="Select Gender : " />
 
-        <RadioButton
-            android:id="@+id/rBtnMale"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
-            android:text="Male" />
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-        <RadioButton
-            android:id="@+id/rBtnFemale"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
-            android:text="Female" />
-    </RadioGroup>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingStart="40dp"
+                tools:ignore="RtlSymmetry">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
+                <TextView
+                    style="@style/registerStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Name : " />
+
+                <EditText
+                    android:id="@+id/txtName"
+                    style="@style/registerStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@null"
+                    android:ems="15"
+                    android:gravity="center" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingStart="40dp"
+                tools:ignore="RtlSymmetry">
+
+                <TextView
+                    style="@style/registerStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Email/Username : " />
+
+                <EditText
+                    android:id="@+id/txtUsername"
+                    style="@style/registerStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@null"
+                    android:ems="15"
+                    android:gravity="center" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20sp"
+                android:orientation="horizontal"
+                android:paddingLeft="40dp">
+
+                <TextView
+                    style="@style/registerStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Date of Birth : " />
+
+                <Button
+                    android:id="@+id/btnDob"
+                    style="?android:spinnerStyle"
+                    android:layout_width="185dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:onClick="openDatePicker"
+                    android:paddingLeft="40dp"
+                    android:text="01 01 2020"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView" />
+            </LinearLayout>
+
+            <RadioGroup
+                android:id="@+id/rgGenderGrp"
+                android:layout_width="match_parent"
+                android:layout_height="59dp"
+                android:orientation="horizontal"
+                android:paddingLeft="40dp">
+
+                <TextView
+                    style="@style/registerStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="35dp"
+                    android:text="Select Gender : " />
+
+                <RadioButton
+                    android:id="@+id/rBtnMale"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:text="Male" />
+
+                <RadioButton
+                    android:id="@+id/rBtnFemale"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:text="Female" />
+            </RadioGroup>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingLeft="40dp">
+
+                <TextView
+                    style="@style/registerStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Choose Your Goal" />
+
+                <Spinner
+                    android:id="@+id/goalSelect"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingLeft="40dp">
+
+                <TextView
+                    style="@style/registerStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Weekly Activity Level" />
+
+                <Spinner
+                    android:id="@+id/continuous_slider"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingStart="40dp"
+                tools:ignore="RtlSymmetry">
+
+                <TextView
+                    style="@style/registerStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Calorie Intake Limit (kcal) : " />
+
+                <EditText
+                    android:id="@+id/txtCalorieIntake"
+                    style="@style/registerStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@null"
+                    android:ems="15"
+                    android:enabled="false"
+                    android:gravity="center"
+                    android:inputType="numberDecimal" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingStart="40dp"
+                tools:ignore="RtlSymmetry">
+
+                <TextView
+                    style="@style/registerStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Water Intake Limit (ml) : " />
+
+                <EditText
+                    android:id="@+id/txtWaterIntake"
+                    style="@style/registerStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@null"
+                    android:ems="15"
+                    android:enabled="false"
+                    android:gravity="center"
+                    android:inputType="numberDecimal" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/txtprofileInvalidError"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:text=" "
+                android:textColor="@color/red"
+                android:visibility="invisible" />
+
+            <Button
+                android:id="@+id/btnSaveProfileChanges"
+                android:layout_width="241dp"
+                android:layout_height="65dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="30dp"
+                android:text="Save Edited Changes" />
+        </LinearLayout>
+
+
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingLeft="40dp">
+        android:layout_gravity="bottom"
+        android:layout_margin="0dp"
+        android:padding="0dp"
+        app:labelVisibilityMode="labeled"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scrollable"
+        app:layout_constraintVertical_bias="1.0"
+        app:menu="@menu/bottom_nav_bar"
+        tools:layout_editor_absoluteX="0dp" />
 
-        <TextView
-            style="@style/registerStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Choose Your Goal" />
-
-        <Spinner
-            android:id="@+id/goalSelect"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingLeft="40dp">
-
-        <TextView
-            style="@style/registerStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Weekly Activity Level" />
-
-        <Spinner
-            android:id="@+id/continuous_slider"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingStart="40dp"
-        tools:ignore="RtlSymmetry">
-
-        <TextView
-            style="@style/registerStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Calorie Intake Limit (kcal) : " />
-
-        <EditText
-            android:id="@+id/txtCalorieIntake"
-            style="@style/registerStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:background="@null"
-            android:ems="15"
-            android:enabled="false"
-            android:gravity="center"
-            android:inputType="numberDecimal" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingStart="40dp"
-        tools:ignore="RtlSymmetry">
-
-        <TextView
-            style="@style/registerStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Water Intake Limit (ml) : " />
-
-        <EditText
-            android:id="@+id/txtWaterIntake"
-            style="@style/registerStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:background="@null"
-            android:ems="15"
-            android:enabled="false"
-            android:gravity="center"
-            android:inputType="numberDecimal" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/txtprofileInvalidError"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:text=" "
-        android:textColor="@color/red"
-        android:visibility="invisible" />
-
-    <Button
-        android:id="@+id/btnSaveProfileChanges"
-        android:layout_width="241dp"
-        android:layout_height="65dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="30dp"
-        android:text="Save Edited Changes" />
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

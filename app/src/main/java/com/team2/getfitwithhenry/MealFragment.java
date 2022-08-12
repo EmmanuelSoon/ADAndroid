@@ -143,12 +143,10 @@ public class MealFragment extends DialogFragment {
                             removeDietRecordFromServer(dr.getId());
                             dietRecordList.remove(dr);
                             updateDietRecords();
-                            getUserFromSharedPreference();
-                            ((LoggerActivity) getActivity()).getDietRecordsFromServer(user, date);
                         }
                     });
-
-
+                    getUserFromSharedPreference();
+                    ((LoggerActivity) getActivity()).getDietRecordsFromServer(user, date);
                 }
             });
         }
