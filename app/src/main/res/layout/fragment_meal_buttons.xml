@@ -14,40 +14,44 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="left|center_vertical"
             android:theme="@style/breakfastBtn"
-            android:text="Breakfast \n\n TotalCalories: 1000"
-            android:lines="3"/>
+            android:text="Breakfast: 1000 Kcal"
+            android:paddingVertical="20dp"
+            android:textSize="25sp"
+            />
 
         <Button
             android:id="@+id/lunch_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="left|center_vertical"
             android:theme="@style/LunchBtn"
-            android:text="Lunch \n\n TotalCalories: 1000"
-            android:lines="3"/>
+            android:text="Lunch: 1000 Kcal"
+            android:paddingVertical="20dp"
+            android:textSize="25sp"
+            />
 
         <Button
             android:id="@+id/dinner_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="left|center_vertical"
             android:theme="@style/dinnerBtn"
-            android:text="Dinner \n\n TotalCalories: 1000"
-            android:lines="3"/>
+            android:text="Dinner: 1000 Kcal"
+            android:paddingVertical="20dp"
+            android:textSize="25sp"
+            />
 
         <Button
             android:id="@+id/extras_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="left|center_vertical"
             android:theme="@style/extraBtn"
-            android:text="Extras \n\n TotalCalories: 1000"
-            android:lines="3"/>
+            android:text="Extras: 1000 Kcal"
+            android:paddingVertical="20dp"
+            android:textSize="25sp"
+            />
 
 
     </LinearLayout>
