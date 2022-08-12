@@ -94,6 +94,7 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
     private static final int TIME_INTERVAL = 2000;
     private long mBackPressed;
     public List<String> getXAxisData;
+    private Map<String, String> getData = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,11 +108,13 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
         Gson gson = new Gson();
         String json = pref.getString("userDetails", "");
         user = gson.fromJson(json, User.class);
+        dropdownItem = "Weight";
         showDropdownList();
-        Map<String, String> getData = new HashMap<>();
+
         getData.put("username", user.getUsername());
         getData.put("date", String.valueOf(LocalDate.now()));
         getFromServer(getData, "/user/getuserrecords", "daily");
+
 
     }
 
@@ -208,8 +211,9 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
                         UserCombinedData ucd = objectMapper.readValue(responseBody.string(), UserCombinedData.class);
                         healthRecordList = ucd.getMyHrList();
                         dietRecordList = ucd.getMyDietRecord();
+                        String dditem = dropdownItem;
                         if (healthRecordList.size() != 0) {
-                            showLineGraph(healthRecordList, "Weight");
+                            showLineGraph(healthRecordList, dropdownItem);
                             // showGraphView(healthRecordList);
                         } else {
                             Toast.makeText(HomeActivity.this, "No weight tracking for this user", Toast.LENGTH_SHORT).show();
@@ -294,13 +298,14 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 dropdownItem = parent.getItemAtPosition(position).toString();
                 Toast.makeText(HomeActivity.this, "Item: " + dropdownItem, Toast.LENGTH_SHORT).show();
+                getFromServer(getData, "/user/getuserrecords", "daily");
             }
         });
     }
 
     private void showLineGraph(List<HealthRecord> healthRecordList, String item) {
         mpLineChart = findViewById(R.id.LineChart);
-        LineDataSet lineDataSet1 = new LineDataSet(dataValuesforChart(healthRecordList, item, "daily"), item + "tracking");
+        LineDataSet lineDataSet1 = new LineDataSet(dataValuesforChart(healthRecordList, item, "daily"), item + " tracking");
         lineDataSet1.setCubicIntensity(3f);
         lineDataSet1.setAxisDependency(YAxis.AxisDependency.LEFT);
         // lineDataSet1.setColor(Color.RED);
