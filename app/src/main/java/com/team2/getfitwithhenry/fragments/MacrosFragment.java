@@ -120,15 +120,16 @@ public class MacrosFragment extends Fragment {
             fatIntakeKcal += dr.getWeight()/nr.getServingSize() * nr.getFats() * 9;
         }
 
+        double totalIntake = carbIntakeKcal + proteinIntakeKcal + fatIntakeKcal;
         NumberFormat f = NumberFormat.getInstance(Locale.ENGLISH);
         f.setMaximumFractionDigits(2);
         f.setMinimumFractionDigits(2);
         f.setRoundingMode(RoundingMode.HALF_UP);
 
 
-        carbAngle = new Float(f.format(carbIntakeKcal/calIntake*100));
-        proteinAngle = new Float(f.format(proteinIntakeKcal/calIntake*100));
-        fatAngle = new Float(f.format(fatIntakeKcal/calIntake*100));
+        carbAngle = new Float(f.format(carbIntakeKcal/totalIntake*100));
+        proteinAngle = new Float(f.format(proteinIntakeKcal/totalIntake*100));
+        fatAngle = new Float(f.format(fatIntakeKcal/totalIntake*100));
 
     }
 }

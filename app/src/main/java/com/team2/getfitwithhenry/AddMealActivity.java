@@ -56,6 +56,7 @@ public class AddMealActivity extends AppCompatActivity {
     TextView cals;
     User user;
     String strDate;
+    Boolean fromEditMeal;
     List<Ingredient> myMeal = new ArrayList<>();
     Map<Integer, Double> mealMap = new HashMap<>();
     ActivityResultLauncher<Intent> rlSearchActivity;
@@ -80,7 +81,12 @@ public class AddMealActivity extends AppCompatActivity {
         Intent intent = getIntent();
         strDate = intent.getStringExtra("date");
         List<Ingredient> listFromActivity = (List<Ingredient>) intent.getSerializableExtra("ingredients");
+        fromEditMeal = intent.getBooleanExtra("FromEditMeal", false);
         if(listFromActivity != null){
+            myMeal = listFromActivity;
+        }
+        if (fromEditMeal){
+            mealMap = (Map<Integer, Double>) intent.getSerializableExtra("mealmap");
             myMeal = listFromActivity;
         }
 
@@ -117,12 +123,8 @@ public class AddMealActivity extends AppCompatActivity {
         submitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 String mealType = mealTypeSpinner.getSelectedItem().toString();
-
-
                 postToServer(buildJson(mealMap));
-
                 Intent intent = new Intent();
                 setResult(RESULT_OK, intent);
                 finish();
@@ -137,12 +139,10 @@ public class AddMealActivity extends AppCompatActivity {
                 Intent data = result.getData();
                 List<Ingredient> newList = (List<Ingredient>)data.getSerializableExtra("ingredients");
                 for (Ingredient ing: newList){
-                    System.out.println(ing.getName());
                     if(!myMeal.contains(ing)){
                         myMeal.add(ing);
                     }
                 }
-
                 setListView(myMeal);
             }
         });
@@ -152,13 +152,20 @@ public class AddMealActivity extends AppCompatActivity {
 
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
         RequestBody body = RequestBody.create(postData.toString(), JSON);
+        Request request = null;
 
-        //need to use your own pc's ip address here, cannot use local host.
-        Request request = new Request.Builder()
-                .url(Constants.javaURL +"/user/adddietrecord")
-                .post(body)
-                .build();
-
+        if (fromEditMeal){
+             request = new Request.Builder()
+                    .url(Constants.javaURL +"/user/editdietrecord")
+                    .post(body)
+                    .build();
+        }
+        else{
+            request = new Request.Builder()
+                    .url(Constants.javaURL +"/user/adddietrecord")
+                    .post(body)
+                    .build();
+        }
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -172,8 +179,7 @@ public class AddMealActivity extends AppCompatActivity {
                     if (!response.isSuccessful()) {
                         throw new IOException("Unexpected code " + response);
                     }
-
-                    finish();
+                    response.body().close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

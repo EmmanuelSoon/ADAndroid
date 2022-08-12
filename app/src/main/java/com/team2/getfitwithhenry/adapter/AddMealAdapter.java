@@ -66,9 +66,11 @@ public class AddMealAdapter extends ArrayAdapter<Ingredient> {
         cals.setText("Calories/100g :" + String.valueOf(iList.get(pos).getCalorie()) + " kcals");
 
         EditText editText = view.findViewById(R.id.foodWeight);
+        editText.setText("");
         editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
         if(addMealActivity.getMealMap().get(iList.get(pos).getId())!=0) {
             editText.setText(addMealActivity.getMealMap().get(iList.get(pos).getId()).toString());
+            editText.setSelection(editText.length());
         }
         editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override

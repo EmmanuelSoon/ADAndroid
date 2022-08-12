@@ -68,6 +68,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import kotlin.jvm.internal.TypeReference;
@@ -94,8 +95,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
     private BottomNavigationView bottomNavView;
     private Button addHeight;
     private Button addWeight;
-    private TextView weightText;
-    private TextView heightText;
+    private ActivityResultLauncher<Intent> addMealActivityLauncher;
     User user;
 
     //TODO LIST:
@@ -114,7 +114,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
 
         MealFragment mf = new MealFragment();
         Bundle args = new Bundle();
-        args.putString("meal", content.split(" ")[0].toLowerCase());
+        args.putString("meal", content.split(" ")[0].toLowerCase().replace(":", ""));
         args.putString("date", dateSelect);
         args.putString("username", user.getUsername());
         mf.setArguments(args);
@@ -145,16 +145,14 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
         dateButton.setText(setDate(LocalDate.now()));
         //
         addWeight = findViewById(R.id.addWeight);
-        weightText = findViewById(R.id.weight);
         addHeight = findViewById(R.id.addHeight);
-        heightText = findViewById(R.id.height);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String currDate = LocalDate.now().format(formatter);
         getDietRecordsFromServer(user, currDate);
 
         //Set up activity result launcher
-        ActivityResultLauncher<Intent> addMealActivityLauncher = registerForActivityResult(
+        addMealActivityLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
                     @Override
@@ -178,15 +176,16 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
             String dateSelect = datePicker.getYear() + "-" + String.format("%02d", (datePicker.getMonth() + 1)) + "-" + String.format("%02d", datePicker.getDayOfMonth());
             Intent intent = new Intent(this, AddMealActivity.class);
             intent.putExtra("date", dateSelect);
-
             addMealActivityLauncher.launch(intent);
-
-
         }));
 
         //set My Records
         getHealthRecordFromServer(user, currDate);
 
+    }
+
+    public ActivityResultLauncher<Intent> getAddMealActivityLauncher(){
+        return this.addMealActivityLauncher;
     }
 
 
@@ -253,23 +252,24 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
 
                     //set weight and height accordingly here
                     if (myHr.getUserWeight() <= 0) {
-                        heightText.setText(String.format("Height: %.2f", myHr.getUserHeight()));
-                        addHeight.setVisibility(View.GONE);
+                        addHeight.setText(String.format("%.1f", myHr.getUserHeight()) + "cm");
+                        addHeight.setEnabled(false);
 
-                        weightText.setText("Weight: N.A");
-                        addWeight.setVisibility(View.GONE);
+                        addWeight.setText("N.A");
+                        addWeight.setEnabled(false);
 
                         if (LocalDate.now().equals(myHr.getDate())) {
-                            addHeight.setVisibility(View.VISIBLE);
-                            weightText.setText(String.format("Weight: %.2f", myHr.getUserWeight()));
-                            addWeight.setVisibility(View.VISIBLE);
+                            addHeight.setEnabled(true);
+
+                            addWeight.setText(String.format("%.1f", myHr.getUserWeight()) + "Kg");
+                            addWeight.setEnabled(true);
 
                             addHeight.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
                                     String[] heightArr = String.valueOf(myHr.getUserHeight()).split("\\.");
                                     int intHeight = Integer.parseInt(heightArr[0]);
-                                    showDialogForHeightInput(intHeight, myHr, bmi);
+                                    showDialogForHeightInput(intHeight > 0 ? intHeight : 170, myHr, bmi);
                                 }
                             });
 
@@ -285,10 +285,10 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
                         }
                     } else {
                         if (LocalDate.now().equals(myHr.getDate())) {
-                            heightText.setText(String.format("Height: %.2f", myHr.getUserHeight()));
-                            addHeight.setVisibility(View.VISIBLE);
-                            weightText.setText(String.format("Weight: %.2f", myHr.getUserWeight()));
-                            addWeight.setVisibility(View.VISIBLE);
+                            addHeight.setText(String.format("%.1f", myHr.getUserHeight()) + "cm");
+                            addHeight.setEnabled(true);
+                            addWeight.setText(String.format("%.1f", myHr.getUserWeight()) + "Kg");
+                            addWeight.setEnabled(true);
 
                             addHeight.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -310,10 +310,10 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
                                 }
                             });
                         } else {
-                            heightText.setText(String.format("Height: %.2f", myHr.getUserHeight()));
-                            addHeight.setVisibility(View.GONE);
-                            weightText.setText(String.format("Weight: %.2f", myHr.getUserWeight()));
-                            addWeight.setVisibility(View.GONE);
+                            addHeight.setText(String.format("%.1f", myHr.getUserHeight()) + "cm");
+                            addHeight.setEnabled(false);
+                            addWeight.setText(String.format("%.1f", myHr.getUserWeight()) + "Kg");
+                            addWeight.setEnabled(false);
                         }
                     }
                 }
@@ -349,7 +349,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
                 //update the selected value to server then after update the information of weight
                 try {
                     updateUserHeight(height);
-                    heightText.setText(String.format("Weight: %.2f", height));
+                    addHeight.setText(String.format("%.1f", height) + "cm");
                     Toast.makeText(getApplicationContext(), "You have successfully updated your height", Toast.LENGTH_LONG).show();
                     double b = calculateBMI(weight, height);
                     setUserBMI(b, v);
@@ -399,7 +399,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
                 //update the selected value to server then after update the information of weight
                 try {
                     updateUserWeight(weight);
-                    weightText.setText(String.format("Weight: %.2f", weight));
+                    addWeight.setText(String.format("Weight: %.1f", weight) + "Kg");
                     Toast.makeText(getApplicationContext(), "You have successfully updated your weight", Toast.LENGTH_LONG).show();
                     double b = calculateBMI(weight, height);
                     setUserBMI(b, v);
@@ -495,6 +495,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
         else
             return 0.0;
     }
+
     private double calculateBMI(double weight, double height){
 
         if (weight != 0 && height != 0) {
@@ -509,19 +510,19 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
             bmi.setText("BMI: N.A");
         } else {
             if(myBmi <= 18.5){
-                bmi.setText("BMI: " + String.format("%.2f", myBmi) + "  (Underweight !)");
-                bmi.setTextColor(Color.parseColor("#ff0000"));
+                bmi.setText("BMI: " + String.format("%.2f", myBmi));
+                bmi.setTextColor(Color.parseColor("#fcfc03"));
             }
             else if(myBmi > 18.5 && myBmi < 25){
-                bmi.setText("BMI: " + String.format("%.2f", myBmi) + "  (Normal weight)");
+                bmi.setText("BMI: " + String.format("%.2f", myBmi));
                 bmi.setTextColor(Color.parseColor("#006400"));
             }
             else if(myBmi >= 25 && myBmi < 30){
-                bmi.setText("BMI: " + String.format("%.2f", myBmi) + "  (Overweight !)");
-                bmi.setTextColor(Color.parseColor("#ff0000"));
+                bmi.setText("BMI: " + String.format("%.2f", myBmi));
+                bmi.setTextColor(Color.parseColor("#fcfc03"));
             }
             else{
-                bmi.setText("BMI: " + String.format("%.2f", myBmi) + "  (Obesity !)");
+                bmi.setText("BMI: " + String.format("%.2f", myBmi));
                 bmi.setTextColor(Color.parseColor("#ff0000"));
             }
         }
@@ -551,13 +552,11 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
         int month = cal.get(Calendar.MONTH) +1;
         int day = cal.get(Calendar.DAY_OF_MONTH);
         int style = AlertDialog.THEME_HOLO_LIGHT;
-       LocalDate minDate = user.getDateCreated();
-       // LocalDate minDatedob = user.getDateofbirth();
 
         datePickerDialog = new DatePickerDialog(this, style, dateSetListener, year, month, day);
 
         // reminder to set min date first before max date for same date issue.
-        datePickerDialog.getDatePicker().setMinDate(setCalDate(minDate).getTimeInMillis());
+        datePickerDialog.getDatePicker().setMinDate(setCalDate(LocalDate.of(2020, 01, 01)).getTimeInMillis());
         datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
     }
 

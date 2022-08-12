@@ -2,6 +2,7 @@ package com.team2.getfitwithhenry;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -27,18 +28,22 @@ import com.team2.getfitwithhenry.adapter.MealListAdapter;
 import com.team2.getfitwithhenry.model.Constants;
 import com.team2.getfitwithhenry.model.DietRecord;
 import com.team2.getfitwithhenry.model.HealthRecord;
+import com.team2.getfitwithhenry.model.Ingredient;
 import com.team2.getfitwithhenry.model.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import okhttp3.Call;
@@ -60,7 +65,6 @@ public class MealFragment extends DialogFragment {
     private User user;
     private Context context;
     private final OkHttpClient client = new OkHttpClient();
-    private MealListAdapter mlAdaptor;
 
 
     public MealFragment() {
@@ -89,11 +93,36 @@ public class MealFragment extends DialogFragment {
         editMeal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(getActivity(),AddMealActivity.class);
+                List<Ingredient> iList = getIngredientsFromDietRecords();
+                Map<Integer, Double> mealMap = getMealMapFromDietRecords();
+                intent.putExtra("ingredients", (Serializable) iList);
+                intent.putExtra("mealmap", (Serializable) mealMap);
+                intent.putExtra("FromEditMeal" , true);
+                LoggerActivity activity = (LoggerActivity) getActivity();
+                activity.getAddMealActivityLauncher().launch(intent);
+                dismiss();
             }
         });
         return myView;
     }
+
+    private List<Ingredient> getIngredientsFromDietRecords(){
+        List<Ingredient> iList = new ArrayList<>();
+        for (DietRecord dr : dietRecordList){
+            iList.add(dr.getIngredient());
+        }
+        return iList;
+    }
+
+    private Map<Integer, Double> getMealMapFromDietRecords(){
+        Map<Integer, Double> map = new HashMap<>();
+        for (DietRecord dr : dietRecordList){
+            map.put(dr.getIngredient().getId(), dr.getWeight());
+        }
+        return map;
+    }
+
 
     private void getUserFromSharedPreference() {
 
@@ -143,12 +172,10 @@ public class MealFragment extends DialogFragment {
                             removeDietRecordFromServer(dr.getId());
                             dietRecordList.remove(dr);
                             updateDietRecords();
-                            getUserFromSharedPreference();
-                            ((LoggerActivity) getActivity()).getDietRecordsFromServer(user, date);
                         }
                     });
-
-
+                    getUserFromSharedPreference();
+                    ((LoggerActivity) getActivity()).getDietRecordsFromServer(user, date);
                 }
             });
         }

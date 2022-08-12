@@ -33,27 +33,40 @@
 
     <Button
         android:id="@+id/goToSearchBtn"
-        android:layout_width="125dp"
-        android:layout_height="55dp"
-        android:layout_marginLeft="50dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="40dp"
         android:backgroundTint="@color/green"
-        android:text="@string/goToSearch"
+        android:text="@string/addMealHeader"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/retake_photo"/>
 
     <Button
         android:id="@+id/incorrectBtn"
-        android:layout_width="125dp"
-        android:layout_height="55dp"
-        android:layout_marginRight="50dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="40dp"
         android:backgroundTint="@color/red"
         android:text="@string/incorrect"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/retake_photo"/>
+
+    <Button
+        android:id="@+id/retake_photo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
+        android:backgroundTint="@color/purple_200"
+        android:text="Retake Photo"
+        app:layout_constraintRight_toLeftOf="@id/incorrectBtn"
+        app:layout_constraintLeft_toRightOf="@id/goToSearchBtn"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:visibility="gone" />
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
