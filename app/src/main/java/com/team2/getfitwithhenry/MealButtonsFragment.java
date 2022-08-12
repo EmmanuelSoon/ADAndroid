@@ -5,6 +5,10 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.text.Layout;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.AlignmentSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -109,10 +113,10 @@ public class MealButtonsFragment extends Fragment {
                     }
                     //update the button texts
                     String textTemplate = "meal \n\n TotalCalories: 1000";
-                    breakfastBtn.setText("Breakfast \n\n Total Calories: " + String.format("%.2f", bfTotal));
-                    lunchBtn.setText("Lunch \n\n Total Calories: " + String.format("%.2f", lunchTotal));
-                    dinnerBtn.setText("Dinner \n\n Total Calories: " + String.format("%.2f", dinnerTotal));
-                    extrasBtn.setText("Extras \n\n Total Calories: " + String.format("%.2f", extrasTotal));
+                    breakfastBtn.setText("Breakfast: " + String.format("%.2f", bfTotal) + " Kcal");
+                    lunchBtn.setText("Lunch: " + String.format("%.2f", lunchTotal)+ " Kcal");
+                    dinnerBtn.setText("Dinner: " + String.format("%.2f", dinnerTotal)+ " Kcal");
+                    extrasBtn.setText("Extras: " + String.format("%.2f", extrasTotal)+ " Kcal");
 
                 }
             });

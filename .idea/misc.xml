@@ -3,6 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/AD project/ADAndroid/app/src/main/res/drawable/ic_android_black_24dp.xml" value="0.2585" />
+        <entry key="..\:/AD project/ADAndroid/app/src/main/res/drawable/ic_baseline_person_24.xml" value="0.2585" />
+        <entry key="..\:/AD project/ADAndroid/app/src/main/res/drawable/ic_bmi.xml" value="0.1345" />
+        <entry key="..\:/AD project/ADAndroid/app/src/main/res/drawable/ic_calories.xml" value="0.2585" />
+        <entry key="..\:/AD project/ADAndroid/app/src/main/res/drawable/ic_calories_limit.xml" value="0.2585" />
+        <entry key="..\:/AD project/ADAndroid/app/src/main/res/drawable/ic_current_calories.xml" value="0.2585" />
         <entry key="..\:/AD project/ADAndroid/app/src/main/res/layout/activity_add_meal.xml" value="0.36666666666666664" />
         <entry key="..\:/AD project/ADAndroid/app/src/main/res/layout/activity_camera.xml" value="0.36666666666666664" />
         <entry key="..\:/AD project/ADAndroid/app/src/main/res/layout/activity_home.xml" value="0.36666666666666664" />
