@@ -4,11 +4,14 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -21,9 +24,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 import com.google.gson.Gson;
 import com.team2.getfitwithhenry.model.Constants;
 import com.team2.getfitwithhenry.model.Goal;
@@ -62,6 +68,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private DatePickerDialog mdobDatePicker;
     private TextView mtxtprofileInvalidError;
     private Button mbtnDob;
+    private Toolbar mToolbar;
+    private BottomNavigationView bottomNavView;
     private Button mbtnSaveChanges;
     private String[] goalmatch = {"WEIGHTLOSS", "WEIGHTGAIN", "WEIGHTMAINTAIN", "MUSCLE"};
     private String[] goals = {"Weight Loss", "Weight Gain", "Weight Maintain", "Muscle"};
@@ -73,6 +81,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+
+        setTopNavBar();
+        setBottomNavBar();
 
         mtxtName = findViewById(R.id.txtName);
         mtxtUsername = findViewById(R.id.txtUsername);
@@ -92,6 +103,72 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         getUserFromSharedPreference();
         initDatePicker();
         onInitialDataBind();
+    }
+
+    public void setTopNavBar() {
+        mToolbar = findViewById(R.id.top_navbar);
+        setSupportActionBar(mToolbar);
+    }
+
+    public void setBottomNavBar() {
+        bottomNavView = findViewById(R.id.bottom_navigation);
+        bottomNavView.setSelected(false);
+        bottomNavView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Intent intent;
+                int id = item.getItemId();
+                switch (id) {
+
+                    case (R.id.nav_scanner):
+                        intent = new Intent(getApplicationContext(), CameraActivity.class);
+                        startActivity(intent);
+                        break;  //or should this be finish?
+
+                    case (R.id.nav_search):
+                        intent = new Intent(getApplicationContext(), SearchFoodActivity.class);
+                        startActivity(intent);
+                        break;
+
+                    case (R.id.nav_recipe):
+                        intent = new Intent(getApplicationContext(), RecipeActivity.class);
+                        startActivity(intent);
+                        break;
+
+                    case (R.id.nav_home):
+                        intent = new Intent(getApplicationContext(), HomeActivity.class);
+                        startActivity(intent);
+                        break;
+
+                    case (R.id.nav_log):
+                        intent = new Intent(getApplicationContext(), LoggerActivity.class);
+                        startActivity(intent);
+                        break;
+                }
+
+                return false;
+            }
+        });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.top_nav_bar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.editProfile:
+                return true;
+            case R.id.logout:
+                logout();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -346,6 +423,23 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             mtxtprofileInvalidError.setVisibility(View.VISIBLE);
             Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_LONG).show();
         });
+    }
+
+    private void logout() {
+        SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.clear();
+        editor.commit();
+
+        Toast.makeText(getApplicationContext(), "You have logged out successfully", Toast.LENGTH_LONG).show();
+        startLoginActivity();
+    }
+
+
+    private void startLoginActivity() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+
     }
 
 }
