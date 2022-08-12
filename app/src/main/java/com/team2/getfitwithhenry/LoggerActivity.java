@@ -95,7 +95,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
     private BottomNavigationView bottomNavView;
     private Button addHeight;
     private Button addWeight;
-
+    private ActivityResultLauncher<Intent> addMealActivityLauncher;
     User user;
 
     //TODO LIST:
@@ -111,8 +111,6 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
     public void itemClicked(String content) {
         DatePicker datePicker = datePickerDialog.getDatePicker();
         String dateSelect = datePicker.getYear() + "-" + String.format("%02d", (datePicker.getMonth() + 1)) + "-" + String.format("%02d", datePicker.getDayOfMonth());
-
-        Toast.makeText(this, content, Toast.LENGTH_SHORT).show();
 
         MealFragment mf = new MealFragment();
         Bundle args = new Bundle();
@@ -154,7 +152,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
         getDietRecordsFromServer(user, currDate);
 
         //Set up activity result launcher
-        ActivityResultLauncher<Intent> addMealActivityLauncher = registerForActivityResult(
+        addMealActivityLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
                     @Override
@@ -178,15 +176,16 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
             String dateSelect = datePicker.getYear() + "-" + String.format("%02d", (datePicker.getMonth() + 1)) + "-" + String.format("%02d", datePicker.getDayOfMonth());
             Intent intent = new Intent(this, AddMealActivity.class);
             intent.putExtra("date", dateSelect);
-
             addMealActivityLauncher.launch(intent);
-
-
         }));
 
         //set My Records
         getHealthRecordFromServer(user, currDate);
 
+    }
+
+    public ActivityResultLauncher<Intent> getAddMealActivityLauncher(){
+        return this.addMealActivityLauncher;
     }
 
 
