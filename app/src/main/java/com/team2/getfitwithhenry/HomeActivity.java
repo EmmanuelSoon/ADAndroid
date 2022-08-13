@@ -258,13 +258,7 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
                         monthList = ucd.getMonthList();
                         healthRecordList = ucd.getMyHrList();
                         dietRecordList = ucd.getMyDietRecord();
-//                        if (healthRecordList.size() != 0) {
-//                           // showLineGraph(healthRecordList, dropdownItem);
-//                            // showGraphView(healthRecordList);
-//                        } else {
-//                            Toast.makeText(HomeActivity.this, "No weight tracking for this user", Toast.LENGTH_SHORT).show();
-//                        }
-                        //setProgressStats(getApplicationContext());
+
                         setGraphTabView();
                         setUpTabview();
                         response.body().close();
