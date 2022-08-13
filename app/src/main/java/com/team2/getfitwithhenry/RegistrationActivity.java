@@ -3,19 +3,25 @@ package com.team2.getfitwithhenry;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -26,6 +32,7 @@ import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.team2.getfitwithhenry.model.Constants;
 import com.team2.getfitwithhenry.model.Goal;
@@ -50,17 +57,20 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class RegistrationActivity extends AppCompatActivity implements View.OnClickListener {
-    EditText mNameTxt, mEmailTxt, mPasswordTxt, mConfirmPasswordTxt;
-    String gender = null;
-    String goal; LocalDate dateOfBirth;
-    Button mDobBtn;
-    Spinner mGoalSelection;
+
+    TextInputLayout mNameLayout, mEmailLayout, mPasswordLayout, mGenderLayout, mGoalLayout, mDobLayout;
+    EditText mNameTxt, mEmailTxt, mPasswordTxt, mDobBtn;
+    String goal, gender;
+    LocalDate dateOfBirth;
     Button mRegisterBtn;
-    TextView mReturnLogin, mValdiationErrorText;
+    TextView mReturnLogin;
+    String [] genderArr = {"Male", "Female"};
     String[] goals = {"Weight Loss", "Weight Gain", "Weight Maintain", "Muscle"};
     private DatePickerDialog datePickerDialog;
     private User user;
     private final OkHttpClient client = new OkHttpClient();
+    AutoCompleteTextView mGenderSelection;
+    AutoCompleteTextView mGoalSelection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,11 +79,12 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
 
         init();
 
+        mNameTxt.setOnClickListener(this);
         mEmailTxt.setOnClickListener(this);
         mPasswordTxt.setOnClickListener(this);
-        mConfirmPasswordTxt.setOnClickListener(this);
         mRegisterBtn.setOnClickListener(this);
         mReturnLogin.setOnClickListener(this);
+        mDobBtn.setOnClickListener(this);
 
     }
     @Override
@@ -92,13 +103,13 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         String mName = mNameTxt.getText().toString();
         String mEmail = mEmailTxt.getText().toString();
         String mPassword = mPasswordTxt.getText().toString();
-        String mConfirmPassword = mConfirmPasswordTxt.getText().toString();
         LocalDate mDob = dateOfBirth;
+        String mGender = convertGenderFormat(gender);
         Goal mGoal = getGoal(goal);
 
         if(id == R.id.registerBtn){
             try{
-                seedUser(mName,mEmail,mPassword,mConfirmPassword,mDob,gender,mGoal);
+                seedUser(mName,mEmail,mPassword,mDob,mGender,mGoal);
             }catch(JSONException e){
                 e.printStackTrace();
             }
@@ -108,59 +119,158 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
+    private String convertGenderFormat(String gender){
+        if(gender == "Male")
+            return "M";
+        else if(gender == "Female")
+            return "F";
+        else
+            return "";
+    }
+
     private void init(){
         mNameTxt = findViewById(R.id.nameTxt);
         mEmailTxt = findViewById(R.id.emailTxt);
         mPasswordTxt = findViewById(R.id.passwordTxt);
-        mConfirmPasswordTxt = findViewById(R.id.confirmPasswordTxt);
         mDobBtn = findViewById(R.id.dobBtn);
-        mGoalSelection = findViewById(R.id.goalSelection);
+        mDobBtn.setInputType(InputType.TYPE_NULL);
+        mDobBtn.setKeyListener(null);
+        mGoalSelection =(AutoCompleteTextView) findViewById(R.id.goalSelection);
         mRegisterBtn = findViewById(R.id.registerBtn);
         mReturnLogin = findViewById(R.id.returnLogin);
-        mValdiationErrorText = findViewById(R.id.registerValidationTxt);
+        mGenderSelection = (AutoCompleteTextView)findViewById(R.id.genderTxt);
+        mNameLayout = findViewById(R.id.nameLayout);
+        mEmailLayout = findViewById(R.id.emailLayout);
+        mPasswordLayout = findViewById(R.id.passwordLayout);
+        mGenderLayout = findViewById(R.id.genderLayout);
+        mGoalLayout = findViewById(R.id.goalLayout);
+        mDobLayout = findViewById(R.id.dobLayout);
 
-        initDatePicker();
-
-        mGoalSelection.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        mDobBtn.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                goal = goals[i];
-//                Toast.makeText(getApplicationContext(),goals[i],Toast.LENGTH_LONG).show();
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if(motionEvent.getAction() == MotionEvent.ACTION_UP){
+                    initDatePicker();
+                    openDatePicker(mDobBtn);
+                }
+                return false;
             }
         });
-        ArrayAdapter ad = new ArrayAdapter(this, android.R.layout.simple_spinner_item, goals);
-        ad.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+//        mGenderSelection.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View view, MotionEvent motionEvent) {
+//                if(motionEvent.getAction() == MotionEvent.ACTION_UP){
+//                    closeKeyboard(mGenderSelection);
+//                }
+//                return false;
+//            }
+//        });
+
+        mGenderSelection.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(view == mGenderSelection){
+                    if(hasWindowFocus()){
+                        closeKeyboard(view);
+                    }
+                }
+            }
+        });
+        mGenderSelection.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l){
+                gender = genderArr[i];
+                mGenderLayout.setHint("Select Gender");
+            }
+        });
+
+        mGoalSelection.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(view == mGoalSelection){
+                    if(hasWindowFocus()){
+                        closeKeyboard(view);
+                    }
+                }
+            }
+        });
+        mGoalSelection.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l){
+                goal = goals[i];
+                mGoalLayout.setHint("Select Goal");
+            }
+        });
+
+//        for spinner selection
+//        mGoalSelection.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+//                goal = goals[i];
+//                Toast.makeText(getApplicationContext(),goals[i],Toast.LENGTH_LONG).show();
+//                System.out.println(goal);
+//            }
+//            @Override
+//            public void onNothingSelected(AdapterView<?> adapterView) {
+//
+//            }
+//        });
+
+        ArrayAdapter<String> genderAd = new ArrayAdapter(this, R.layout.drop_down_gender, genderArr);
+        genderAd.setDropDownViewResource(android.R.layout.select_dialog_singlechoice);
+        mGenderSelection.setAdapter(genderAd);
+
+
+        ArrayAdapter ad = new ArrayAdapter(this, R.layout.drop_down_goal, goals);
         mGoalSelection.setAdapter(ad);
     }
-    private boolean validation(String name, String email, String password, String confirmPassword
-        , LocalDate dob, String gender, Goal goal) throws JSONException {
 
-        String msg = "";
+    private boolean validation(String name, String email, String password, LocalDate dob, String gender, Goal goal) throws JSONException {
 
-        if (name.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || gender == null || dob == null) {
-            msg = "All Fields Should Be Filled";
-            showErrorMsg(msg);
+        String msg = "Required*";
+
+        showErrorMsgIfEmpty(mNameLayout, name, msg);
+        showErrorMsgIfEmpty(mEmailLayout,email, msg);
+        showErrorMsgIfEmpty(mPasswordLayout, password, msg);
+        showErrorMsgIfEmpty(mGenderLayout,gender, msg);
+        showErrorMsgIfEmpty(mGoalLayout,goal,msg);
+        showErrorMsgIfEmpty(mDobLayout,dob,msg);
+
+        if (name.isEmpty() || email.isEmpty() || password.isEmpty() || gender == null || dob == null || goal==null) {
             return false;
-        } else if (!isValidEmail(email)) {
-            msg = "Must be valid email address";
-            showErrorMsg(msg);
-            return false;
-        } else if (!password.equals(confirmPassword)) {
-            msg = "Password Didn't Match";
-            showErrorMsg(msg);
-            return false;
+        }
+        else{
+            if(!isValidEmail(email)){
+                msg = "Must be valid email address";
+                mEmailLayout.setHelperText(msg);
+                return false;
+            }
         }
         return true;
     }
+    private void showErrorMsgIfEmpty(TextInputLayout layout, String item, String error){
+        if(item.isEmpty())
+            layout.setHelperText(error);
+        else
+            layout.setHelperText("");
+    }
+    private void showErrorMsgIfEmpty(TextInputLayout layout, LocalDate date, String error){
+        if(date==null)
+            layout.setHelperText(error);
+        else
+            layout.setHelperText("");
+    }
+    private void showErrorMsgIfEmpty(TextInputLayout layout, Goal goal, String error){
+        if(goal==null)
+            layout.setHelperText(error);
+        else
+            layout.setHelperText("");
+    }
 
-    private void seedUser(String name, String email, String password, String confirmPassword
-            , LocalDate dob, String gender, Goal goal) throws JSONException{
+    private void seedUser(String name, String email, String password, LocalDate dob, String gender, Goal goal) throws JSONException{
 
-        if(validation(name, email, password, confirmPassword, dob, gender, goal)){
+        if(validation(name, email, password, dob, gender, goal)){
             //Creating new user
             user = new User(name, email, password, dob, gender, goal);
 
@@ -186,13 +296,6 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         return false;
     }
 
-    private void showErrorMsg(String msg){
-        if(msg != null){
-            mValdiationErrorText.setText(msg);
-            mValdiationErrorText.setVisibility(View.VISIBLE);
-        }
-    }
-
     private void validateUserFromDetails(JSONObject userObj){
         MediaType JsonObj = MediaType.parse("application/json; charset=utf-8");
         RequestBody requestBody = RequestBody.create(JsonObj, userObj.toString());
@@ -216,7 +319,6 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                 ObjectMapper objectMapper = new ObjectMapper();
                 objectMapper.registerModule(new JavaTimeModule());
 
-
                 if (responseBody.contentLength() != 0)
                     user = objectMapper.readValue(responseBody.string(), User.class);
                 else
@@ -226,7 +328,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            showErrorMsg("Username is already existed");
+                            mEmailLayout.setHelperText("Username is already existed");
                         }
                     });
                 }
@@ -240,7 +342,6 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                         }
                     });
                 }
-
                 response.body().close();
             }
         });
@@ -313,22 +414,25 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         datePickerDialog.show();
     }
 
-    public void onRadioButtonClicked(View view){
-        boolean checked = ((RadioButton) view).isChecked();
-
-        switch (view.getId()){
-            case R.id.radio_male:
-                if(checked)
-                    gender = "M";
-                break;
-            case R.id.radio_female:
-                if(checked)
-                    gender = "F";
-                break;
-            default: gender = "";
-        }
-    }
+//    public void onRadioButtonClicked(View view){
+//        boolean checked = ((RadioButton) view).isChecked();
+//
+//        switch (view.getId()){
+//            case R.id.radio_male:
+//                if(checked)
+//                    gender = "M";
+//                break;
+//            case R.id.radio_female:
+//                if(checked)
+//                    gender = "F";
+//                break;
+//
+//            default: gender = "";
+//        }
+//    }
     private Goal getGoal(String goal) {
+        if(goal == null)
+            return null;
         switch (goal) {
             case "Weight Loss":
                 return Goal.WEIGHTLOSS;
@@ -338,11 +442,15 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                 return Goal.WEIGHTMAINTAIN;
             case "Muscle":
                 return Goal.MUSCLE;
-
             // should not come to this default
             default:
-                return Goal.WEIGHTMAINTAIN;
+                return null;
         }
+    }
+
+    private void closeKeyboard(View view){
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
     }
 
     private void startHomeActivity(){
@@ -358,6 +466,4 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         Intent intent = new Intent(this, QuestionnaireActivity.class);
         startActivity(intent);
     }
-
-
 }

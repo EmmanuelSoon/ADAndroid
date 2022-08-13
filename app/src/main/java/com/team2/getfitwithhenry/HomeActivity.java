@@ -46,6 +46,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.github.mikephil.charting.data.Entry;
 import com.google.gson.Gson;
 import com.team2.getfitwithhenry.adapter.DashboardProgressAdapter;
+import com.team2.getfitwithhenry.adapter.GraphFilterAdapter;
 import com.team2.getfitwithhenry.helper.ProgressArcDrawable;
 import com.team2.getfitwithhenry.model.Constants;
 import com.team2.getfitwithhenry.model.DietRecord;
@@ -54,6 +55,7 @@ import com.team2.getfitwithhenry.model.HealthRecord;
 import com.team2.getfitwithhenry.model.Role;
 import com.team2.getfitwithhenry.model.User;
 import com.team2.getfitwithhenry.model.UserCombinedData;
+import com.team2.getfitwithhenry.model.WeekMonthData;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -84,6 +86,8 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
     private final OkHttpClient client = new OkHttpClient();
     private List<HealthRecord> healthRecordList;
     private List<DietRecord> dietRecordList;
+    private List<WeekMonthData> weekList;
+    private List<WeekMonthData> monthList;
     private User user;
     private AutoCompleteTextView autoCompleteTextView;
     private ArrayAdapter<String> adapterItem;
@@ -91,6 +95,7 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
     private String dropdownItem = null;
     private LineChart mpLineChart;
     private ViewPager2 vp2;
+    private ViewPager2 graphVP;
     private static final int TIME_INTERVAL = 2000;
     private long mBackPressed;
     public List<String> getXAxisData;
@@ -109,7 +114,7 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
         String json = pref.getString("userDetails", "");
         user = gson.fromJson(json, User.class);
         dropdownItem = "Weight";
-        showDropdownList();
+       // showDropdownList();
 
         getData.put("username", user.getUsername());
         getData.put("date", String.valueOf(LocalDate.now()));
@@ -129,6 +134,46 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
             startQuestionnaireActivity();
     }
 
+    public void setGraphTabView(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                FragmentManager fm = getSupportFragmentManager();
+                GraphFilterAdapter myGraphAdapter = new GraphFilterAdapter(fm, getLifecycle(), user, healthRecordList,weekList,monthList);
+                graphVP = findViewById(R.id.graph_pager);
+                graphVP.setAdapter(myGraphAdapter);
+                TabLayout tabLayout = findViewById(R.id.graph_tab_layout);
+                if (tabLayout != null) {
+                    tabLayout.removeAllTabs();
+                }
+                tabLayout.addTab(tabLayout.newTab().setText("Weight"));
+                tabLayout.addTab(tabLayout.newTab().setText("Calories"));
+                tabLayout.addTab(tabLayout.newTab().setText("Water Intake"));
+
+                tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                    @Override
+                    public void onTabSelected(TabLayout.Tab tab) {
+                        graphVP.setCurrentItem(tab.getPosition());
+                    }
+
+                    @Override
+                    public void onTabUnselected(TabLayout.Tab tab) {
+                    }
+
+                    @Override
+                    public void onTabReselected(TabLayout.Tab tab) {
+                    }
+                });
+                //allows swipe gesture for tabs
+                graphVP.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+                    @Override
+                    public void onPageSelected(int position) {
+                        tabLayout.selectTab(tabLayout.getTabAt(position));
+                    }
+                });
+            }
+        });
+    }
 
     public void setUpTabview() {
 
@@ -209,15 +254,18 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
                         ObjectMapper objectMapper = new ObjectMapper();
                         objectMapper.registerModule(new JavaTimeModule());
                         UserCombinedData ucd = objectMapper.readValue(responseBody.string(), UserCombinedData.class);
+                        weekList = ucd.getWeekList();
+                        monthList = ucd.getMonthList();
                         healthRecordList = ucd.getMyHrList();
                         dietRecordList = ucd.getMyDietRecord();
-                        if (healthRecordList.size() != 0) {
-                            showLineGraph(healthRecordList, dropdownItem);
-                            // showGraphView(healthRecordList);
-                        } else {
-                            Toast.makeText(HomeActivity.this, "No weight tracking for this user", Toast.LENGTH_SHORT).show();
-                        }
+//                        if (healthRecordList.size() != 0) {
+//                           // showLineGraph(healthRecordList, dropdownItem);
+//                            // showGraphView(healthRecordList);
+//                        } else {
+//                            Toast.makeText(HomeActivity.this, "No weight tracking for this user", Toast.LENGTH_SHORT).show();
+//                        }
                         //setProgressStats(getApplicationContext());
+                        setGraphTabView();
                         setUpTabview();
                         response.body().close();
 
@@ -287,81 +335,81 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
         setUpTabview();
     }
 
-    private void showDropdownList() {
-        autoCompleteTextView = findViewById(R.id.dropDownList);
-        int testing = itemLists.length;
-        adapterItem = new ArrayAdapter<String>(this, R.layout.graph_list_item, itemLists);
-        autoCompleteTextView.setAdapter(adapterItem);
-        autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                dropdownItem = parent.getItemAtPosition(position).toString();
-                Toast.makeText(HomeActivity.this, "Item: " + dropdownItem, Toast.LENGTH_SHORT).show();
-                getFromServer(getData, "/user/getuserrecords", "daily");
-            }
-        });
-    }
+//    private void showDropdownList() {
+//        autoCompleteTextView = findViewById(R.id.dropDownList);
+//        int testing = itemLists.length;
+//        adapterItem = new ArrayAdapter<String>(this, R.layout.graph_list_item, itemLists);
+//        autoCompleteTextView.setAdapter(adapterItem);
+//        autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                dropdownItem = parent.getItemAtPosition(position).toString();
+//                Toast.makeText(HomeActivity.this, "Item: " + dropdownItem, Toast.LENGTH_SHORT).show();
+//                getFromServer(getData, "/user/getuserrecords", "daily");
+//            }
+//        });
+//    }
 
-    private void showLineGraph(List<HealthRecord> healthRecordList, String item) {
-        mpLineChart = findViewById(R.id.LineChart);
-        LineDataSet lineDataSet1 = new LineDataSet(dataValuesforChart(healthRecordList, item, "daily"), item + " tracking");
-        lineDataSet1.setCubicIntensity(3f);
-        lineDataSet1.setAxisDependency(YAxis.AxisDependency.LEFT);
-        // lineDataSet1.setColor(Color.RED);
-        lineDataSet1.setCircleColor(Color.YELLOW);
-        lineDataSet1.setLineWidth(2f);
-        lineDataSet1.setCircleSize(4f);
-
-        lineDataSet1.setFillColor(ColorTemplate.getHoloBlue());
-        lineDataSet1.setHighLightColor(Color.rgb(244, 117, 117));
-        ArrayList<ILineDataSet> dataSets = new ArrayList<>();
-        dataSets.add(lineDataSet1);
-
-        //mpLineChart.setNoDataText("No Data to show! Please Update your information to show graph");
-        mpLineChart.setDrawGridBackground(true);
-        mpLineChart.setDrawBorders(true);
-        mpLineChart.setBorderColor(Color.LTGRAY);
-        LineData data = new LineData(dataSets);
-        mpLineChart.setData(data);
-        mpLineChart.setViewPortOffsets(100, 30, 100, 200);
-        mpLineChart.setDragEnabled(true);
-        mpLineChart.setTouchEnabled(true);
-
-        //enable pinch zoom to avoid scalling x and y seperately
-        mpLineChart.setPinchZoom(true);
-
-
-        // styling Dataset Value
-        lineDataSet1.setValueTextSize(10);
-        lineDataSet1.setValueTextColor(Color.BLUE);
-        // lineDataSet1.setAxisDependency(YAxis.AxisDependency.RIGHT);
-
-//        List<String> xAxisLabel = getXAxisLabels(healthRecordList);
-        XAxis xAxis = mpLineChart.getXAxis();
-        xAxis.setGranularity(1f);
-        xAxis.setGranularityEnabled(true);
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setLabelCount(getXAxisData.size(), false); // yes, false. This is intentional
-        xAxis.setValueFormatter(new IndexAxisValueFormatter(getXAxisData));
-//        xAxis.mAxisMaximum = 3;
-
-        xAxis.setLabelRotationAngle(-60f);
-
-        // changing yAxis label
-        YAxis yAxisLeft = mpLineChart.getAxisLeft();
-        yAxisLeft.setGranularity(1f);
-        yAxisLeft.setGranularityEnabled(true);
-        //yAxisLeft.setEnabled(false);
-        YAxis yAxisRight = mpLineChart.getAxisRight();
-        yAxisRight.setGranularity(1f);
-        yAxisRight.setGranularityEnabled(true);
-        // yAxisRight.setEnabled(true);
-
-
-        mpLineChart.setVisibleXRangeMaximum(7f);
-        mpLineChart.invalidate();
-
-    }
+//    private void showLineGraph(List<HealthRecord> healthRecordList, String item) {
+//        mpLineChart = findViewById(R.id.LineChart);
+//        LineDataSet lineDataSet1 = new LineDataSet(dataValuesforChart(healthRecordList, item, "daily"), item + " tracking");
+//        lineDataSet1.setCubicIntensity(3f);
+//        lineDataSet1.setAxisDependency(YAxis.AxisDependency.LEFT);
+//        // lineDataSet1.setColor(Color.RED);
+//        lineDataSet1.setCircleColor(Color.YELLOW);
+//        lineDataSet1.setLineWidth(2f);
+//        lineDataSet1.setCircleSize(4f);
+//
+//        lineDataSet1.setFillColor(ColorTemplate.getHoloBlue());
+//        lineDataSet1.setHighLightColor(Color.rgb(244, 117, 117));
+//        ArrayList<ILineDataSet> dataSets = new ArrayList<>();
+//        dataSets.add(lineDataSet1);
+//
+//        //mpLineChart.setNoDataText("No Data to show! Please Update your information to show graph");
+//        mpLineChart.setDrawGridBackground(true);
+//        mpLineChart.setDrawBorders(true);
+//        mpLineChart.setBorderColor(Color.LTGRAY);
+//        LineData data = new LineData(dataSets);
+//        mpLineChart.setData(data);
+//        mpLineChart.setViewPortOffsets(100, 30, 100, 200);
+//        mpLineChart.setDragEnabled(true);
+//        mpLineChart.setTouchEnabled(true);
+//
+//        //enable pinch zoom to avoid scalling x and y seperately
+//        mpLineChart.setPinchZoom(true);
+//
+//
+//        // styling Dataset Value
+//        lineDataSet1.setValueTextSize(10);
+//        lineDataSet1.setValueTextColor(Color.BLUE);
+//        // lineDataSet1.setAxisDependency(YAxis.AxisDependency.RIGHT);
+//
+////        List<String> xAxisLabel = getXAxisLabels(healthRecordList);
+//        XAxis xAxis = mpLineChart.getXAxis();
+//        xAxis.setGranularity(1f);
+//        xAxis.setGranularityEnabled(true);
+//        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+//        xAxis.setLabelCount(getXAxisData.size(), false); // yes, false. This is intentional
+//        xAxis.setValueFormatter(new IndexAxisValueFormatter(getXAxisData));
+////        xAxis.mAxisMaximum = 3;
+//
+//        xAxis.setLabelRotationAngle(-60f);
+//
+//        // changing yAxis label
+//        YAxis yAxisLeft = mpLineChart.getAxisLeft();
+//        yAxisLeft.setGranularity(1f);
+//        yAxisLeft.setGranularityEnabled(true);
+//        //yAxisLeft.setEnabled(false);
+//        YAxis yAxisRight = mpLineChart.getAxisRight();
+//        yAxisRight.setGranularity(1f);
+//        yAxisRight.setGranularityEnabled(true);
+//        // yAxisRight.setEnabled(true);
+//
+//
+//        mpLineChart.setVisibleXRangeMaximum(7f);
+//        mpLineChart.invalidate();
+//
+//    }
 
 //    private ArrayList<String> getXAxisLabels(List<HealthRecord> hrList){
 //        ArrayList<String> xAxisLabel = new ArrayList<>();
@@ -371,50 +419,50 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
 //        return xAxisLabel;
 //    }
 
-    private ArrayList<Entry> dataValuesforChart(List<HealthRecord> hrList, String itemName, String filter) {
-
-        ArrayList<Entry> dataVals = new ArrayList<Entry>();
-        getXAxisData = new ArrayList<String>();
-        int count = 0;
-        if (filter == "daily") {
-            switch (itemName) {
-                case "Weight":
-                    for (int i = hrList.size() - 1; i >= 0; i--) {
-                        HealthRecord testing1 = hrList.get(i);
-                        getXAxisData.add(hrList.get(i).getDate().toString());
-                        dataVals.add(new Entry(count, (float) hrList.get(i).getUserWeight()));
-                        count++;
-                    }
-                    break;
-                case "Calories":
-                    for (int i = hrList.size() - 1; i >= 0; i--) {
-                        HealthRecord testing1 = hrList.get(i);
-                        getXAxisData.add(hrList.get(i).getDate().toString());
-                        dataVals.add(new Entry(count, (float) hrList.get(i).getCalIntake()));
-                        count++;
-                    }
-                    break;
-                case "Water Intake":
-                    for (int i = hrList.size() - 1; i >= 0; i--) {
-                        HealthRecord testing1 = hrList.get(i);
-                        getXAxisData.add(hrList.get(i).getDate().toString());
-                        dataVals.add(new Entry(count, (float) hrList.get(i).getWaterIntake()));
-                        count++;
-                    }
-                    break;
-                default:
-                    for (int i = hrList.size() - 1; i >= 0; i--) {
-                        HealthRecord testing1 = hrList.get(i);
-                        getXAxisData.add(hrList.get(i).getDate().toString());
-                        dataVals.add(new Entry(count, (float) hrList.get(i).getUserWeight()));
-                        count++;
-                    }
-                    break;
-            }
-        }
-            return dataVals;
-
-    }
+//    private ArrayList<Entry> dataValuesforChart(List<HealthRecord> hrList, String itemName, String filter) {
+//
+//        ArrayList<Entry> dataVals = new ArrayList<Entry>();
+//        getXAxisData = new ArrayList<String>();
+//        int count = 0;
+//        if (filter == "daily") {
+//            switch (itemName) {
+//                case "Weight":
+//                    for (int i = hrList.size() - 1; i >= 0; i--) {
+//                        HealthRecord testing1 = hrList.get(i);
+//                        getXAxisData.add(hrList.get(i).getDate().toString());
+//                        dataVals.add(new Entry(count, (float) hrList.get(i).getUserWeight()));
+//                        count++;
+//                    }
+//                    break;
+//                case "Calories":
+//                    for (int i = hrList.size() - 1; i >= 0; i--) {
+//                        HealthRecord testing1 = hrList.get(i);
+//                        getXAxisData.add(hrList.get(i).getDate().toString());
+//                        dataVals.add(new Entry(count, (float) hrList.get(i).getCalIntake()));
+//                        count++;
+//                    }
+//                    break;
+//                case "Water Intake":
+//                    for (int i = hrList.size() - 1; i >= 0; i--) {
+//                        HealthRecord testing1 = hrList.get(i);
+//                        getXAxisData.add(hrList.get(i).getDate().toString());
+//                        dataVals.add(new Entry(count, (float) hrList.get(i).getWaterIntake()));
+//                        count++;
+//                    }
+//                    break;
+//                default:
+//                    for (int i = hrList.size() - 1; i >= 0; i--) {
+//                        HealthRecord testing1 = hrList.get(i);
+//                        getXAxisData.add(hrList.get(i).getDate().toString());
+//                        dataVals.add(new Entry(count, (float) hrList.get(i).getUserWeight()));
+//                        count++;
+//                    }
+//                    break;
+//            }
+//        }
+//            return dataVals;
+//
+//    }
 
         public void setTopNavBar () {
             mToolbar = findViewById(R.id.top_navbar);
