@@ -328,6 +328,11 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
                 if (!response.isSuccessful()) {
                     throw new IOException("Unexpected code" + response);
                 }
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.registerModule(new JavaTimeModule());
+                HealthRecord myHr = objectMapper.readValue(responseBody.string(), HealthRecord.class);
+                setRecords(getApplicationContext(), myHr);
+                responseBody.close();
             }
         });
     }
@@ -355,19 +360,19 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
             bmi.setText("BMI: N.A");
         } else {
             if(myBmi <= 18.5){
-                bmi.setText("BMI: " + String.format("%.2f", myBmi));
+                bmi.setText("BMI: " + String.format("%.1f", myBmi));
                 bmi.setTextColor(Color.parseColor("#ffcc00"));
             }
             else if(myBmi > 18.5 && myBmi < 25){
-                bmi.setText("BMI: " + String.format("%.2f", myBmi));
+                bmi.setText("BMI: " + String.format("%.1f", myBmi));
                 bmi.setTextColor(Color.parseColor("#006400"));
             }
             else if(myBmi >= 25 && myBmi < 30){
-                bmi.setText("BMI: " + String.format("%.2f", myBmi));
+                bmi.setText("BMI: " + String.format("%.1f", myBmi));
                 bmi.setTextColor(Color.parseColor("#ffcc00"));
             }
             else{
-                bmi.setText("BMI: " + String.format("%.2f", myBmi));
+                bmi.setText("BMI: " + String.format("%.1f", myBmi));
                 bmi.setTextColor(Color.parseColor("#ff0000"));
             }
         }
@@ -459,6 +464,8 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
                         FragmentManager fm = getSupportFragmentManager();
                         MealButtonsFragment mealFragment = (MealButtonsFragment) fm.findFragmentById(R.id.fragment_meal);
                         mealFragment.setDietRecordList(dietRecordList);
+
+                        responseBody.close();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -502,7 +509,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
                         objectMapper.registerModule(new JavaTimeModule());
                         HealthRecord myHr = objectMapper.readValue(responseBody.string(), HealthRecord.class);
                         setRecords(getApplicationContext(), myHr);
-
+                        responseBody.close();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -517,6 +524,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
 
     public void setTopNavBar() {
         mToolbar = findViewById(R.id.top_navbar);
+        mToolbar.setTitle("");
         setSupportActionBar(mToolbar);
     }
 
