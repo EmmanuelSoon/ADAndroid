@@ -350,7 +350,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
                 try {
                     updateUserHeight(height);
                     addHeight.setText(String.format("%.1f", height) + "cm");
-                    Toast.makeText(getApplicationContext(), "You have successfully updated your height", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Height updated", Toast.LENGTH_SHORT).show();
                     double b = calculateBMI(weight, height);
                     setUserBMI(b, v);
 
@@ -400,7 +400,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
                 try {
                     updateUserWeight(weight);
                     addWeight.setText(String.format("Weight: %.1f", weight) + "Kg");
-                    Toast.makeText(getApplicationContext(), "You have successfully updated your weight", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Weight updated", Toast.LENGTH_SHORT).show();
                     double b = calculateBMI(weight, height);
                     setUserBMI(b, v);
 
