@@ -176,7 +176,6 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
     }
 
     public void setUpTabview() {
-
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
