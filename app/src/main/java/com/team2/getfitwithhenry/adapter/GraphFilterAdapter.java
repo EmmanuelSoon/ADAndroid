@@ -21,6 +21,8 @@ public class GraphFilterAdapter extends FragmentStateAdapter{
     private List<HealthRecord> hrList;
     private List<WeekMonthData> weekList;
     private List<WeekMonthData> monthList;
+    private String[] monthLabel = {"Jan","Feb","Mar","April","May","June","July","Aug","Sep","Oct","Nov","Dec"};
+    private String[] graphFilter = {"Last 7 Days", "Last 7 Weeks/Year", "Last 7 Months/Year"};
 
     public GraphFilterAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle, User user, List<HealthRecord> hrList, List<WeekMonthData> weekList,List<WeekMonthData> monthList) {
         super(fragmentManager, lifecycle);
@@ -36,11 +38,11 @@ public class GraphFilterAdapter extends FragmentStateAdapter{
     public Fragment createFragment(int position) {
         switch (position){
             case 0:
-                return new WeightGraphFilterFragment(user, hrList,weekList,monthList,"weight");
+                return new WeightGraphFilterFragment(user, hrList, weekList, monthList, monthLabel, graphFilter, "weight");
             case 1:
-                return new CaloriesGraphFilterFragment(user, hrList,"calories");
+                return new CaloriesGraphFilterFragment(user, hrList, weekList, monthList, monthLabel, graphFilter, "calories");
             case 2:
-                return new WaterIntakeGraphFilterFragment(user, hrList,"waterIntake");
+                return new WaterIntakeGraphFilterFragment(user, hrList,weekList,monthList,monthLabel, graphFilter, "waterIntake");
 
         }
 
