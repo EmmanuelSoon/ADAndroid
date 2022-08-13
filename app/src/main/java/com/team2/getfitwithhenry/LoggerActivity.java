@@ -99,8 +99,6 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
     User user;
 
     //TODO LIST:
-    //refresh page after adding meal
-    //get meal list sorted by meal type (combine meal type)
     //UI -> show break down of ingredients on click
     // first change logger ui to show the enum types with the cals
     // then set on click to each row
@@ -121,15 +119,14 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
         mf.show(getSupportFragmentManager(), "Meal Fragment");
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logger);
 
-        setTopNavBar();
 
-        //set up bottom navbar
+        //set up navbars
+        setTopNavBar();
         setBottomNavBar();
 
         SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
@@ -188,55 +185,9 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
         return this.addMealActivityLauncher;
     }
 
-
-    public void getHealthRecordFromServer(User user, String date) {
-        JSONObject postData = new JSONObject();
-        try {
-            postData.put("username", user.getUsername());
-            postData.put("date", date);
-
-            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-            RequestBody body = RequestBody.create(postData.toString(), JSON);
-
-            //need to use your own pc's ip address here, cannot use local host.
-            Request request = new Request.Builder()
-                    .url(Constants.javaURL + "/user/gethealthrecorddate")
-                    .post(body)
-                    .build();
-
-            client.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    e.printStackTrace();
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) {
-                    try {
-                        ResponseBody responseBody = response.body();
-                        if (!response.isSuccessful()) {
-                            throw new IOException("Unexpected code " + response);
-                        }
-
-                        ObjectMapper objectMapper = new ObjectMapper();
-                        objectMapper.registerModule(new JavaTimeModule());
-                        HealthRecord myHr = objectMapper.readValue(responseBody.string(), HealthRecord.class);
-                        setMyRecords(getApplicationContext(), myHr);
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void setMyRecords(final Context context, final HealthRecord myHr) {
-        if (context != null && myHr != null) {
+    public void setRecords(Context context, HealthRecord myHr){
+        if(context != null && myHr != null){
             new Handler(Looper.getMainLooper()).post(new Runnable() {
-
                 @Override
                 public void run() {
                     TextView totalCals = findViewById(R.id.total_calories);
@@ -250,166 +201,88 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
                     myBmi = calculateBMI(myHr);
                     setUserBMI(myBmi, bmi);
 
-                    //set weight and height accordingly here
-                    if (myHr.getUserWeight() <= 0) {
-                        addHeight.setText(String.format("%.1f", myHr.getUserHeight()) + "cm");
-                        addHeight.setEnabled(false);
+                    addHeight.setText(String.format("%.1f", myHr.getUserHeight()) + "cm");
+                    addHeight.setEnabled(false);
 
-                        addWeight.setText("N.A");
-                        addWeight.setEnabled(false);
+                    addWeight.setText(String.format("%.1f", myHr.getUserWeight()) + "Kg");
+                    addWeight.setEnabled(false);
 
-                        if (LocalDate.now().equals(myHr.getDate())) {
-                            addHeight.setEnabled(true);
+                    if(LocalDate.now().equals(myHr.getDate())){
+                        addWeight.setEnabled(true);
+                        addHeight.setEnabled(true);
+                        addHeight.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                String[] heightArr = String.valueOf(myHr.getUserHeight()).split("\\.");
+                                int intHeight = Integer.parseInt(heightArr[0]);
+                                showDialogForInput("height",intHeight > 0 ? intHeight : 170, myHr, bmi);
+                            }
+                        });
 
-                            addWeight.setText(String.format("%.1f", myHr.getUserWeight()) + "Kg");
-                            addWeight.setEnabled(true);
-
-                            addHeight.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    String[] heightArr = String.valueOf(myHr.getUserHeight()).split("\\.");
-                                    int intHeight = Integer.parseInt(heightArr[0]);
-                                    showDialogForHeightInput(intHeight > 0 ? intHeight : 170, myHr, bmi);
-                                }
-                            });
-
-                            addWeight.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    // add a dialog here for user to add new health record
-                                    int intWeight = 50;
-                                    // int decimalWeight = Integer.parseInt(arr[1]);
-                                    showDialogForWeightInput(intWeight, myHr, bmi);
-                                }
-                            });
-                        }
-                    } else {
-                        if (LocalDate.now().equals(myHr.getDate())) {
-                            addHeight.setText(String.format("%.1f", myHr.getUserHeight()) + "cm");
-                            addHeight.setEnabled(true);
-                            addWeight.setText(String.format("%.1f", myHr.getUserWeight()) + "Kg");
-                            addWeight.setEnabled(true);
-
-                            addHeight.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    String[] heightArr = String.valueOf(myHr.getUserHeight()).split("\\.");
-                                    int intHeight = Integer.parseInt(heightArr[0]);
-                                    showDialogForHeightInput(intHeight, myHr, bmi);
-                                }
-                            });
-                            addWeight.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    // add a dialog here for user to add new health record
-                                    String[] arr = String.valueOf(myHr.getUserWeight()).split("\\.");
-                                    int intWeight = Integer.parseInt(arr[0]);
-                                    // couldn't do it due to string arr in display
-                                    // int decimalWeight = Integer.parseInt(arr[1]);
-                                    showDialogForWeightInput(intWeight, myHr, bmi);
-                                }
-                            });
-                        } else {
-                            addHeight.setText(String.format("%.1f", myHr.getUserHeight()) + "cm");
-                            addHeight.setEnabled(false);
-                            addWeight.setText(String.format("%.1f", myHr.getUserWeight()) + "Kg");
-                            addWeight.setEnabled(false);
-                        }
+                        addWeight.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                String[] arr = String.valueOf(myHr.getUserWeight()).split("\\.");
+                                int intWeight = Integer.parseInt(arr[0]);
+                                showDialogForInput("weight",intWeight > 0 ? intWeight : 50, myHr, bmi);
+                            }
+                        });
                     }
                 }
             });
         }
     }
 
-    public void showDialogForHeightInput(int intHeight, HealthRecord myHr, TextView v) {
-
+    public void showDialogForInput(String action, int value, HealthRecord myHr, TextView v){
         Dialog d = new Dialog(this);
-        //d.setTitle("Update Your Height");
-        d.setContentView(R.layout.height_input);
-        Button save = d.findViewById(R.id.saveHeight);
-        Button cancel = d.findViewById(R.id.cancelHeight);
-        NumberPicker npInt = d.findViewById(R.id.heightInt);
-        NumberPicker npDouble = d.findViewById(R.id.heightDouble);
+        d.setContentView(R.layout.input_dialog_layout);
+        TextView title = d.findViewById(R.id.valueText);
+        Button save = d.findViewById(R.id.saveValue);
+        Button cancel = d.findViewById(R.id.cancelValue);
+        NumberPicker npInt = d.findViewById(R.id.valueInt);
+        NumberPicker npDouble = d.findViewById(R.id.valueDouble);
         npInt.setMaxValue(300); // max value 100
         npInt.setMinValue(3);
-        npInt.setValue(intHeight);
+        npInt.setValue(value);
         npInt.setWrapSelectorWheel(false);
-        String[] doubleArr = new String[]{".0 cm", ".1 cm", ".2 cm", ".3 cm", ".4 cm", ".5 cm", ".6 cm", ".7 cm", ".8 cm", ".9 cm"};
+        String[] doubleArr = null;
+        if(action.equals("weight")){
+            title.setText("Update Your Weight");
+            doubleArr = new String[]{".0 Kg", ".1 Kg", ".2 Kg", ".3 Kg", ".4 Kg", ".5 Kg", ".6 Kg", ".7 Kg", ".8 Kg", ".9 Kg"};
+        }
+        else{
+            title.setText("Update Your Height");
+            doubleArr = new String[]{".0 cm", ".1 cm", ".2 cm", ".3 cm", ".4 cm", ".5 cm", ".6 cm", ".7 cm", ".8 cm", ".9 cm"};
+        }
         npDouble.setMaxValue(9);
         npDouble.setMinValue(0);
         npDouble.setDisplayedValues(doubleArr);
         npDouble.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int val1 = npInt.getValue();
                 int val2 = npDouble.getValue();
-                double weight = myHr.getUserWeight();
-                double height = val1 + val2 / 10.0;
-                //update the selected value to server then after update the information of weight
-                try {
-                    updateUserHeight(height);
+                double height = 0.0;
+                double weight = 0.0;
+                if(action.equals("weight")){
+                    height = myHr.getUserHeight();
+                    weight = val1 + val2 / 10.0;
+                    updateUser(action, weight);
+                    addWeight.setText(String.format("%.1f", weight) + "Kg");
+                    Toast.makeText(getApplicationContext(), "Weight updated", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    weight = myHr.getUserWeight();
+                    height = val1 + val2 / 10.0;
+                    updateUser(action, height);
                     addHeight.setText(String.format("%.1f", height) + "cm");
                     Toast.makeText(getApplicationContext(), "Height updated", Toast.LENGTH_SHORT).show();
-                    double b = calculateBMI(weight, height);
-                    setUserBMI(b, v);
-
-                    d.dismiss();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
-            }
-        });
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+                double b = calculateBMI(weight, height);
+                setUserBMI(b, v);
                 d.dismiss();
-            }
-        });
-        d.show();
-    }
-    //show dialog for user to input their latest weight
-    public void showDialogForWeightInput(int intWeight, HealthRecord myHr, TextView v) {
-
-        Dialog d = new Dialog(this);
-        //d.setTitle("Update Your Weight");
-        d.setContentView(R.layout.weight_input);
-        Button save = d.findViewById(R.id.saveWeight);
-        Button cancel = d.findViewById(R.id.cancelWeight);
-        NumberPicker npInt = d.findViewById(R.id.weightInt);
-        NumberPicker npDouble = d.findViewById(R.id.weightDouble);
-        npInt.setMaxValue(500); // max value 100
-        npInt.setMinValue(3);
-        npInt.setValue(intWeight);
-        npInt.setWrapSelectorWheel(false);
-        String[] doubleArr = new String[]{".0 Kg", ".1 Kg", ".2 Kg", ".3 Kg", ".4 Kg", ".5 Kg", ".6 Kg", ".7 Kg", ".8 Kg", ".9 Kg"};
-        npDouble.setMaxValue(9);
-        npDouble.setMinValue(0);
-        npDouble.setDisplayedValues(doubleArr);
-        npDouble.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
-        save.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int val1 = npInt.getValue();
-                int val2 = npDouble.getValue();
-                double height = myHr.getUserHeight();
-                double weight = val1 + val2 / 10.0;
-                //update the selected value to server then after update the information of weight
-                try {
-                    updateUserWeight(weight);
-                    addWeight.setText(String.format("Weight: %.1f", weight) + "Kg");
-                    Toast.makeText(getApplicationContext(), "Weight updated", Toast.LENGTH_SHORT).show();
-                    double b = calculateBMI(weight, height);
-                    setUserBMI(b, v);
-
-                    d.dismiss();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
         });
         cancel.setOnClickListener(new View.OnClickListener() {
@@ -421,20 +294,24 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
         d.show();
     }
 
-    private void updateUserHeight(double height) throws JSONException, IOException {
+    private void updateUser(String action, double value){
         JSONObject postData = new JSONObject();
-        postData.put("username", user.getUsername());
-        //postData.put("date", setDate(LocalDate.now()));
-        DatePicker datePicker = datePickerDialog.getDatePicker();
-        String dateSelect = datePicker.getYear() + "-" + String.format("%02d", (datePicker.getMonth() + 1)) + "-" + String.format("%02d", datePicker.getDayOfMonth());
-        //postData.put("date", setDate(LocalDate.now()));
-        postData.put("date", dateSelect);
-        postData.put("height", height);
+        try{
+            postData.put("username", user.getUsername());
+            //postData.put("date", setDate(LocalDate.now()));
+            DatePicker datePicker = datePickerDialog.getDatePicker();
+            String dateSelect = datePicker.getYear() + "-" + String.format("%02d", (datePicker.getMonth() + 1)) + "-" + String.format("%02d", datePicker.getDayOfMonth());
+            //postData.put("date", setDate(LocalDate.now()));
+            postData.put("date", dateSelect);
+            postData.put(action, value);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
         RequestBody body = RequestBody.create(postData.toString(), JSON);
-        //need to use your own pc's ip address here, cannot use local host.
         Request request = new Request.Builder()
-                .url(Constants.javaURL + "/user/updateheight")
+                .url(Constants.javaURL + "/user/update" + action)
                 .post(body)
                 .build();
 
@@ -446,39 +323,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                ResponseBody responseBody = response.body();
-                if (!response.isSuccessful()) {
-                    throw new IOException("Unexpected code" + response);
-                }
-            }
-        });
-    }
 
-    private void updateUserWeight(double weight) throws JSONException, IOException {
-        JSONObject postData = new JSONObject();
-        postData.put("username", user.getUsername());
-        //postData.put("date", setDate(LocalDate.now()));
-        DatePicker datePicker = datePickerDialog.getDatePicker();
-        String dateSelect = datePicker.getYear() + "-" + String.format("%02d", (datePicker.getMonth() + 1)) + "-" + String.format("%02d", datePicker.getDayOfMonth());
-        //postData.put("date", setDate(LocalDate.now()));
-        postData.put("date", dateSelect);
-        postData.put("weight", weight);
-        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-        RequestBody body = RequestBody.create(postData.toString(), JSON);
-        //need to use your own pc's ip address here, cannot use local host.
-        Request request = new Request.Builder()
-                .url(Constants.javaURL + "/user/updateweight")
-                .post(body)
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
                 ResponseBody responseBody = response.body();
                 if (!response.isSuccessful()) {
                     throw new IOException("Unexpected code" + response);
@@ -511,7 +356,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
         } else {
             if(myBmi <= 18.5){
                 bmi.setText("BMI: " + String.format("%.2f", myBmi));
-                bmi.setTextColor(Color.parseColor("#fcfc03"));
+                bmi.setTextColor(Color.parseColor("#ffcc00"));
             }
             else if(myBmi > 18.5 && myBmi < 25){
                 bmi.setText("BMI: " + String.format("%.2f", myBmi));
@@ -519,7 +364,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
             }
             else if(myBmi >= 25 && myBmi < 30){
                 bmi.setText("BMI: " + String.format("%.2f", myBmi));
-                bmi.setTextColor(Color.parseColor("#fcfc03"));
+                bmi.setTextColor(Color.parseColor("#ffcc00"));
             }
             else{
                 bmi.setText("BMI: " + String.format("%.2f", myBmi));
@@ -624,10 +469,51 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
         }
     }
 
+    public void getHealthRecordFromServer(User user, String date) {
+        JSONObject postData = new JSONObject();
+        try {
+            postData.put("username", user.getUsername());
+            postData.put("date", date);
 
-    public static void removeMeal(DietRecord dr) {
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+            RequestBody body = RequestBody.create(postData.toString(), JSON);
 
+            //need to use your own pc's ip address here, cannot use local host.
+            Request request = new Request.Builder()
+                    .url(Constants.javaURL + "/user/gethealthrecorddate")
+                    .post(body)
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) {
+                    try {
+                        ResponseBody responseBody = response.body();
+                        if (!response.isSuccessful()) {
+                            throw new IOException("Unexpected code " + response);
+                        }
+
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        objectMapper.registerModule(new JavaTimeModule());
+                        HealthRecord myHr = objectMapper.readValue(responseBody.string(), HealthRecord.class);
+                        setRecords(getApplicationContext(), myHr);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
+
+
 
     public void setTopNavBar() {
         mToolbar = findViewById(R.id.top_navbar);
