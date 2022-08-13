@@ -116,7 +116,7 @@ public class MealButtonsFragment extends Fragment {
                     breakfastBtn.setText("Breakfast: " + String.format("%.2f", bfTotal) + " Kcal");
                     lunchBtn.setText("Lunch: " + String.format("%.2f", lunchTotal)+ " Kcal");
                     dinnerBtn.setText("Dinner: " + String.format("%.2f", dinnerTotal)+ " Kcal");
-                    extrasBtn.setText("Extras: " + String.format("%.2f", extrasTotal)+ " Kcal");
+                    extrasBtn.setText("Extra: " + String.format("%.2f", extrasTotal)+ " Kcal");
 
                 }
             });

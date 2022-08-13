@@ -32,6 +32,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import okhttp3.Call;
@@ -104,7 +105,12 @@ public class AddMealActivity extends AppCompatActivity {
         setListView(myMeal);
 
         mealTypeSpinner = findViewById(R.id.mealtype_spinner);
-        mealTypeSpinner.setAdapter(new ArrayAdapter<MealType>(this, android.R.layout.simple_spinner_item, MealType.values()));
+        ArrayAdapter<MealType> myAdaptor = new ArrayAdapter<MealType>(this, android.R.layout.simple_spinner_item, MealType.values());
+        mealTypeSpinner.setAdapter(myAdaptor);
+        if(fromEditMeal){
+            String mealtype = intent.getStringExtra("meal");
+            mealTypeSpinner.setSelection(myAdaptor.getPosition(MealType.valueOf(mealtype.toUpperCase(Locale.ROOT))));
+        }
 
         //TODO change this button name
         addView = findViewById(R.id.search_ingredientsBtn);

@@ -99,6 +99,8 @@ public class MealFragment extends DialogFragment {
                 intent.putExtra("ingredients", (Serializable) iList);
                 intent.putExtra("mealmap", (Serializable) mealMap);
                 intent.putExtra("FromEditMeal" , true);
+                intent.putExtra("date", date);
+                intent.putExtra("meal" ,meal);
                 LoggerActivity activity = (LoggerActivity) getActivity();
                 activity.getAddMealActivityLauncher().launch(intent);
                 dismiss();
