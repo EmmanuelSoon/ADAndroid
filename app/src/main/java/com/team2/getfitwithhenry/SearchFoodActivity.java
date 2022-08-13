@@ -203,6 +203,7 @@ public class SearchFoodActivity extends AppCompatActivity {
 
     public void setTopNavBar() {
         mToolbar = findViewById(R.id.top_navbar);
+        mToolbar.setTitle("");
         setSupportActionBar(mToolbar);
     }
 

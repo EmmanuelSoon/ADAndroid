@@ -205,7 +205,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                         Intent data = result.getData();
                         bitImage = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
                         mImageView.setImageBitmap(bitImage);
-                        Toast.makeText(getBaseContext(), "Showing the image", Toast.LENGTH_LONG).show();
+//                        Toast.makeText(getBaseContext(), "Showing the image", Toast.LENGTH_LONG).show();
                         uploadRequestBody();
                     } else if (result.getResultCode() == RESULT_CANCELED) {
                         finish();
@@ -247,7 +247,6 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                     iPredict = objectMapper.readValue(responseBody.string(), Ingredient.class);
                     displayResponse(getApplicationContext(), iPredict);
 
-                    Log.i("data", responseBody.string());
                     response.body().close();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -321,7 +320,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
                 @Override
                 public void run() {
-                    resultsText.setText(iPredict.getName() + "\n" + iPredict.getNutritionRecord().getTruncNutrition());
+                    resultsText.setText(iPredict.getName() + " (100g)" + "\n" + iPredict.getNutritionRecord().getTruncNutrition());
                     goToSearchBtn.setVisibility(View.VISIBLE);
                     incorrectBtn.setVisibility(View.VISIBLE);
                     retakeBtn.setVisibility(View.VISIBLE);

@@ -71,7 +71,7 @@ public class NutritionRecord implements Serializable {
     }
 
     public String getTruncNutrition(){
-        return "Total Calories: " + totalCalories + "\nCarbohydrates: " + carbs + "\nProteins: " + proteins + "\nFats: " + fats;
+        return "Calories: " + totalCalories + "Kcal\nCarbohydrates: " + carbs + "g\nProteins: " + proteins + "g\nFats: " + fats + "g";
     }
 
     // Getters and setters
