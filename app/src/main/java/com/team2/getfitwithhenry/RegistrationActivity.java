@@ -71,6 +71,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
     private final OkHttpClient client = new OkHttpClient();
     AutoCompleteTextView mGenderSelection;
     AutoCompleteTextView mGoalSelection;
+    int min = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +86,9 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         mRegisterBtn.setOnClickListener(this);
         mReturnLogin.setOnClickListener(this);
         mDobBtn.setOnClickListener(this);
-
+        mNameTxt.addTextChangedListener(nameWatcher);
+        mPasswordTxt.addTextChangedListener(passwordWatcher);
+        mEmailTxt.addTextChangedListener(emailWatcher);
     }
     @Override
     public void onStart(){
@@ -119,15 +122,6 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
-    private String convertGenderFormat(String gender){
-        if(gender == "Male")
-            return "M";
-        else if(gender == "Female")
-            return "F";
-        else
-            return "";
-    }
-
     private void init(){
         mNameTxt = findViewById(R.id.nameTxt);
         mEmailTxt = findViewById(R.id.emailTxt);
@@ -152,6 +146,9 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                 if(motionEvent.getAction() == MotionEvent.ACTION_UP){
                     initDatePicker();
                     openDatePicker(mDobBtn);
+
+                    // brute force
+                    showErrorMsgIfEmpty(mDobLayout,dateOfBirth,"");
                 }
                 return false;
             }
@@ -182,6 +179,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l){
                 gender = genderArr[i];
                 mGenderLayout.setHint("Select Gender");
+                showErrorMsgIfEmpty(mGenderLayout,gender, "Please select One*");
             }
         });
 
@@ -200,6 +198,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l){
                 goal = goals[i];
                 mGoalLayout.setHint("Select Goal");
+                showErrorMsgIfEmpty(mGoalLayout,goal,"Please select One*");
             }
         });
 
@@ -221,46 +220,77 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         genderAd.setDropDownViewResource(android.R.layout.select_dialog_singlechoice);
         mGenderSelection.setAdapter(genderAd);
 
-
         ArrayAdapter ad = new ArrayAdapter(this, R.layout.drop_down_goal, goals);
         mGoalSelection.setAdapter(ad);
+
     }
 
     private boolean validation(String name, String email, String password, LocalDate dob, String gender, Goal goal) throws JSONException {
 
-        String msg = "Required*";
+        String countError = "Please enter between "+min+" and 20 characters!";
+        String msg = "Please select One*";
 
-        showErrorMsgIfEmpty(mNameLayout, name, msg);
-        showErrorMsgIfEmpty(mEmailLayout,email, msg);
-        showErrorMsgIfEmpty(mPasswordLayout, password, msg);
+        showWordCountError(name, min, mNameLayout, countError );
+        showWordCountError(email, min, mEmailLayout, countError );
+        showWordCountError(password, min, mPasswordLayout, countError );
         showErrorMsgIfEmpty(mGenderLayout,gender, msg);
         showErrorMsgIfEmpty(mGoalLayout,goal,msg);
         showErrorMsgIfEmpty(mDobLayout,dob,msg);
 
-        if (name.isEmpty() || email.isEmpty() || password.isEmpty() || gender == null || dob == null || goal==null) {
-            return false;
-        }
-        else{
+        if(email.length() >= min ){
             if(!isValidEmail(email)){
-                msg = "Must be valid email address";
-                mEmailLayout.setHelperText(msg);
-                return false;
+                mEmailLayout.setHelperText("Must be valid email address");
             }
+            else{
+                mEmailLayout.setHelperText("");
+            }
+        }
+
+        if((name.length() < min)  ||
+                (email.length() < min) ||
+                (password.length() < min) ||
+                gender.isEmpty() || dob == null || goal == null || (!isValidEmail(email))){
+            return false;
         }
         return true;
     }
-    private void showErrorMsgIfEmpty(TextInputLayout layout, String item, String error){
-        if(item.isEmpty())
+
+    // remark max length is specified in xml, so there is no need to check for that
+    private void wordCountError(EditText sentence, int min, TextInputLayout layout, String error){
+        if(sentence.getText().length() < min ){
+            layout.setHelperText(error);
+//            layout.setCounterEnabled(true);
+//            layout.setCounterMaxLength(max);
+        }
+        else{
+            layout.setHelperText("");
+//            layout.setCounterEnabled(false);
+        }
+    }
+
+    private void showWordCountError(String sentence, int min, TextInputLayout layout, String error){
+        if(sentence.length() < min){
+            layout.setHelperText(error);
+        }
+        else{
+            layout.setHelperText("");
+        }
+    }
+
+    private void showErrorMsgIfEmpty(TextInputLayout layout, String field, String error){
+        if(field.isEmpty())
             layout.setHelperText(error);
         else
             layout.setHelperText("");
     }
+
     private void showErrorMsgIfEmpty(TextInputLayout layout, LocalDate date, String error){
         if(date==null)
             layout.setHelperText(error);
         else
             layout.setHelperText("");
     }
+
     private void showErrorMsgIfEmpty(TextInputLayout layout, Goal goal, String error){
         if(goal==null)
             layout.setHelperText(error);
@@ -291,8 +321,9 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         String mailFormat =  "^[A-Za-z0-9+_.-]+@(.+)$";
         Pattern pattern = Pattern.compile(mailFormat);
         Matcher matcher = pattern.matcher(email);
-        if(matcher.matches())
+        if(matcher.matches()){
             return true;
+        }
         return false;
     }
 
@@ -448,6 +479,15 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
+    private String convertGenderFormat(String gender){
+        if(gender == "Male")
+            return "M";
+        else if(gender == "Female")
+            return "F";
+        else
+            return "";
+    }
+
     private void closeKeyboard(View view){
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
@@ -466,4 +506,50 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         Intent intent = new Intent(this, QuestionnaireActivity.class);
         startActivity(intent);
     }
+
+    private TextWatcher nameWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            String countError = "Please enter between "+min+" and 20 characters!";
+            wordCountError(mNameTxt, min, mNameLayout, countError);
+        }
+        @Override
+        public void afterTextChanged(Editable editable) {
+
+        }
+    };
+    private TextWatcher emailWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            String countError = "Please enter between "+min+" and 20 characters!";
+            wordCountError(mEmailTxt,min,mEmailLayout, countError);
+        }
+        @Override
+        public void afterTextChanged(Editable editable) {
+
+        }
+    };
+    private TextWatcher passwordWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            String countError = "Please enter between "+min+" and 20 characters!";
+            wordCountError(mPasswordTxt, min, mPasswordLayout, countError);
+        }
+        @Override
+        public void afterTextChanged(Editable editable) {
+
+        }
+    };
 }

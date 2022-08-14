@@ -76,7 +76,7 @@ public class NutritionRecord implements Serializable {
         NumberFormat f = NumberFormat.getInstance(Locale.ENGLISH);
         f.setMaximumFractionDigits(2);
         f.setMinimumFractionDigits(2);
-        return "Total Calories: " + f.format(totalCalories) + "\nCarbohydrates: " + f.format(carbs) + "\nProteins: " + f.format(proteins) + "\nFats: " + f.format(fats);
+        return "Calories: " + f.format(totalCalories) + "Kcal\nCarbohydrates: " + f.format(carbs) + "g\nProteins: " + f.format(proteins) + "g\nFats: " + f.format(fats) + "g";
     }
 
     // Getters and setters

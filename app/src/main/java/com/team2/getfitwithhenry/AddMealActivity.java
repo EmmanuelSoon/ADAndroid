@@ -93,14 +93,11 @@ public class AddMealActivity extends AppCompatActivity {
 
         registerActivity();
 
-        //TODO CHANGE THIS - setting to today's date if coming from search (to give options)
-        if (strDate != null) {
-            LocalDate date = LocalDate.parse(strDate);
-        }
-        else{
+        if (strDate == null) {
             LocalDate date = LocalDate.now();
             strDate = date.toString();
         }
+
 
         setListView(myMeal);
 

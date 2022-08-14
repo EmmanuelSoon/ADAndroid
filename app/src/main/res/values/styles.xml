@@ -45,9 +45,18 @@
 <!--        <item name="helperText">Required*</item>-->
         <item name="helperTextTextColor">@color/red</item>
 <!--        <item name="counterEnabled">true</item>-->
-<!--        <item name="counterMaxLength">20</item>-->
+<!--        <item name="counterMaxLength">5</item>-->
 <!--        <item name="errorEnabled">true</item>-->
+
     </style>
+
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.Bridge">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
 
 
 </resources>
