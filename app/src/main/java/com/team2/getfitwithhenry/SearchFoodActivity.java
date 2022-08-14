@@ -121,10 +121,12 @@ public class SearchFoodActivity extends AppCompatActivity {
         mAddMealBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Map<Integer, Double> mealMap = new HashMap<>();
                 if(!recipeBuilder.isEmpty()){
                     for (Recipe recipe : recipeBuilder){
                         for(WeightedIngredient wi : recipe.getIngredientList()){
                             mealBuilder.add(wi.getIngredient());
+                            mealMap.put(wi.getIngredient().getId(), (double) Math.round(wi.getWeight()/recipe.getPortion()));
                         }
                     }
                 }
@@ -133,11 +135,20 @@ public class SearchFoodActivity extends AppCompatActivity {
                 if (componentName == null) {
                     Intent intent = new Intent(SearchFoodActivity.this, AddMealActivity.class);
                     intent.putExtra("ingredients", (Serializable) mealBuilder);
+                    if (!mealMap.isEmpty()){
+                        intent.putExtra("FromEditMeal", true);
+                        intent.putExtra("mealmap", (Serializable) mealMap);
+                        intent.putExtra("meal", "BREAKFAST");
+                    }
                     startActivity(intent);
                 } else {
                     Intent response = new Intent();
                     response.putExtra("ingredients", (Serializable) mealBuilder);
-                    response.putExtra("recipe", (Serializable) recipeBuilder);
+                    if (!mealMap.isEmpty()){
+                        response.putExtra("FromEditMeal", true);
+                        response.putExtra("mealmap", (Serializable) mealMap);
+                        response.putExtra("meal", "BREAKFAST");
+                    }
                     setResult(RESULT_OK, response);
                     finish();
                 }
@@ -292,6 +303,7 @@ public class SearchFoodActivity extends AppCompatActivity {
                     mlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            mAddMealBtn.setText("Add 1 Serving");
                             mAddMealBtn.setVisibility(View.VISIBLE);
                             if (recipeBuilder.isEmpty() | !recipeBuilder.contains(recipeList.get(position))) {
                                 recipeBuilder.add(recipeList.get(position));

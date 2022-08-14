@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.ThumbnailUtils;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,7 +53,8 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
         System.out.println(recipeList.get(pos).getName());
 
         TextView nutriView = view.findViewById(R.id.queryNutrition);
-        nutriView.setText(recipeList.get(pos).getNutritionRecord().getTruncNutrition());
+        nutriView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+        nutriView.setText(recipeList.get(pos).getNutritionRecord().getTruncNutrition() + "\nPortion size: " + recipeList.get(pos).getPortion());
         view.setBackgroundColor(Color.WHITE);
 
         return view;
