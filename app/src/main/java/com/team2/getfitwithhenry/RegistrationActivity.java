@@ -359,7 +359,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            mEmailLayout.setHelperText("Username is already existed");
+                            mEmailLayout.setHelperText("Email is already existed");
                         }
                     });
                 }
