@@ -140,7 +140,7 @@ public class RecipeActivity extends AppCompatActivity {
 
     public void setBottomNavBar() {
         bottomNavView = findViewById(R.id.bottom_navigation);
-        bottomNavView.setSelectedItemId(R.id.nav_log);
+        bottomNavView.setSelectedItemId(R.id.nav_recipe);
         bottomNavView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -151,21 +151,25 @@ public class RecipeActivity extends AppCompatActivity {
                     case (R.id.nav_scanner):
                         intent = new Intent(getApplicationContext(), CameraActivity.class);
                         startActivity(intent);
+                        overridePendingTransition(R.animator.slide_in_right, R.animator.slide_out_left);
                         break;  //or should this be finish?
 
                     case (R.id.nav_search):
                         intent = new Intent(getApplicationContext(), SearchFoodActivity.class);
                         startActivity(intent);
+                        overridePendingTransition(R.animator.slide_in_left, R.animator.slide_out_right);
                         break;
 
-                    case (R.id.nav_recipe):
-                        intent = new Intent(getApplicationContext(), RecipeActivity.class);
+                    case (R.id.nav_log):
+                        intent = new Intent(getApplicationContext(), LoggerActivity.class);
                         startActivity(intent);
+                        overridePendingTransition(R.animator.slide_in_left, R.animator.slide_out_right);
                         break;
 
                     case (R.id.nav_home):
                         intent = new Intent(getApplicationContext(), HomeActivity.class);
                         startActivity(intent);
+                        overridePendingTransition(R.animator.slide_in_left, R.animator.slide_out_right);
                         break;
                 }
 
