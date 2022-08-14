@@ -75,9 +75,8 @@ public class WaterIntakeGraphFilterFragment extends Fragment {
 
     private void showDropdownList(View view) {
         autoCompleteTextView = view.findViewById(R.id.dropDownListforWaterIntake);
-        int testing = graphFilter.length;
+        autoCompleteTextView.setFocusable(false);
         adapterItem = new ArrayAdapter<String>(getActivity().getApplicationContext(),R.layout.graph_list_item, graphFilter);
-        // adapterItem = new ArrayAdapter<String>(this,graphFilter, R.layout.graph_list_item);
         autoCompleteTextView.setAdapter(adapterItem);
         autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

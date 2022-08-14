@@ -26,6 +26,7 @@
             android:id="@+id/nameLayout"
             android:layout_marginTop="10dp"
             android:hint="Name"
+
             app:startIconDrawable="@drawable/ic_baseline_person_24"
             app:endIconMode="clear_text">
 
@@ -33,7 +34,8 @@
                 android:id="@+id/nameTxt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxLength="20"/>
+                android:maxLength="50"
+                />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -47,7 +49,7 @@
                 android:id="@+id/emailTxt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxLength="20"/>
+                android:maxLength="50"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -62,7 +64,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
-                android:maxLength="20"/>
+                android:maxLength="50"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -242,7 +244,8 @@
             android:text="Already Registered? Go Back to Login"
             android:layout_gravity="center"
             android:clickable="true"
-            android:layout_marginTop="20dp"/>
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="30dp"/>
     </LinearLayout>
 
 </ScrollView>
