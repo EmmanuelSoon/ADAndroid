@@ -12,23 +12,31 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Parcelable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethod;
+
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.navigation.NavigationBarView;
 import com.team2.getfitwithhenry.adapter.FoodListAdapter;
+import com.team2.getfitwithhenry.adapter.RecipeListAdapter;
 import com.team2.getfitwithhenry.model.Constants;
 import com.team2.getfitwithhenry.model.Ingredient;
+import com.team2.getfitwithhenry.model.Recipe;
+import com.team2.getfitwithhenry.model.WeightedIngredient;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,7 +45,9 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -57,10 +67,13 @@ public class SearchFoodActivity extends AppCompatActivity {
     private Toolbar mToolbar;
     private NavigationBarView bottomNavView;
     private Button mAddMealBtn;
+    private MaterialButtonToggleGroup mToggleBtn;
+    List<Recipe> rList;
     List<Ingredient> iList;
     String query;
     private final OkHttpClient client = new OkHttpClient();
     List<Ingredient> mealBuilder = new ArrayList<>();
+    List<Recipe> recipeBuilder = new ArrayList<>();
 
 
     @Override
@@ -73,34 +86,49 @@ public class SearchFoodActivity extends AppCompatActivity {
 
         mSearchBtn = findViewById(R.id.search);
         mEditText = findViewById(R.id.editText);
+        mToggleBtn = (MaterialButtonToggleGroup) findViewById(R.id.toggleButton);
 
+        //TODO check if there are other actiivities using this function
+//        Intent intent = getIntent();
+//        query = intent.getStringExtra("SearchValue");
+//        if (query != null) {
+//            getSearchResult(query);
+//        }
+//        mEditText.setText(query);
 
-        Intent intent = getIntent();
-        query = intent.getStringExtra("SearchValue");
-        if (query != null) {
-            getSearchResult(query);
-        }
-
-        mEditText.setText(query);
+        mToggleBtn.setSingleSelection(true);
+        mToggleBtn.setSelectionRequired(true);
+        mToggleBtn.check(R.id.ingredientBtn);
 
         mSearchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 query = mEditText.getText().toString();
-                getSearchResult(query);
-
+                if (mToggleBtn.getCheckedButtonId() == R.id.ingredientBtn) {
+                    getIngredientResult(query);
+                }
+                else if (mToggleBtn.getCheckedButtonId() == R.id.recipeBtn) {
+                    getRecipeResult(query);
+                }
                 //drop the soft keyboard
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
             }
         });
 
+
         mAddMealBtn = findViewById(R.id.add_as_meal);
         mAddMealBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!recipeBuilder.isEmpty()){
+                    for (Recipe recipe : recipeBuilder){
+                        for(WeightedIngredient wi : recipe.getIngredientList()){
+                            mealBuilder.add(wi.getIngredient());
+                        }
+                    }
+                }
                 //check if there is an activity that called search
-
                 ComponentName componentName = getCallingActivity();
                 if (componentName == null) {
                     Intent intent = new Intent(SearchFoodActivity.this, AddMealActivity.class);
@@ -109,6 +137,7 @@ public class SearchFoodActivity extends AppCompatActivity {
                 } else {
                     Intent response = new Intent();
                     response.putExtra("ingredients", (Serializable) mealBuilder);
+                    response.putExtra("recipe", (Serializable) recipeBuilder);
                     setResult(RESULT_OK, response);
                     finish();
                 }
@@ -119,8 +148,7 @@ public class SearchFoodActivity extends AppCompatActivity {
 
     }
 
-    public void getSearchResult(String query) {
-
+    public void getIngredientResult(String query) {
 
         JSONObject postData = new JSONObject();
         try {
@@ -128,8 +156,6 @@ public class SearchFoodActivity extends AppCompatActivity {
             MediaType JSON = MediaType.parse("application/json; charset=utf-8");
             RequestBody body = RequestBody.create(postData.toString(), JSON);
 
-
-            //need to use your own pc's ip address here, cannot use local host.
             Request request = new Request.Builder()
                     .url(Constants.javaURL + "/search/ingredients")
                     .post(body)
@@ -152,7 +178,7 @@ public class SearchFoodActivity extends AppCompatActivity {
                         ObjectMapper objectMapper = new ObjectMapper();
                         objectMapper.registerModule(new JavaTimeModule());
                         iList = Arrays.asList(objectMapper.readValue(responseBody.string(), Ingredient[].class));
-                        displaySearchResult(getApplicationContext(), iList);
+                        displayIngredientResult(getApplicationContext(), iList);
 
                         response.body().close();
                     } catch (Exception e) {
@@ -166,7 +192,54 @@ public class SearchFoodActivity extends AppCompatActivity {
 
     }
 
-    public void displaySearchResult(final Context context, List<Ingredient> myList) {
+    public void getRecipeResult(String query) {
+
+        JSONObject postData = new JSONObject();
+        try {
+            postData.put("query", query);
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+            RequestBody body = RequestBody.create(postData.toString(), JSON);
+
+
+            //need to use your own pc's ip address here, cannot use local host.
+            Request request = new Request.Builder()
+                    .url(Constants.javaURL + "/search/recipes")
+                    .post(body)
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) {
+                    try {
+                        ResponseBody responseBody = response.body();
+                        if (!response.isSuccessful()) {
+                            throw new IOException("Unexpected code " + response);
+                        }
+
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                        objectMapper.registerModule(new JavaTimeModule());
+                        rList = Arrays.asList(objectMapper.readValue(responseBody.string(), Recipe[].class));
+                        displayRecipeResult(getApplicationContext(), rList);
+
+                        response.body().close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void displayIngredientResult(final Context context, List<Ingredient> myList) {
         if (context != null) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
 
@@ -191,6 +264,41 @@ public class SearchFoodActivity extends AppCompatActivity {
                             }
                             else {
                                 mealBuilder.remove(iList.get(position));
+                                view.setBackgroundColor(Color.WHITE);
+                            }
+                        }
+                    });
+
+                }
+            });
+        }
+    }
+
+    public void displayRecipeResult(final Context context, List<Recipe> recipeList) {
+        if (context != null) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+
+                @Override
+                public void run() {
+                    RecipeListAdapter rAdapter = new RecipeListAdapter(context, recipeList);
+                    mlistView = findViewById(R.id.listView);
+                    if (mlistView != null) {
+                        mlistView.setAdapter(rAdapter);
+                    }
+
+                    mlistView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+                    mlistView.setItemsCanFocus(false);
+
+                    mlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            mAddMealBtn.setVisibility(View.VISIBLE);
+                            if (recipeBuilder.isEmpty() | !recipeBuilder.contains(recipeList.get(position))) {
+                                recipeBuilder.add(recipeList.get(position));
+                                view.setBackgroundColor(Color.LTGRAY);
+                            }
+                            else {
+                                recipeBuilder.remove(recipeList.get(position));
                                 view.setBackgroundColor(Color.WHITE);
                             }
                         }
