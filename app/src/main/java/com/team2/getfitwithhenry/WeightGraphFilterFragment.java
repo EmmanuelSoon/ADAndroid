@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -76,6 +77,7 @@ public class WeightGraphFilterFragment extends Fragment {
 
     private void showDropdownList(View view) {
         autoCompleteTextView = view.findViewById(R.id.dropDownListforWeight);
+        autoCompleteTextView.setFocusable(false);
         adapterItem = new ArrayAdapter<String>(getActivity().getApplicationContext(),R.layout.graph_list_item, graphFilter);
         autoCompleteTextView.setAdapter(adapterItem);
         autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
