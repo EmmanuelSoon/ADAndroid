@@ -3,6 +3,8 @@ package com.team2.getfitwithhenry.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 public class NutritionRecord implements Serializable {
 
@@ -71,7 +73,10 @@ public class NutritionRecord implements Serializable {
     }
 
     public String getTruncNutrition(){
-        return "Total Calories: " + totalCalories + "\nCarbohydrates: " + carbs + "\nProteins: " + proteins + "\nFats: " + fats;
+        NumberFormat f = NumberFormat.getInstance(Locale.ENGLISH);
+        f.setMaximumFractionDigits(2);
+        f.setMinimumFractionDigits(2);
+        return "Total Calories: " + f.format(totalCalories) + "\nCarbohydrates: " + f.format(carbs) + "\nProteins: " + f.format(proteins) + "\nFats: " + f.format(fats);
     }
 
     // Getters and setters
