@@ -34,7 +34,7 @@
                 android:id="@+id/nameTxt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxLength="20"
+                android:maxLength="50"
                 />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -49,7 +49,7 @@
                 android:id="@+id/emailTxt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxLength="20"/>
+                android:maxLength="50"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -64,7 +64,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
-                android:maxLength="20"/>
+                android:maxLength="50"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout

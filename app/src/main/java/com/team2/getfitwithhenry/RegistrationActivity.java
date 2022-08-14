@@ -147,7 +147,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                     initDatePicker();
                     openDatePicker(mDobBtn);
 
-                    // brute force
+                    // brute force to off the helper text
                     showErrorMsgIfEmpty(mDobLayout,dateOfBirth,"");
                 }
                 return false;
@@ -227,7 +227,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
 
     private boolean validation(String name, String email, String password, LocalDate dob, String gender, Goal goal) throws JSONException {
 
-        String countError = "Please enter between "+min+" and 20 characters!";
+        String countError = "Please enter between "+min+" and 50 characters!";
         String msg = "Please select One*";
 
         showWordCountError(name, min, mNameLayout, countError );
@@ -514,7 +514,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
 
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            String countError = "Please enter between "+min+" and 20 characters!";
+            String countError = "Please enter between "+min+" and 50 characters!";
             wordCountError(mNameTxt, min, mNameLayout, countError);
         }
         @Override
@@ -529,7 +529,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
 
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            String countError = "Please enter between "+min+" and 20 characters!";
+            String countError = "Please enter between "+min+" and 50 characters!";
             wordCountError(mEmailTxt,min,mEmailLayout, countError);
         }
         @Override
@@ -544,7 +544,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
 
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            String countError = "Please enter between "+min+" and 20 characters!";
+            String countError = "Please enter between "+min+" and 50 characters!";
             wordCountError(mPasswordTxt, min, mPasswordLayout, countError);
         }
         @Override
