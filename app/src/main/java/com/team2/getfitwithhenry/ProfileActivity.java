@@ -6,20 +6,19 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.Spinner;
-import android.widget.TextView;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -30,10 +29,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.team2.getfitwithhenry.model.Constants;
 import com.team2.getfitwithhenry.model.Goal;
 import com.team2.getfitwithhenry.model.User;
+import com.team2.getfitwithhenry.model.UserWithWeightHeight;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,7 +44,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import okhttp3.Call;
@@ -58,22 +58,19 @@ import okhttp3.ResponseBody;
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
 
     private final OkHttpClient client = new OkHttpClient();
-    private EditText mtxtName;
-    private EditText mtxtUsername;
-    private EditText mtxtCalorieIntake;
-    private EditText mtxtWaterIntake;
-    private RadioButton mrBtnMale, mrBtnFemale;
-    private RadioGroup mRGGenderGrp;
-    private Spinner mGoalSelect, mactivityLevelSelector;
-    private DatePickerDialog mdobDatePicker;
-    private TextView mtxtprofileInvalidError;
-    private Button mbtnDob;
     private Toolbar mToolbar;
     private BottomNavigationView bottomNavView;
-    private Button mbtnSaveChanges;
+    TextInputLayout mNameLayout, mEmailLayout, mGenderLayout, mGoalLayout, mDobLayout, mactivityLayout, mweightLayout, mheightLayout, mcalorieLimitLayout, mwaterLimitLayout;
+    private EditText mtxtName, mtxtUsername, mtxtCalorieIntake, mtxtWaterIntake, mtxtWeight, mtxtHeight, mbtnDob;
+    private AutoCompleteTextView mGoalSelect, mactivityLevelSelector, mgenderSelector;
+    private DatePickerDialog mdobDatePicker;
+    private ImageButton mbtnSaveChanges;
+    private String goalSelction, activitylevelSelction, genderSelection;
     private String[] goalmatch = {"WEIGHTLOSS", "WEIGHTGAIN", "WEIGHTMAINTAIN", "MUSCLE"};
     private String[] goals = {"Weight Loss", "Weight Gain", "Weight Maintain", "Muscle"};
     private String[] activityLevels = {"Lightly Active", "Moderately Active", "Very Active", "Extra Active"};
+    String[] genderArr = {"Male", "Female"};
+    private UserWithWeightHeight userWithWeightHeight;
     private User user;
     private User updatedUser;
 
@@ -85,24 +82,56 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         setTopNavBar();
         setBottomNavBar();
 
+        mNameLayout = findViewById(R.id.nameLayout);
         mtxtName = findViewById(R.id.txtName);
-        mtxtUsername = findViewById(R.id.txtUsername);
-        mbtnDob = findViewById(R.id.btnDob);
-        mrBtnMale = findViewById(R.id.rBtnMale);
-        mrBtnFemale = findViewById(R.id.rBtnFemale);
-        mRGGenderGrp = findViewById(R.id.rgGenderGrp);
-        mtxtCalorieIntake = findViewById(R.id.txtCalorieIntake);
-        mtxtWaterIntake = findViewById(R.id.txtWaterIntake);
-        mGoalSelect = findViewById(R.id.goalSelect);
-        mactivityLevelSelector = findViewById(R.id.continuous_slider);
-        mbtnSaveChanges = findViewById(R.id.btnSaveProfileChanges);
-        mtxtprofileInvalidError = findViewById(R.id.txtprofileInvalidError);
 
+        mEmailLayout = findViewById(R.id.emailLayout);
+        mtxtUsername = findViewById(R.id.txtUsername);
+
+        mDobLayout = findViewById(R.id.dobLayout);
+        mbtnDob = findViewById(R.id.btnDob);
+        mbtnDob.setInputType(InputType.TYPE_NULL);
+        mbtnDob.setKeyListener(null);
+
+        mGoalLayout = findViewById(R.id.goalLayout);
+        mGoalSelect = findViewById(R.id.goalSelect);
+
+        mactivityLayout = findViewById(R.id.activityLayout);
+        mactivityLevelSelector = findViewById(R.id.continuous_slider);
+
+        mweightLayout = findViewById(R.id.weightLayout);
+        mtxtWeight = findViewById(R.id.userWeight);
+
+        mheightLayout = findViewById(R.id.heightLayout);
+        mtxtHeight = findViewById(R.id.userHeight);
+
+        mGenderLayout = findViewById(R.id.genderLayout);
+        mgenderSelector = findViewById(R.id.genderTxt);
+
+        mcalorieLimitLayout = findViewById(R.id.calorieLimitLayout);
+        mtxtCalorieIntake = findViewById(R.id.txtCalorieIntake);
+
+        mwaterLimitLayout = findViewById(R.id.waterLimitLayout);
+        mtxtWaterIntake = findViewById(R.id.txtWaterIntake);
+
+        mbtnSaveChanges = findViewById(R.id.btnSaveProfileChanges);
+
+        mtxtName.setOnClickListener(this);
+        mtxtUsername.setOnClickListener(this);
+        mtxtWeight.setOnClickListener(this);
+        mtxtHeight.setOnClickListener(this);
+        mbtnDob.setOnClickListener(this);
         mbtnSaveChanges.setOnClickListener(this);
 
+        initEventListeners();
+
         getUserFromSharedPreference();
-        initDatePicker();
-        onInitialDataBind();
+        try {
+            getUserDetailswithHeightandWeight();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void setTopNavBar() {
@@ -151,6 +180,89 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         });
     }
 
+    private void initEventListeners() {
+        mbtnDob.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                initDatePicker();
+                openDatePicker(mbtnDob);
+            }
+            return false;
+        });
+
+        mgenderSelector.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (view == mgenderSelector) {
+                    if (hasWindowFocus()) {
+                        closeKeyboard(view);
+                    }
+                }
+
+            }
+        });
+
+        mgenderSelector.setOnItemClickListener((adapterView, view, i, l) -> {
+            genderSelection = genderArr[i];
+            mGenderLayout.setHint("Select Gender");
+            //showErrorMsgIfEmpty(mGenderLayout,gender, "Please select One*");
+        });
+
+        mGoalSelect.setOnFocusChangeListener((view, b) -> {
+            if (view == mGoalSelect) {
+                if (hasWindowFocus()) {
+                    closeKeyboard(view);
+                }
+            }
+        });
+        mGoalSelect.setOnItemClickListener((adapterView, view, i, l) -> {
+            goalSelction = goals[i];
+            mGoalLayout.setHint("Select Goal");
+            //showErrorMsgIfEmpty(mGoalLayout,goal,"Please select One*");
+        });
+
+        mactivityLevelSelector.setOnFocusChangeListener((view, b) -> {
+            if (view == mactivityLevelSelector) {
+                if (hasWindowFocus()) {
+                    closeKeyboard(view);
+                }
+            }
+        });
+        mactivityLevelSelector.setOnItemClickListener((adapterView, view, i, l) -> {
+            activitylevelSelction = activityLevels[i];
+            mactivityLayout.setHint("Select Activity");
+            //showErrorMsgIfEmpty(mGoalLayout,goal,"Please select One*");
+        });
+
+        arrayAddapterSetter();
+    }
+
+    private void arrayAddapterSetter() {
+        ArrayAdapter<String> goalAdapter = new ArrayAdapter<>(this, R.layout.drop_down_goal, goals);
+        mGoalSelect.setAdapter(goalAdapter);
+
+        ArrayAdapter<String> activitylevelAdapter = new ArrayAdapter<>(this, R.layout.drop_down_goal, activityLevels);
+        mactivityLevelSelector.setAdapter(activitylevelAdapter);
+
+        ArrayAdapter<String> genderAd = new ArrayAdapter(this, R.layout.drop_down_gender, genderArr);
+        genderAd.setDropDownViewResource(android.R.layout.select_dialog_singlechoice);
+        mgenderSelector.setAdapter(genderAd);
+    }
+
+    private void closeKeyboard(View view) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
+    }
+
+    private void getUserFromSharedPreference() {
+        SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = pref.getString("userDetails", "");
+        user = gson.fromJson(json, User.class);
+        user.setDateofbirth(LocalDate.parse(user.getDobStringFormat(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        user.setDateCreated(LocalDate.parse(user.getDateCreatedStringFormat(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -174,8 +286,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.btnSaveProfileChanges) {
-            mtxtprofileInvalidError.setText(" ");
-            mtxtprofileInvalidError.setVisibility(View.INVISIBLE);
+
             if (validateFormFields()) {
                 checkIfDetailsChanged();
                 try {
@@ -187,50 +298,20 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
-    private void getUserFromSharedPreference() {
-
-        SharedPreferences pref = getSharedPreferences("UserDetailsObj", MODE_PRIVATE);
-
-        if (pref.contains("userDetails")) {
-            Gson gson = new Gson();
-            String json = pref.getString("userDetails", "");
-            user = gson.fromJson(json, User.class);
-            user.setDateofbirth(LocalDate.parse(user.getDobStringFormat(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-
-            updatedUser = user;
-        }
-
-    }
-
     private void onInitialDataBind() {
+
+        int position = Arrays.asList(goalmatch).indexOf(user.getGoal().name());
 
         mtxtName.setText(user.getName());
         mtxtUsername.setText(user.getUsername());
         mtxtCalorieIntake.setText(user.getCalorieintake_limit_inkcal().toString());
         mtxtWaterIntake.setText(user.getWaterintake_limit_inml().toString());
-
-        if (user.getGender().toUpperCase().equals("M")) {
-            mrBtnMale.setChecked(true);
-            mrBtnFemale.setChecked(false);
-        } else if (user.getGender().toUpperCase().equals("F")) {
-            mrBtnMale.setChecked(false);
-            mrBtnFemale.setChecked(true);
-        }
-
+        mtxtWeight.setText(userWithWeightHeight.getUserWeight().toString());
+        mtxtHeight.setText(userWithWeightHeight.getUserHeight().toString());
         mbtnDob.setText(setDate(user.getDateofbirth()));
-
-        int position = Arrays.asList(goalmatch).indexOf(user.getGoal().toString());
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, goals);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mGoalSelect.setAdapter(adapter);
-        mGoalSelect.setSelection(position);
-
-        position = Arrays.asList(activityLevels).indexOf(user.getActivitylevel());
-        ArrayAdapter<String> activityLevelAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, activityLevels);
-        activityLevelAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mactivityLevelSelector.setAdapter(activityLevelAdapter);
-        mactivityLevelSelector.setSelection(position);
-
+        mGoalSelect.setText(goals[position], false);
+        mactivityLevelSelector.setText(user.getActivitylevel(), false);
+        mgenderSelector.setText((user.getGender().equals("M") ? "Male" : "Female"), false);
     }
 
     private void initDatePicker() {
@@ -264,14 +345,17 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void checkIfDetailsChanged() {
-        RadioButton checkBtn = (RadioButton) findViewById(mRGGenderGrp.getCheckedRadioButtonId());
-        String selectedGoal = goalmatch[Arrays.asList(goals).indexOf(mGoalSelect.getSelectedItem().toString())];
-        String gender = (checkBtn == mrBtnMale ? "M" : "F");
+
+        int position = Arrays.asList(goals).indexOf(mGoalSelect.getText().toString());
+        String selectedGoal = goalmatch[position];
+        genderSelection = mgenderSelector.getText().toString();
+        String gender = (genderSelection.equals("Male") ? "M" : "F");
         String selectedDob = mbtnDob.getText().toString();
         String[] dateArray = selectedDob.split("-");
         selectedDob = dateArray[2] + "-" + dateArray[1] + "-" + dateArray[0];
         LocalDate convertedDate = LocalDate.parse(selectedDob, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        String selectedActivity = mactivityLevelSelector.getSelectedItem().toString();
+        activitylevelSelction = mactivityLevelSelector.getText().toString();
+
 
         if (mtxtName.getText().toString().equals(user.getName()) &&
                 mtxtUsername.getText().toString().equals(user.getUsername()) &&
@@ -280,7 +364,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 selectedGoal.equals(user.getGoal().toString()) &&
                 mtxtCalorieIntake.getText().toString().equals(user.getCalorieintake_limit_inkcal().toString()) &&
                 mtxtWaterIntake.getText().toString().equals(user.getWaterintake_limit_inml().toString()) &&
-                selectedActivity.equals(user.getActivitylevel())) {
+                activitylevelSelction.equals(user.getActivitylevel()) &&
+                mtxtWeight.getText().toString().equals(userWithWeightHeight.getUserWeight().toString()) &&
+                mtxtHeight.getText().toString().equals(userWithWeightHeight.getUserHeight().toString())) {
             Toast.makeText(this,
                     "No details changed", Toast.LENGTH_SHORT).show();
         } else {
@@ -294,7 +380,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             updatedUser.setDateofbirth(convertedDate);
             updatedUser.setGender(gender);
             updatedUser.setGoal(Goal.valueOf(selectedGoal));
-            updatedUser.setActivitylevel(mactivityLevelSelector.getSelectedItem().toString());
+            updatedUser.setActivitylevel(activitylevelSelction);
             updatedUser.setCalorieintake_limit_inkcal(Double.parseDouble(mtxtCalorieIntake.getText().toString()));
             updatedUser.setWaterintake_limit_inml(Double.parseDouble(mtxtWaterIntake.getText().toString()));
 
@@ -315,6 +401,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         userObj.put("activitylevel", updatedUser.getActivitylevel());
         userObj.put("calorieintake_limit_inkcal", updatedUser.getCalorieintake_limit_inkcal());
         userObj.put("waterintake_limit_inml", updatedUser.getWaterintake_limit_inml());
+        userObj.put("userWeight", mtxtWeight.getText().toString());
+        userObj.put("userHeight", mtxtHeight.getText().toString());
 
         updatUserDetails(userObj);
     }
@@ -322,44 +410,40 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @SuppressLint("ResourceType")
     private boolean validateFormFields() {
         if (mtxtName.getText().toString().trim().isEmpty()) {
-            mtxtName.setError("Name cannot be empty");
+            mNameLayout.setHelperText("required*");
             return false;
         }
 
         if (mtxtUsername.getText().toString().trim().isEmpty()) {
-            mtxtUsername.setError("Username cannot be empty");
+            mEmailLayout.setHelperText("required");
             return false;
         }
 
         String userNameFormat = "^[A-Za-z0-9+_.-]+@(.+)$";
         Pattern pattern = Pattern.compile(userNameFormat);
         if (!pattern.matcher(mtxtUsername.getText().toString()).matches()) {
-            mtxtUsername.setError("Invalid Email Format");
-            return false;
-        }
-
-        //RadioButton checkBtn = (RadioButton) findViewById(mRGGenderGrp.getCheckedRadioButtonId());
-        if (mRGGenderGrp.getCheckedRadioButtonId() <= 0) {
-            mrBtnFemale.setError("Select gender");
-            return false;
-        }
-
-        if (mGoalSelect.getSelectedItem() == null || mGoalSelect.getSelectedItem().toString().trim().isEmpty()) {
-            TextView errorText = (TextView) mGoalSelect.getSelectedView();
-            errorText.setError("Select goal");
-            errorText.setTextColor(Color.RED);
+            mEmailLayout.setHelperText("Invalid Email Format");
             return false;
         }
 
         if (mtxtCalorieIntake.getText().toString().trim().isEmpty()) {
-            mtxtCalorieIntake.setError("Calorie limit cannot be empty");
+            mcalorieLimitLayout.setHelperText("required*");
             return false;
         }
 
         if (mtxtWaterIntake.getText().toString().trim().isEmpty()) {
-            mtxtWaterIntake.setError("water limit cannot be empty");
+            mwaterLimitLayout.setHelperText("required*");
             return false;
         }
+
+        if (mtxtWeight.getText().toString().trim().isEmpty()) {
+            mweightLayout.setHelperText("required*");
+        }
+
+        if (mtxtHeight.getText().toString().trim().isEmpty()) {
+            mheightLayout.setHelperText("required*");
+        }
+
         return true;
     }
 
@@ -386,9 +470,13 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 objectMapper.registerModule(new JavaTimeModule());
 
                 if (responseBody.contentLength() != 0)
-                    user = objectMapper.readValue(responseBody.string(), User.class);
+                    userWithWeightHeight = objectMapper.readValue(responseBody.string(), UserWithWeightHeight.class);
                 else
                     displayprofileInvalidError(getApplicationContext());
+
+                if (userWithWeightHeight != null) {
+                    updatedUser = user = userWithWeightHeight.getUser();
+                }
 
                 if (user != null) {
                     runOnUiThread(new Runnable() {
@@ -402,6 +490,63 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 }
             }
         });
+    }
+
+    private void getUserDetailswithHeightandWeight() throws JSONException {
+
+        JSONObject getUserObj = new JSONObject();
+        getUserObj.put("id", user.getId());
+
+        MediaType JsonObj = MediaType.parse("application/json; charset=utf-8");
+        RequestBody requestBody = RequestBody.create(JsonObj, getUserObj.toString());
+        Request request = new Request.Builder().url(Constants.javaURL + "/userprofile/getUserDetailswithHeightandWeight").post(requestBody).build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                ResponseBody responseBody = response.body();
+
+                if (!response.isSuccessful()) {
+                    throw new IOException("Unexpected code " + response);
+                }
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.registerModule(new JavaTimeModule());
+
+                if (responseBody.contentLength() != 0)
+                    userWithWeightHeight = objectMapper.readValue(responseBody.string(), UserWithWeightHeight.class);
+                else
+                    userWithWeightHeight = null;
+
+                if (userWithWeightHeight != null) {
+                    updatedUser = user = userWithWeightHeight.getUser();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            onInitialDataBind();
+                        }
+                    });
+                }
+
+                if (userWithWeightHeight == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), "Something Went Wrong", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+
+
+                response.body().close();
+            }
+        });
+
     }
 
     private void updateUserinSharedPreference(User user) {
@@ -418,9 +563,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private void displayprofileInvalidError(Context context) {
 
         new Handler(Looper.getMainLooper()).post(() -> {
-
-            mtxtprofileInvalidError.setText("Username already Exists!");
-            mtxtprofileInvalidError.setVisibility(View.VISIBLE);
+            mEmailLayout.setHelperText("Username found. Enter different one!");
             Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_LONG).show();
         });
     }
@@ -439,7 +582,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private void startLoginActivity() {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
-
     }
 
 }
