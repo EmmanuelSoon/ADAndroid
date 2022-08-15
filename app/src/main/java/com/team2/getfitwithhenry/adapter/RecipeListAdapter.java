@@ -20,8 +20,10 @@ import androidx.annotation.NonNull;
 import com.team2.getfitwithhenry.R;
 import com.team2.getfitwithhenry.model.Recipe;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import android.util.Base64;
 import java.util.List;
 
 public class RecipeListAdapter extends ArrayAdapter<Recipe> {
@@ -45,7 +47,12 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
         try {
             imageView.setImageBitmap(getBitmapFromAssets("seed_images/" + recipeName + ".jpg"));
         } catch (IOException ex){
-            imageView.setImageResource(R.drawable.ic_baseline_image_not_supported_24);
+            String image = recipeList.get(pos).getImage();
+            byte[] decodedString = Base64.decode(image.substring(image.indexOf(",") + 1), Base64.DEFAULT);
+            InputStream input = new ByteArrayInputStream(decodedString);
+            Bitmap bitmap = BitmapFactory.decodeStream(input);
+            imageView.setImageBitmap(bitmap);
+//            imageView.setImageResource(R.drawable.ic_baseline_image_not_supported_24);
         }
 
         TextView nameView = view.findViewById(R.id.queryName);
