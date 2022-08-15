@@ -439,10 +439,22 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
         if (mtxtWeight.getText().toString().trim().isEmpty()) {
             mweightLayout.setHelperText("required*");
+            return false;
+        }
+
+        if (Double.parseDouble(mtxtWeight.getText().toString()) <= 0.0 ) {
+            mweightLayout.setHelperText("Should be greater than 0");
+            return false;
         }
 
         if (mtxtHeight.getText().toString().trim().isEmpty()) {
             mheightLayout.setHelperText("required*");
+            return false;
+        }
+
+        if (Double.parseDouble(mtxtHeight.getText().toString()) <= 0.0 ) {
+            mheightLayout.setHelperText("Should be greater than 0");
+            return false;
         }
 
         return true;
