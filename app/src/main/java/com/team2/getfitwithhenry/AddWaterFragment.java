@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,6 +47,8 @@ public class AddWaterFragment extends DialogFragment {
     private List<Double> cupValues = Arrays.asList(236.0, 330.0, 500.0);
     private IAddWater mCallBack;
     private boolean isAdding;
+    private String ADD_WATER = "#6f956c";
+    private String REMOVE_WATER = "#93000A";
 
     public AddWaterFragment() {
         // Required empty public constructor
@@ -57,10 +61,16 @@ public class AddWaterFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        TextView textView = new TextView(getContext());
+        textView.setText(isAdding == true? "Add water": "Remove water");
+        textView.setTextColor(Color.WHITE);
+        textView.setPadding(20,30,20,30);
+        textView.setTextSize(25F);
+        textView.setBackgroundColor(isAdding == true? Color.parseColor(ADD_WATER) : Color.parseColor(REMOVE_WATER));
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         builder.setView(inflater.inflate(R.layout.fragment_add_water, null))
-                .setTitle(isAdding == true? "Add water": "Remove water")
+                .setCustomTitle(textView)
                 .setItems(new String[]{"Small cup - 236ml", "Medium cup - 330ml", "Large cup - 500ml"}, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -79,6 +89,7 @@ public class AddWaterFragment extends DialogFragment {
                         AddWaterFragment.this.getDialog().cancel();
                     }
                 });
+
         return builder.create();
     }
 

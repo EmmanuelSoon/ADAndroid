@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,6 +80,8 @@ public class CaloriesGraphFilterFragment extends Fragment {
         adapterItem = new ArrayAdapter<String>(getActivity().getApplicationContext(),R.layout.graph_list_item, graphFilter);
         // adapterItem = new ArrayAdapter<String>(this,graphFilter, R.layout.graph_list_item);
         autoCompleteTextView.setAdapter(adapterItem);
+        autoCompleteTextView.setRawInputType(InputType.TYPE_NULL);
+        autoCompleteTextView.setFocusable(false);
         autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
