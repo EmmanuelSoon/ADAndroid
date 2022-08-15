@@ -11,6 +11,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textAlignment="center"
         android:text="A Breakdown of your meals' calories based on the macronutrients."
         android:padding="5dp">
 
@@ -41,6 +42,8 @@
                 <TextView android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
                 <TextView android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+                <TextView android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:layout_gravity="center"
@@ -53,13 +56,18 @@
             </TableRow>
 
             <TableRow>
+                <TextView android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="    "
+                    android:layout_marginTop="5dp"
+                    android:background="@color/proteinRed"/>
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Protein"
                     android:padding="5dp"
                     android:layout_gravity="center"
-                    android:background="@color/proteinRed"/>
+                    />
                 <TextView
                     android:id="@+id/row1_2"
                     android:layout_width="match_parent"
@@ -77,12 +85,15 @@
             </TableRow>
 
             <TableRow>
+                <TextView android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="    "
+                    android:background="@color/carbGreen"/>
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Carbs"
-                    android:padding="5dp"
-                    android:background="@color/carbGreen"/>
+                    android:padding="5dp" />
                 <TextView
                     android:id="@+id/row2_2"
                     android:layout_width="match_parent"
@@ -100,12 +111,16 @@
             </TableRow>
 
             <TableRow>
+                <TextView android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="    "
+                    android:background="@color/fatYellow"/>
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Fats"
                     android:padding="5dp"
-                    android:background="@color/fatYellow"/>
+                    />
                 <TextView
                     android:id="@+id/row3_2"
                     android:layout_width="match_parent"
