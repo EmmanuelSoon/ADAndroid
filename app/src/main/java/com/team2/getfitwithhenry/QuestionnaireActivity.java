@@ -71,6 +71,7 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_questionnaire);
 
+        mtxtName = findViewById(R.id.txtNameQuestionnaire);
         mtxtUserWeight = findViewById(R.id.txtUserWeight);
         mtxtUserHeight = findViewById(R.id.txtUserHeight);
         mactivityLevelSelector = findViewById(R.id.continuous_slider);
