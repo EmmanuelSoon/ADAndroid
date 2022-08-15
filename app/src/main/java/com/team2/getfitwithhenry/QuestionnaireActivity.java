@@ -62,7 +62,7 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
     private User updatedUser;
     private ArrayAdapter<String> goalAdapter, activitylevelAdapter;
     private String activitylevelSelection;
-    private TextInputLayout mweightLayout, mheightLayout;
+    private TextInputLayout mweightLayout, mheightLayout,mactivityLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +77,7 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
         mtxtSomethingWentWrong = findViewById(R.id.txtSomethingWentWrong);
         mweightLayout = findViewById(R.id.weightLayout);
         mheightLayout = findViewById(R.id.heightLayout);
+        mactivityLayout = findViewById(R.id.activityLayout);
         mbtnSaveHealthDetails.setOnClickListener(this);
 
         getUserFromSharedPreference();
@@ -143,7 +144,7 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
         String gender = "M";
 
         updatedUser.setId(user.getId());
-        updatedUser.setName(mtxtName.getText().toString());
+        updatedUser.setName(user.getName());
         updatedUser.setUsername(user.getUsername());
         updatedUser.setPassword(user.getPassword());
         updatedUser.setDateofbirth(user.getDateofbirth());
@@ -291,6 +292,11 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
         }
         else if(Double.parseDouble(mtxtUserHeight.getText().toString()) < 3 || Double.parseDouble(mtxtUserHeight.getText().toString()) > 300 ){
             mheightLayout.setHelperText("Height should be between 3 to 300");
+            isValidationok = false;
+        }
+
+        if(mactivityLevelSelector.getText()==null){
+            mactivityLayout.setHelperText("*Required");
             isValidationok = false;
         }
 

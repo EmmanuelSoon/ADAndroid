@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -42,13 +46,16 @@
         android:id="@+id/weightLayout"
         android:layout_marginTop="20dp"
         android:hint="Enter Your Weight (Kg)"
-        app:startIconDrawable="@drawable/ic_weight_icon"
+
         app:endIconMode="clear_text">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/txtUserWeight"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:drawableStart="@drawable/ic_scale_weight_icon"
+            android:drawablePadding="13dp"
             android:maxLength="20"/>
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -57,7 +64,6 @@
         android:id="@+id/heightLayout"
         android:layout_marginTop="10dp"
         android:hint="Enter Your Height (cm)"
-        app:startIconDrawable="@drawable/ic_height_sv"
         app:startIconTint="#0000FF"
         app:endIconMode="clear_text">
 
@@ -65,6 +71,9 @@
             android:id="@+id/txtUserHeight"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:drawableStart="@drawable/ic_height_sv"
+            android:drawablePadding="13dp"
             android:maxLength="20"/>
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -78,10 +87,11 @@
         android:layout_marginStart="35dp"
         android:layout_marginEnd="35dp"
         android:layout_marginTop="5dp"
-        app:startIconDrawable="@drawable/ic_user_activity_level"
         app:startIconTint="#0000FF">
 
         <AutoCompleteTextView
+            android:drawableStart="@drawable/ic_user_activity_level"
+            android:drawablePadding="15dp"
             android:id="@+id/continuous_slider"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -106,3 +116,4 @@
         android:layout_marginTop="30dp"
         android:text="Save Details" />
 </LinearLayout>
+</ScrollView>
