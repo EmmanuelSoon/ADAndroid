@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,6 +78,7 @@ public class WeightGraphFilterFragment extends Fragment {
 
     private void showDropdownList(View view) {
         autoCompleteTextView = view.findViewById(R.id.dropDownListforWeight);
+        autoCompleteTextView.setRawInputType(InputType.TYPE_NULL);
         autoCompleteTextView.setFocusable(false);
         adapterItem = new ArrayAdapter<String>(getActivity().getApplicationContext(),R.layout.graph_list_item, graphFilter);
         autoCompleteTextView.setAdapter(adapterItem);

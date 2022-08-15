@@ -39,234 +39,216 @@
         app:layout_constraintTop_toBottomOf="@id/top_navbar_container">
 
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingStart="40dp"
-                tools:ignore="RtlSymmetry">
-
                 <TextView
-                    style="@style/registerStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Name : " />
+                    android:layout_gravity="center"
+                    android:layout_marginTop="20dp"
+                    android:text="EDIT PROFILE"
+                    android:textSize="20sp" />
+            >
 
-                <EditText
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/nameLayout"
+                style="@style/textInputLayout.OutlinedBox"
+                android:layout_marginTop="10dp"
+                android:hint="Name"
+                app:endIconMode="clear_text"
+                app:startIconDrawable="@drawable/ic_baseline_person_24">
+
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/txtName"
-                    style="@style/registerStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="50dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:background="@null"
-                    android:ems="15"
-                    android:gravity="center" />
-            </LinearLayout>
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingStart="40dp"
-                tools:ignore="RtlSymmetry">
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/emailLayout"
+                style="@style/textInputLayout.OutlinedBox"
+                android:hint="Email"
+                app:endIconMode="clear_text"
+                app:startIconDrawable="@drawable/ic_email">
 
-                <TextView
-                    style="@style/registerStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Email/Username : " />
-
-                <EditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/txtUsername"
-                    style="@style/registerStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="50dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:background="@null"
-                    android:ems="15"
-                    android:gravity="center" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20sp"
-                android:orientation="horizontal"
-                android:paddingLeft="40dp">
-
-                <TextView
-                    style="@style/registerStyle"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Date of Birth : " />
+                    android:maxLength="20" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-                <Button
+            <!-- android:drawableStart="@drawable/ic_birth_date_icon" -->
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/dobLayout"
+                style="@style/textInputLayout.OutlinedBox"
+                android:layout_marginTop="5dp"
+                android:hint="Date of Birth"
+                app:endIconDrawable="@drawable/ic_down_arrow_icon"
+                app:endIconMode="custom"
+                app:startIconDrawable="@drawable/ic_birth_date_icon">
+
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/btnDob"
-                    style="?android:spinnerStyle"
-                    android:layout_width="185dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="40dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:onClick="openDatePicker"
-                    android:paddingLeft="40dp"
-                    android:text="01 01 2020"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView" />
-            </LinearLayout>
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <RadioGroup
-                android:id="@+id/rgGenderGrp"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/goalLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
-                android:layout_height="59dp"
-                android:orientation="horizontal"
-                android:paddingLeft="40dp">
-
-                <TextView
-                    style="@style/registerStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="35dp"
-                    android:text="Select Gender : " />
-
-                <RadioButton
-                    android:id="@+id/rBtnMale"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="15dp"
-                    android:paddingRight="15dp"
-                    android:text="Male" />
-
-                <RadioButton
-                    android:id="@+id/rBtnFemale"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="15dp"
-                    android:paddingRight="15dp"
-                    android:text="Female" />
-            </RadioGroup>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingLeft="40dp">
+                android:layout_marginStart="35dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="35dp"
+                app:helperTextTextColor="@color/red"
+                app:startIconDrawable="@drawable/ic_goal_icon"
+                app:startIconTint="#0000FF">
 
-                <TextView
-                    style="@style/registerStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Choose Your Goal" />
-
-                <Spinner
+                <AutoCompleteTextView
                     android:id="@+id/goalSelect"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center" />
-            </LinearLayout>
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:dropDownAnchor="@id/goalLayout"
+                    android:hint="Your Goal"
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/activityLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingLeft="40dp">
+                android:layout_marginStart="35dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="35dp"
+                app:helperTextTextColor="@color/red"
+                app:startIconDrawable="@drawable/ic_goal_icon"
+                app:startIconTint="#0000FF">
 
-                <TextView
-                    style="@style/registerStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Weekly Activity Level" />
-
-                <Spinner
+                <AutoCompleteTextView
                     android:id="@+id/continuous_slider"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center" />
-            </LinearLayout>
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:dropDownAnchor="@id/activityLayout"
+                    android:hint="Activity Level"
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:orientation="horizontal"
-                android:paddingStart="40dp"
-                tools:ignore="RtlSymmetry">
+                android:weightSum="2">
 
-                <TextView
-                    style="@style/registerStyle"
-                    android:layout_width="wrap_content"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/weightLayout"
+                    style="@style/textInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Calorie Intake Limit (kcal) : " />
+                    android:layout_weight="1"
+                    android:hint="Weight (kg)"
+                    app:startIconDrawable="@drawable/ic_scale_weight_icon">
 
-                <EditText
-                    android:id="@+id/txtCalorieIntake"
-                    style="@style/registerStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="50dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:background="@null"
-                    android:ems="15"
-                    android:enabled="false"
-                    android:gravity="center"
-                    android:inputType="numberDecimal" />
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/userWeight"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/heightLayout"
+                    style="@style/textInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Height (cm)"
+                    android:textSize="5sp"
+                    app:startIconDrawable="@drawable/ic_height_sv">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/userHeight"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/genderLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="35dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="35dp"
+                app:helperTextTextColor="@color/red"
+                app:startIconDrawable="@drawable/ic_genders_icon"
+                app:startIconTint="#0000FF">
+
+                <AutoCompleteTextView
+                    android:id="@+id/genderTxt"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:hint="Gender"
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:orientation="horizontal"
-                android:paddingStart="40dp"
-                tools:ignore="RtlSymmetry">
+                android:weightSum="2">
 
-                <TextView
-                    style="@style/registerStyle"
-                    android:layout_width="wrap_content"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/calorieLimitLayout"
+                    style="@style/textInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Water Intake Limit (ml) : " />
-
-                <EditText
-                    android:id="@+id/txtWaterIntake"
-                    style="@style/registerStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="50dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:background="@null"
-                    android:ems="15"
+                    android:layout_weight="1"
                     android:enabled="false"
-                    android:gravity="center"
-                    android:inputType="numberDecimal" />
+                    android:hint="Cal lim (kcal)">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/txtCalorieIntake"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:enabled="false" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <ImageButton
+                    android:id="@+id/btnSaveProfileChanges"
+                    android:layout_width="88dp"
+                    android:layout_height="66dp"
+                    android:src="@drawable/ic_baseline_edit_note_24" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/waterLimitLayout"
+                    style="@style/textInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:enabled="false"
+                    android:hint="Water Lim (ml)"
+                    android:textSize="5sp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/txtWaterIntake"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:enabled="false" />
+                </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/txtprofileInvalidError"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="20dp"
-                android:text=" "
-                android:textColor="@color/red"
-                android:visibility="invisible" />
-
-            <Button
-                android:id="@+id/btnSaveProfileChanges"
-                android:layout_width="241dp"
-                android:layout_height="65dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="30dp"
-                android:text="Save Edited Changes" />
         </LinearLayout>
 
 

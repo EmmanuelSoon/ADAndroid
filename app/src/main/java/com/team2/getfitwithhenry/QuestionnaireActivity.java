@@ -9,7 +9,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.InputType;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -21,6 +24,7 @@ import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.team2.getfitwithhenry.model.Constants;
 import com.team2.getfitwithhenry.model.Goal;
@@ -49,15 +53,16 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
     private final OkHttpClient client = new OkHttpClient();
     private TextView mtxtName, mtxtSomethingWentWrong;
     private EditText mtxtUserWeight, mtxtUserHeight;
-    private AutoCompleteTextView mGoalSelect,mactivityLevelSelector;
+    private AutoCompleteTextView mactivityLevelSelector;
     private Button mbtnSaveHealthDetails;
     private String[] goalmatch = {"WEIGHTLOSS", "WEIGHTGAIN", "WEIGHTMAINTAIN", "MUSCLE"};
     private String[] goals = {"Weight Loss", "Weight Gain", "Weight Maintain", "Muscle"};
     private String[] activityLevels = {"Lightly Active", "Moderately Active", "Very Active", "Extra Active"};
     private User user;
     private User updatedUser;
-    private ArrayAdapter<String> goalAdapter,activitylevelAdapter;
-    private String goalSelection, activitylevelSelection;
+    private ArrayAdapter<String> goalAdapter, activitylevelAdapter;
+    private String activitylevelSelection;
+    private TextInputLayout mweightLayout, mheightLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,11 +72,11 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
         mtxtName = findViewById(R.id.txtNameQuestionnaire);
         mtxtUserWeight = findViewById(R.id.txtUserWeight);
         mtxtUserHeight = findViewById(R.id.txtUserHeight);
-        mGoalSelect = findViewById(R.id.goalSelection);
         mactivityLevelSelector = findViewById(R.id.continuous_slider);
         mbtnSaveHealthDetails = findViewById(R.id.btnSaveHealthDetails);
         mtxtSomethingWentWrong = findViewById(R.id.txtSomethingWentWrong);
-
+        mweightLayout = findViewById(R.id.weightLayout);
+        mheightLayout = findViewById(R.id.heightLayout);
         mbtnSaveHealthDetails.setOnClickListener(this);
 
         getUserFromSharedPreference();
@@ -92,7 +97,7 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
             }
         }
     }
-
+    
     @Override
     public void onBackPressed() {
         super.onBackPressed();
@@ -114,35 +119,7 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
     }
 
     private void onInitialDataBind() {
-        mtxtName.setText(user.getName());
-        switch (user.getGoal().name()){
-            case("WEIGHTLOSS"):
-                mGoalSelect.setText(goals[0]);
-                break;
-            case("WEIGHTGAIN"):
-                mGoalSelect.setText(goals[1]);
-                break;
-            case("WEIGHTMAINTAIN"):
-                mGoalSelect.setText(goals[2]);
-                break;
-            case("MUSCLE"):
-                mGoalSelect.setText(goals[3]);
-                break;
-            default:
-                mGoalSelect.setText(null);
-                break;
-        }
-        goalAdapter = new ArrayAdapter<String>(this, R.layout.graph_list_item, goals);
-        mGoalSelect.setAdapter(goalAdapter);
-        mGoalSelect.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                goalSelection = parent.getItemAtPosition(position).toString();
-                Toast.makeText(QuestionnaireActivity.this, "Item: " + goalSelection, Toast.LENGTH_SHORT).show();
-            }
-        });
-        mGoalSelect.setFocusable(false);
-
+        mtxtName.setText("Dear "+user.getName()+",");
         activitylevelAdapter = new ArrayAdapter<String>(this, R.layout.graph_list_item, activityLevels);
         mactivityLevelSelector.setAdapter(activitylevelAdapter);
         mactivityLevelSelector.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -152,6 +129,8 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
                 Toast.makeText(QuestionnaireActivity.this, "Item: " + activitylevelSelection, Toast.LENGTH_SHORT).show();
             }
         });
+
+        mactivityLevelSelector.setRawInputType(InputType.TYPE_NULL);
         mactivityLevelSelector.setFocusable(false);
     }
 
@@ -170,23 +149,7 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
         updatedUser.setDateofbirth(user.getDateofbirth());
         updatedUser.setGender(user.getGender());
         updatedUser.setActivitylevel(activitylevelSelection);
-        switch (goalSelection){
-            case("Weight Loss"):
-                updatedUser.setGoal(Goal.WEIGHTLOSS);
-                break;
-            case("Weight Gain"):
-                updatedUser.setGoal(Goal.WEIGHTGAIN);
-                break;
-            case("Weight Maintain"):
-                updatedUser.setGoal(Goal.WEIGHTMAINTAIN);
-                break;
-            case("Muscle"):
-                updatedUser.setGoal(Goal.MUSCLE);
-                break;
-            default:
-                break;
-        }
-
+        updatedUser.setGoal(user.getGoal());
         updatedUser.setCalorieintake_limit_inkcal(Double.parseDouble(performCalculation(updatedUser.getGender(), mtxtUserWeight.getText().toString(), mtxtUserHeight.getText().toString(), updatedUser.getActivitylevel())));
         updatedUser.setWaterintake_limit_inml(updatedUser.getGender().equals(gender) ? 3700.0 : 2700.0);
     }
@@ -308,17 +271,38 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
     }
 
     private boolean validateFields() {
-        if (mtxtUserWeight.getText().toString().trim().equals("") || Double.parseDouble(mtxtUserWeight.getText().toString()) <= 0) {
-            mtxtUserWeight.setError("Weight should be greater than 0");
-            return true;
+        boolean isValidationok = true;
+        if (mtxtUserWeight.getText().toString().trim().equals("")) {
+            mweightLayout.setHelperText("*Required");
+            isValidationok = false;
+          //  return true;
+        }
+        else if(Double.parseDouble(mtxtUserWeight.getText().toString()) < 3 || Double.parseDouble(mtxtUserWeight.getText().toString()) > 300 ){
+            mweightLayout.setHelperText("Weight should be between 3 to 300");
+            isValidationok = false;
+          //  return true;
         }
 
-        if (mtxtUserHeight.getText().toString().trim().equals("") || Double.parseDouble(mtxtUserHeight.getText().toString()) <= 0) {
-            mtxtUserHeight.setError("Height should be greater than 0");
-            return true;
+
+        if (mtxtUserHeight.getText().toString().trim().equals("")) {
+            mheightLayout.setHelperText("*Required");
+            isValidationok = false;
+          //  return true;
+        }
+        else if(Double.parseDouble(mtxtUserHeight.getText().toString()) < 3 || Double.parseDouble(mtxtUserHeight.getText().toString()) > 300 ){
+            mheightLayout.setHelperText("Height should be between 3 to 300");
+            isValidationok = false;
         }
 
-        return false;
+
+        if(!isValidationok){
+            return true;
+        }
+        else{
+            return false;
+        }
+
+      //  return false;
     }
 
     private void somethingWentWrongError(Context context, User user) {
