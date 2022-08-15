@@ -178,7 +178,6 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l){
                 gender = genderArr[i];
-                mGenderLayout.setHint("Select Gender");
                 showErrorMsgIfEmpty(mGenderLayout,gender, "Please select One*");
             }
         });
@@ -197,7 +196,6 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l){
                 goal = goals[i];
-                mGoalLayout.setHint("Select Goal");
                 showErrorMsgIfEmpty(mGoalLayout,goal,"Please select One*");
             }
         });
