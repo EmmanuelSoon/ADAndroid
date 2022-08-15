@@ -319,6 +319,7 @@ public class HomeActivity extends AppCompatActivity implements AddWaterFragment.
 
     @Override
     public void onSelectedData(Double selectedMils) {
+
         Map<String, Object> waterData = new HashMap<>();
         waterData.put("hrID", healthRecordList.get(0).getId());
         waterData.put("addMils", selectedMils);
