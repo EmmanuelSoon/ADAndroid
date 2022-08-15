@@ -12,10 +12,15 @@
         <entry key="..\:/AD project/ADAndroid/app/src/main/res/drawable/ic_getfitwithhenry_background.xml" value="0.2585" />
         <entry key="..\:/AD project/ADAndroid/app/src/main/res/layout/activity_add_meal.xml" value="0.36666666666666664" />
         <entry key="..\:/AD project/ADAndroid/app/src/main/res/layout/activity_camera.xml" value="0.36666666666666664" />
+        <entry key="..\:/AD project/ADAndroid/app/src/main/res/layout/activity_forgot_password.xml" value="0.36666666666666664" />
         <entry key="..\:/AD project/ADAndroid/app/src/main/res/layout/activity_home.xml" value="0.1" />
         <entry key="..\:/AD project/ADAndroid/app/src/main/res/layout/activity_logger.xml" value="0.36666666666666664" />
+        <entry key="..\:/AD project/ADAndroid/app/src/main/res/layout/activity_login.xml" value="0.36666666666666664" />
         <entry key="..\:/AD project/ADAndroid/app/src/main/res/layout/activity_main.xml" value="0.36666666666666664" />
+        <entry key="..\:/AD project/ADAndroid/app/src/main/res/layout/activity_profile.xml" value="0.33" />
+        <entry key="..\:/AD project/ADAndroid/app/src/main/res/layout/activity_questionnaire.xml" value="0.33" />
         <entry key="..\:/AD project/ADAndroid/app/src/main/res/layout/activity_recipe.xml" value="0.36666666666666664" />
+        <entry key="..\:/AD project/ADAndroid/app/src/main/res/layout/activity_registration.xml" value="0.33" />
         <entry key="..\:/AD project/ADAndroid/app/src/main/res/layout/activity_search_food.xml" value="0.17831813576494426" />
         <entry key="..\:/AD project/ADAndroid/app/src/main/res/layout/add_meal_row.xml" value="0.36666666666666664" />
         <entry key="..\:/AD project/ADAndroid/app/src/main/res/layout/food_list.xml" value="0.36666666666666664" />

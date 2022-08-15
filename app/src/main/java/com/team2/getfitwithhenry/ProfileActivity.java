@@ -107,6 +107,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     public void setTopNavBar() {
         mToolbar = findViewById(R.id.top_navbar);
+        mToolbar.setTitle("");
         setSupportActionBar(mToolbar);
     }
 

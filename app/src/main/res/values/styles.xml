@@ -18,16 +18,17 @@
     </style>
 
     <style name="breakfastBtn">
-        <item name="android:backgroundTint">@color/ocean_green</item>
+        <item name="android:textColor">@color/md_theme_light_onSurfaceVariant</item>
+        <item name="android:backgroundTint">@color/md_theme_dark_onSecondaryContainer</item>
     </style>
     <style name="LunchBtn">
-        <item name="android:backgroundTint">@color/colorPrimary</item>
+        <item name="android:backgroundTint">@color/md_theme_dark_tertiary</item>
     </style>
     <style name="dinnerBtn">
-        <item name="android:backgroundTint">@color/purple_200</item>
+        <item name="android:backgroundTint">@color/md_theme_light_primaryContainer</item>
     </style>
     <style name="extraBtn">
-        <item name="android:backgroundTint">@color/light_blue</item>
+        <item name="android:backgroundTint">@color/md_theme_dark_error</item>
     </style>
 
     <style name="textInputLayout.OutlinedBox" parent="Base.Widget.MaterialComponents.TextInputLayout">
@@ -41,9 +42,9 @@
         <item name="android:layout_marginStart">35dp</item>
         <item name="android:layout_marginEnd">35dp</item>
         <item name="android:layout_marginTop">5dp</item>
-        <item name="startIconTint">#0000FF</item>
+        <item name="startIconTint">@color/md_theme_light_primary</item>
 <!--        <item name="helperText">Required*</item>-->
-        <item name="helperTextTextColor">@color/red</item>
+        <item name="helperTextTextColor">@color/md_theme_light_error</item>
 <!--        <item name="counterEnabled">true</item>-->
 <!--        <item name="counterMaxLength">5</item>-->
 <!--        <item name="errorEnabled">true</item>-->

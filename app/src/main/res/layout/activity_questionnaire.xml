@@ -4,7 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
     android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tell us about you!"
+        android:textSize="20sp"
+        android:gravity="center"
+        />
+
+
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/textInputLayout.OutlinedBox"
@@ -12,7 +23,6 @@
         android:layout_marginTop="10dp"
         android:hint="Name"
         app:startIconDrawable="@drawable/ic_baseline_person_24"
-        app:startIconTint="#0000FF"
         app:endIconMode="clear_text">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -28,14 +38,15 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        app:helperTextTextColor="@color/red"
+        app:helperTextTextColor="@color/md_theme_light_error"
         android:id="@+id/goalLayout"
         android:hint="Your Goal"
         android:layout_marginStart="35dp"
         android:layout_marginEnd="35dp"
         android:layout_marginTop="5dp"
         app:startIconDrawable="@drawable/ic_goal_icon"
-        app:startIconTint="#0000FF">
+        app:startIconTint="@color/md_theme_light_primary"
+        >
 
         <AutoCompleteTextView
             android:id="@+id/goalSelection"
@@ -50,7 +61,6 @@
         android:layout_marginTop="10dp"
         android:hint="Enter Your Weight (Kg)"
         app:startIconDrawable="@drawable/ic_scale_weight_icon"
-        app:startIconTint="#0000FF"
         app:endIconMode="clear_text">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -66,7 +76,6 @@
         android:layout_marginTop="10dp"
         android:hint="Enter Your Height (cm)"
         app:startIconDrawable="@drawable/ic_height_sv"
-        app:startIconTint="#0000FF"
         app:endIconMode="clear_text">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -80,14 +89,15 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        app:helperTextTextColor="@color/red"
+        app:helperTextTextColor="@color/md_theme_light_error"
         android:id="@+id/activityLayout"
         android:hint="Your level of physical activity"
         android:layout_marginStart="35dp"
         android:layout_marginEnd="35dp"
         android:layout_marginTop="5dp"
         app:startIconDrawable="@drawable/ic_goal_icon"
-        app:startIconTint="#0000FF">
+        app:startIconTint="@color/md_theme_light_primary"
+        >
 
         <AutoCompleteTextView
             android:id="@+id/continuous_slider"
@@ -103,7 +113,7 @@
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
         android:text=" "
-        android:textColor="@color/red"
+        android:textColor="@color/md_theme_light_error"
         android:visibility="invisible" />
 
     <Button

@@ -15,6 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top"
         android:theme="@style/ThemeOverlay.AppCompat.Light"
+        android:backgroundTint="@color/md_theme_light_primary"
         app:liftOnScroll="true"
         app:layout_constraintBottom_toTopOf="@id/scrollable"
         app:layout_constraintTop_toTopOf="parent">
