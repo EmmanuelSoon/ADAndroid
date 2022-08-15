@@ -11,23 +11,6 @@
     android:orientation="vertical">
 
 
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/textInputLayout.OutlinedBox"
-        android:id="@+id/nameLayout"
-        android:layout_marginTop="10dp"
-        android:hint="Name"
-        app:startIconDrawable="@drawable/ic_baseline_person_24"
-        app:endIconMode="clear_text">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/txtNameQuestionnaire"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLength="20"
-            android:enabled="false"
-            />
-    </com.google.android.material.textfield.TextInputLayout>
-
 
     <ImageView
         android:layout_width="wrap_content"
