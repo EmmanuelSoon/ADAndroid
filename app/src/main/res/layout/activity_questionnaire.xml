@@ -27,6 +27,14 @@
         android:textSize="30sp"
         android:textColor="@color/black"
         android:padding="20dp"></TextView>
+    <TextView
+        android:id="@+id/txtNameQuestionnaire"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:layout_marginHorizontal="40dp"></TextView>
+
 
     <TextView
         android:layout_width="wrap_content"
