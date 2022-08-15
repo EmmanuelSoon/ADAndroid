@@ -249,6 +249,16 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
                     response.body().close();
                 } catch (Exception e) {
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            resultsText.setText("Sorry... something \n went wrong \n No Results Found :(");
+                            goToSearchBtn.setVisibility(View.VISIBLE);
+                            incorrectBtn.setVisibility(View.VISIBLE);
+                            retakeBtn.setVisibility(View.VISIBLE);
+
+                        }
+                    });
                     e.printStackTrace();
                 }
             }
