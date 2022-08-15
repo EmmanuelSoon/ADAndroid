@@ -31,16 +31,38 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="To Serve You better, Please answer this following Questions!"
+        android:text="In order to serve you better, please fill up these following questions!"
         android:textSize="16sp"
         android:textColor="@color/black"
         android:layout_marginTop="8dp"
         android:layout_marginHorizontal="40dp"></TextView>
 
     <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        app:helperTextTextColor="@color/md_theme_light_error"
+        android:id="@+id/activityLayout"
+        android:hint="Your level of physical activity"
+        android:layout_marginStart="35dp"
+        android:layout_marginEnd="35dp"
+        android:layout_marginTop="20dp"
+        app:startIconTint="@color/md_theme_light_primary">
+
+        <AutoCompleteTextView
+            android:drawableStart="@drawable/ic_user_activity_level"
+            android:drawablePadding="15dp"
+            android:inputType="none"
+            android:id="@+id/continuous_slider"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:dropDownAnchor="@id/activityLayout"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
         style="@style/textInputLayout.OutlinedBox"
         android:id="@+id/weightLayout"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="5dp"
         android:hint="Enter Your Weight (Kg)"
         app:endIconMode="clear_text">
 
@@ -57,9 +79,9 @@
     <com.google.android.material.textfield.TextInputLayout
         style="@style/textInputLayout.OutlinedBox"
         android:id="@+id/heightLayout"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:hint="Enter Your Height (cm)"
-        app:startIconTint="#0000FF"
+        app:startIconTint="@color/md_theme_light_primary"
         app:endIconMode="clear_text">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -70,29 +92,6 @@
             android:drawableStart="@drawable/ic_height_sv"
             android:drawablePadding="13dp"
             android:maxLength="20"/>
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        app:helperTextTextColor="@color/red"
-        android:id="@+id/activityLayout"
-        android:hint="Your level of physical activity"
-        android:layout_marginStart="35dp"
-        android:layout_marginEnd="35dp"
-        android:layout_marginTop="5dp"
-        app:startIconTint="#0000FF">
-        app:startIconTint="@color/md_theme_light_primary"
-        >
-
-        <AutoCompleteTextView
-            android:drawableStart="@drawable/ic_user_activity_level"
-            android:drawablePadding="15dp"
-            android:id="@+id/continuous_slider"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:dropDownAnchor="@id/activityLayout"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
@@ -106,6 +105,7 @@
         android:visibility="invisible" />
 
     <Button
+        style="@style/loginTextStyle"
         android:id="@+id/btnSaveHealthDetails"
         android:layout_width="241dp"
         android:layout_height="65dp"

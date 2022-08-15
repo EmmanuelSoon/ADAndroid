@@ -147,34 +147,37 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:orientation="horizontal"
-                android:weightSum="2">
+                android:orientation="horizontal">
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/weightLayout"
                     style="@style/textInputLayout.OutlinedBox"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:hint="Weight (kg)"
                     app:startIconDrawable="@drawable/ic_scale_weight_icon"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="5dp"
                     >
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/userWeight"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                       />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/heightLayout"
                     style="@style/textInputLayout.OutlinedBox"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:hint="Height (cm)"
                     android:textSize="5sp"
-                    app:startIconDrawable="@drawable/ic_height_sv">
+                    app:startIconDrawable="@drawable/ic_height_sv"
+                    android:layout_marginStart="5dp"
+                    >
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/userHeight"
@@ -182,6 +185,7 @@
                         android:layout_height="wrap_content" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
+
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/genderLayout"

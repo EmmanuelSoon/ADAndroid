@@ -76,14 +76,16 @@
             android:layout_marginEnd="35dp"
             android:layout_marginTop="5dp"
             app:startIconDrawable="@drawable/ic_goal_icon"
-            app:startIconTint="@color/md_theme_light_primary">
+            app:startIconTint="@color/md_theme_light_primary"
+            android:hint="Select Goal">
+
 
             <AutoCompleteTextView
                 android:id="@+id/goalSelection"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:inputType="none"
-                android:hint="Select Goal"
+
                 android:dropDownAnchor="@id/goalLayout"/>
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -97,15 +99,16 @@
             android:layout_marginTop="5dp"
             app:helperTextTextColor="@color/md_theme_light_error"
             app:startIconDrawable="@drawable/ic_genders_icon"
-            app:startIconTint="@color/md_theme_light_primary">
+            app:startIconTint="@color/md_theme_light_primary"
+            android:hint="Select Gender">
+
 
             <AutoCompleteTextView
                 android:id="@+id/genderTxt"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:inputType="none"
-                android:hint="Select Gender"/>
+                android:inputType="none" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!--    <com.google.android.material.textfield.TextInputLayout-->

@@ -9,7 +9,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -79,6 +81,8 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
         mheightLayout = findViewById(R.id.heightLayout);
         mactivityLayout = findViewById(R.id.activityLayout);
         mbtnSaveHealthDetails.setOnClickListener(this);
+        mtxtUserHeight.addTextChangedListener(heightWatcher);
+        mtxtUserWeight.addTextChangedListener(weightWatcher);
 
         getUserFromSharedPreference();
         onInitialDataBind();
@@ -120,19 +124,33 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
     }
 
     private void onInitialDataBind() {
-        mtxtName.setText("Dear "+user.getName()+",");
+        mtxtName.setText("Hello "+user.getName()+",");
         activitylevelAdapter = new ArrayAdapter<String>(this, R.layout.graph_list_item, activityLevels);
         mactivityLevelSelector.setAdapter(activitylevelAdapter);
         mactivityLevelSelector.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 activitylevelSelection = parent.getItemAtPosition(position).toString();
-                Toast.makeText(QuestionnaireActivity.this, "Item: " + activitylevelSelection, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(QuestionnaireActivity.this, "Item: " + activitylevelSelection, Toast.LENGTH_SHORT).show();
+                showOnSelectErrorMsg(mactivityLevelSelector, mactivityLayout);
             }
         });
 
-        mactivityLevelSelector.setRawInputType(InputType.TYPE_NULL);
-        mactivityLevelSelector.setFocusable(false);
+        mactivityLevelSelector.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(view == mactivityLevelSelector){
+                    if(hasWindowFocus()){
+                        closeKeyboard(view);
+                    }
+                }
+            }
+        });
+    }
+
+    private void closeKeyboard(View view){
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
     }
 
     private void startHomeActivity() {
@@ -273,33 +291,30 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
 
     private boolean validateFields() {
         boolean isValidationok = true;
-        if (mtxtUserWeight.getText().toString().trim().equals("")) {
-            mweightLayout.setHelperText("*Required");
+        showOnTextErrorMsg(mtxtUserWeight, mweightLayout);
+        showOnTextErrorMsg(mtxtUserHeight, mheightLayout);
+        showOnSelectErrorMsg(mactivityLevelSelector, mactivityLayout);
+
+        if (mtxtUserWeight.getText().toString().isEmpty()) {
             isValidationok = false;
           //  return true;
         }
-        else if(Double.parseDouble(mtxtUserWeight.getText().toString()) < 3 || Double.parseDouble(mtxtUserWeight.getText().toString()) > 300 ){
-            mweightLayout.setHelperText("Weight should be between 3 to 300");
+        else if (Double.parseDouble(mtxtUserWeight.getText().toString()) < 3 || Double.parseDouble(mtxtUserWeight.getText().toString()) > 300 ){
             isValidationok = false;
           //  return true;
         }
 
-
-        if (mtxtUserHeight.getText().toString().trim().equals("")) {
-            mheightLayout.setHelperText("*Required");
+        if (mtxtUserHeight.getText().toString().isEmpty()) {
             isValidationok = false;
           //  return true;
         }
         else if(Double.parseDouble(mtxtUserHeight.getText().toString()) < 3 || Double.parseDouble(mtxtUserHeight.getText().toString()) > 300 ){
-            mheightLayout.setHelperText("Height should be between 3 to 300");
             isValidationok = false;
         }
 
-        if(mactivityLevelSelector.getText()==null){
-            mactivityLayout.setHelperText("*Required");
+        if(mactivityLevelSelector.getText().toString().equals("")){
             isValidationok = false;
         }
-
 
         if(!isValidationok){
             return true;
@@ -334,10 +349,60 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
         startLoginActivity();
     }
 
-
     private void startLoginActivity() {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
 
     }
+
+    private TextWatcher heightWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            showOnTextErrorMsg(mtxtUserHeight,mheightLayout);
+        }
+        @Override
+        public void afterTextChanged(Editable editable) {
+
+        }
+    };
+    private TextWatcher weightWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            showOnTextErrorMsg(mtxtUserWeight, mweightLayout);
+        }
+        @Override
+        public void afterTextChanged(Editable editable) {
+
+        }
+    };
+    private void showOnTextErrorMsg(EditText editText, TextInputLayout layout){
+        if(editText.getText().toString().isEmpty()){
+            layout.setHelperText("Required*");
+        }
+        else if(Double.parseDouble(editText.getText().toString()) < 3 ||
+            Double.parseDouble(editText.getText().toString()) > 300){
+            layout.setHelperText("Please enter proper value*");
+        }
+        else{
+            layout.setHelperText("");
+        }
+    }
+    private void showOnSelectErrorMsg(EditText editText, TextInputLayout layout){
+        if(editText.getText().toString().isEmpty()){
+            layout.setHelperText("Please select One*");
+        }
+        else{
+            layout.setHelperText("");
+        }
+    }
+
 }
