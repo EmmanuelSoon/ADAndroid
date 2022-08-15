@@ -111,7 +111,7 @@
                 android:layout_marginEnd="35dp"
                 app:helperTextTextColor="@color/red"
                 app:startIconDrawable="@drawable/ic_goal_icon"
-                app:startIconTint="#0000FF">
+                app:startIconTint="@color/md_theme_light_primary">
 
                 <AutoCompleteTextView
                     android:id="@+id/goalSelect"
@@ -132,7 +132,7 @@
                 android:layout_marginEnd="35dp"
                 app:helperTextTextColor="@color/red"
                 app:startIconDrawable="@drawable/ic_goal_icon"
-                app:startIconTint="#0000FF">
+                app:startIconTint="@color/md_theme_light_primary">
 
                 <AutoCompleteTextView
                     android:id="@+id/continuous_slider"
@@ -157,7 +157,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:hint="Weight (kg)"
-                    app:startIconDrawable="@drawable/ic_scale_weight_icon">
+                    app:startIconDrawable="@drawable/ic_scale_weight_icon"
+                    >
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/userWeight"
@@ -192,7 +193,7 @@
                 android:layout_marginEnd="35dp"
                 app:helperTextTextColor="@color/red"
                 app:startIconDrawable="@drawable/ic_genders_icon"
-                app:startIconTint="#0000FF">
+                app:startIconTint="@color/md_theme_light_primary">
 
                 <AutoCompleteTextView
                     android:id="@+id/genderTxt"
