@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:theme="@style/ThemeOverlay.AppCompat.Light"
-        android:backgroundTint="@color/colorPrimary"
+        android:backgroundTint="@color/md_theme_light_primary"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/scroll"
         app:liftOnScroll="true">
@@ -52,23 +52,6 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <com.google.android.material.tabs.TabLayout
-                android:id="@+id/graph_tab_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintBottom_toTopOf="@+id/graph_pager"/>
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/graph_pager"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/graph_tab_layout"
-                app:layout_constraintBottom_toTopOf="@+id/text_yourStats"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                />
             <TextView
                 android:id="@+id/text_yourStats"
                 android:layout_width="match_parent"
@@ -78,7 +61,8 @@
                 android:textSize="30sp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/graph_pager" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/tab_layout"/>
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tab_layout"
                 android:layout_width="match_parent"
@@ -92,10 +76,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@+id/tab_layout"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/graph_tab_layout"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent" />
+            <com.google.android.material.tabs.TabLayout
+                android:layout_marginTop="20dp"
+                android:id="@+id/graph_tab_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/pager"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                />
+                app:layout_constraintBottom_toTopOf="@+id/graph_pager"/>
+            <androidx.viewpager2.widget.ViewPager2
+                app:tabMode="scrollable"
+                android:id="@+id/graph_pager"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/graph_tab_layout"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
     <com.google.android.material.bottomnavigation.BottomNavigationView

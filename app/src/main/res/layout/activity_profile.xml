@@ -15,6 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top"
         android:theme="@style/ThemeOverlay.AppCompat.Light"
+        android:backgroundTint="@color/md_theme_light_primary"
         app:layout_constraintBottom_toTopOf="@id/scrollable"
         app:layout_constraintTop_toTopOf="parent"
         app:liftOnScroll="true">
@@ -110,7 +111,7 @@
                 android:layout_marginEnd="35dp"
                 app:helperTextTextColor="@color/red"
                 app:startIconDrawable="@drawable/ic_goal_icon"
-                app:startIconTint="#0000FF">
+                app:startIconTint="@color/md_theme_light_primary">
 
                 <AutoCompleteTextView
                     android:id="@+id/goalSelect"
@@ -131,7 +132,7 @@
                 android:layout_marginEnd="35dp"
                 app:helperTextTextColor="@color/red"
                 app:startIconDrawable="@drawable/ic_goal_icon"
-                app:startIconTint="#0000FF">
+                app:startIconTint="@color/md_theme_light_primary">
 
                 <AutoCompleteTextView
                     android:id="@+id/continuous_slider"
@@ -146,33 +147,37 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:orientation="horizontal"
-                android:weightSum="2">
+                android:orientation="horizontal">
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/weightLayout"
                     style="@style/textInputLayout.OutlinedBox"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:hint="Weight (kg)"
-                    app:startIconDrawable="@drawable/ic_scale_weight_icon">
+                    app:startIconDrawable="@drawable/ic_scale_weight_icon"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="5dp"
+                    >
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/userWeight"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                       />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/heightLayout"
                     style="@style/textInputLayout.OutlinedBox"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:hint="Height (cm)"
                     android:textSize="5sp"
-                    app:startIconDrawable="@drawable/ic_height_sv">
+                    app:startIconDrawable="@drawable/ic_height_sv"
+                    android:layout_marginStart="5dp"
+                    >
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/userHeight"
@@ -180,6 +185,7 @@
                         android:layout_height="wrap_content" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
+
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/genderLayout"
@@ -191,7 +197,7 @@
                 android:layout_marginEnd="35dp"
                 app:helperTextTextColor="@color/red"
                 app:startIconDrawable="@drawable/ic_genders_icon"
-                app:startIconTint="#0000FF">
+                app:startIconTint="@color/md_theme_light_primary">
 
                 <AutoCompleteTextView
                     android:id="@+id/genderTxt"

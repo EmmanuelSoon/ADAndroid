@@ -58,6 +58,7 @@ public class AddMealActivity extends AppCompatActivity {
     User user;
     String strDate;
     Boolean fromEditMeal;
+    Boolean AddRecipe;
     List<Ingredient> myMeal = new ArrayList<>();
     Map<Integer, Double> mealMap = new HashMap<>();
     ActivityResultLauncher<Intent> rlSearchActivity;
@@ -83,10 +84,11 @@ public class AddMealActivity extends AppCompatActivity {
         strDate = intent.getStringExtra("date");
         List<Ingredient> listFromActivity = (List<Ingredient>) intent.getSerializableExtra("ingredients");
         fromEditMeal = intent.getBooleanExtra("FromEditMeal", false);
+        AddRecipe = intent.getBooleanExtra("AddRecipe", false);
         if(listFromActivity != null){
             myMeal = listFromActivity;
         }
-        if (fromEditMeal){
+        if (fromEditMeal || AddRecipe){
             mealMap = (Map<Integer, Double>) intent.getSerializableExtra("mealmap");
             myMeal = listFromActivity;
         }
@@ -140,7 +142,27 @@ public class AddMealActivity extends AppCompatActivity {
         rlSearchActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if(result.getResultCode() == AppCompatActivity.RESULT_OK){
                 Intent data = result.getData();
+                AddRecipe = data.getBooleanExtra("AddRecipe", false);
                 List<Ingredient> newList = (List<Ingredient>)data.getSerializableExtra("ingredients");
+                Map<Integer, Double> recipeIngredients = new HashMap<>();
+                if (AddRecipe){
+                    recipeIngredients = (Map<Integer, Double>) data.getSerializableExtra("mealmap");
+                }
+                if(fromEditMeal && AddRecipe){
+                    for (Map.Entry<Integer, Double> ing : recipeIngredients.entrySet()){
+                        int ingredientId = ing.getKey();
+                        double weight = ing.getValue();
+                        if(mealMap.containsKey(ingredientId)){
+                            mealMap.put(ingredientId, mealMap.get(ingredientId) + weight);
+                        }
+                        else {
+                            mealMap.put(ingredientId, weight);
+                        }
+                    }
+                }
+                else{
+                    mealMap = recipeIngredients;
+                }
                 for (Ingredient ing: newList){
                     if(!myMeal.contains(ing)){
                         myMeal.add(ing);

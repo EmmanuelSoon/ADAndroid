@@ -74,6 +74,7 @@ public class SearchFoodActivity extends AppCompatActivity {
     private final OkHttpClient client = new OkHttpClient();
     List<Ingredient> mealBuilder = new ArrayList<>();
     List<Recipe> recipeBuilder = new ArrayList<>();
+    int prevPos = 0;
 
 
     @Override
@@ -136,16 +137,17 @@ public class SearchFoodActivity extends AppCompatActivity {
                     Intent intent = new Intent(SearchFoodActivity.this, AddMealActivity.class);
                     intent.putExtra("ingredients", (Serializable) mealBuilder);
                     if (!mealMap.isEmpty()){
-                        intent.putExtra("FromEditMeal", true);
+                        intent.putExtra("AddRecipe", true);
                         intent.putExtra("mealmap", (Serializable) mealMap);
                         intent.putExtra("meal", "BREAKFAST");
                     }
                     startActivity(intent);
+                    finish();
                 } else {
                     Intent response = new Intent();
                     response.putExtra("ingredients", (Serializable) mealBuilder);
                     if (!mealMap.isEmpty()){
-                        response.putExtra("FromEditMeal", true);
+                        response.putExtra("AddRecipe", true);
                         response.putExtra("mealmap", (Serializable) mealMap);
                         response.putExtra("meal", "BREAKFAST");
                     }
@@ -305,14 +307,14 @@ public class SearchFoodActivity extends AppCompatActivity {
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                             mAddMealBtn.setText("Add 1 Serving");
                             mAddMealBtn.setVisibility(View.VISIBLE);
-                            if (recipeBuilder.isEmpty() | !recipeBuilder.contains(recipeList.get(position))) {
-                                recipeBuilder.add(recipeList.get(position));
-                                view.setBackgroundColor(Color.LTGRAY);
+                            if(!recipeBuilder.isEmpty()){
+                                View prevView = mlistView.getChildAt(prevPos);
+                                prevView.setBackgroundColor(Color.WHITE);
+                                recipeBuilder.clear();
                             }
-                            else {
-                                recipeBuilder.remove(recipeList.get(position));
-                                view.setBackgroundColor(Color.WHITE);
-                            }
+                            prevPos = position;
+                            recipeBuilder.add(recipeList.get(position));
+                            view.setBackgroundColor(Color.LTGRAY);
                         }
                     });
 

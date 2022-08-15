@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/ThemeOverlay.AppCompat.Light"
+        android:backgroundTint="@color/md_theme_light_primary"
         app:layout_constraintTop_toTopOf="parent"
         app:liftOnScroll="true">
 
@@ -45,7 +46,7 @@
 
     <com.google.android.material.button.MaterialButtonToggleGroup
         android:id="@+id/toggleButton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/editText"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -55,12 +56,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Ingredients"
+            android:layout_weight="1"
             style="?attr/materialButtonOutlinedStyle" />
         <Button
             android:id="@+id/recipeBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="recipes"
+            android:text="Recipes"
+            android:layout_weight="1"
             style="?attr/materialButtonOutlinedStyle"
             />
 

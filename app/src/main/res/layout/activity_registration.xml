@@ -26,7 +26,6 @@
             android:id="@+id/nameLayout"
             android:layout_marginTop="10dp"
             android:hint="Name"
-
             app:startIconDrawable="@drawable/ic_baseline_person_24"
             app:endIconMode="clear_text">
 
@@ -71,14 +70,15 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            app:helperTextTextColor="@color/red"
+            app:helperTextTextColor="@color/md_theme_light_error"
             android:id="@+id/goalLayout"
             android:layout_marginStart="35dp"
             android:layout_marginEnd="35dp"
             android:layout_marginTop="5dp"
             app:startIconDrawable="@drawable/ic_goal_icon"
-            app:startIconTint="#0000FF"
+            app:startIconTint="@color/md_theme_light_primary"
             android:hint="Select Goal">
+
 
             <AutoCompleteTextView
                 android:id="@+id/goalSelection"
@@ -97,10 +97,11 @@
             android:layout_marginStart="35dp"
             android:layout_marginEnd="35dp"
             android:layout_marginTop="5dp"
-            app:helperTextTextColor="@color/red"
+            app:helperTextTextColor="@color/md_theme_light_error"
             app:startIconDrawable="@drawable/ic_genders_icon"
-            app:startIconTint="#0000FF"
+            app:startIconTint="@color/md_theme_light_primary"
             android:hint="Select Gender">
+
 
             <AutoCompleteTextView
                 android:id="@+id/genderTxt"
@@ -133,6 +134,7 @@
             android:id="@+id/dobLayout"
             android:hint="Date of Birth"
             app:startIconDrawable="@drawable/ic_birth_date_icon"
+            app:startIconTint="@color/md_theme_light_primary"
             app:endIconMode="custom"
             app:endIconDrawable="@drawable/ic_down_arrow_icon">
 
@@ -230,7 +232,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/registerBtn"
             android:text="Register"
-            android:backgroundTint="#0000FF"
+            android:backgroundTint="@color/md_theme_light_primary"
             android:layout_marginTop="30dp"
             android:layout_gravity="center"
             android:textStyle="bold"
