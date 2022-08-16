@@ -2,6 +2,7 @@ package com.team2.getfitwithhenry;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -171,6 +172,7 @@ public class MealFragment extends DialogFragment {
                     mlAdaptor.setListener(new MealListAdapter.AdapterListener() {
                         @Override
                         public void removeDiet(DietRecord dr) {
+
                             removeDietRecordFromServer(dr.getId());
                             dietRecordList.remove(dr);
                             updateDietRecords();
@@ -236,6 +238,8 @@ public class MealFragment extends DialogFragment {
         JSONObject postData = new JSONObject();
         try {
             postData.put("dietRecordId", drId);
+            postData.put("username", username);
+            postData.put("date", date);
 
             MediaType JSON = MediaType.parse("application/json; charset=utf-8");
             RequestBody body = RequestBody.create(postData.toString(), JSON);
@@ -270,4 +274,14 @@ public class MealFragment extends DialogFragment {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void onDismiss(final DialogInterface dialog) {
+        super.onDismiss(dialog);
+        final Activity activity = getActivity();
+        if (activity instanceof DialogInterface.OnDismissListener) {
+            ((DialogInterface.OnDismissListener) activity).onDismiss(dialog);
+        }
+    }
+
 }

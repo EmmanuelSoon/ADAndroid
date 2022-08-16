@@ -19,6 +19,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -84,7 +85,7 @@ import okhttp3.ResponseBody;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class LoggerActivity extends AppCompatActivity implements MealButtonsFragment.IMealButtonsFragment, DefaultLifecycleObserver {
+public class LoggerActivity extends AppCompatActivity implements MealButtonsFragment.IMealButtonsFragment, DefaultLifecycleObserver, DialogInterface.OnDismissListener {
 
 
     private User tempUser;
@@ -117,6 +118,13 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
         args.putString("username", user.getUsername());
         mf.setArguments(args);
         mf.show(getSupportFragmentManager(), "Meal Fragment");
+    }
+
+    @Override
+    public void onDismiss(final DialogInterface dialog){
+        DatePicker datePicker = datePickerDialog.getDatePicker();
+        String dateSelect = datePicker.getYear() + "-" + String.format("%02d", (datePicker.getMonth() + 1)) + "-" + String.format("%02d", datePicker.getDayOfMonth());
+        getHealthRecordFromServer(user, dateSelect);
     }
 
     @Override
@@ -464,7 +472,9 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
                         FragmentManager fm = getSupportFragmentManager();
                         MealButtonsFragment mealFragment = (MealButtonsFragment) fm.findFragmentById(R.id.fragment_meal);
                         mealFragment.setDietRecordList(dietRecordList);
-
+                        DatePicker datePicker = datePickerDialog.getDatePicker();
+                        String dateSelect = datePicker.getYear() + "-" + String.format("%02d", (datePicker.getMonth() + 1)) + "-" + String.format("%02d", datePicker.getDayOfMonth());
+                        getHealthRecordFromServer(user, dateSelect);
                         responseBody.close();
                     } catch (Exception e) {
                         e.printStackTrace();
