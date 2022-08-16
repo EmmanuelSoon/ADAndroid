@@ -285,7 +285,7 @@ public class SearchFoodActivity extends AppCompatActivity {
 
                 @Override
                 public void run() {
-                    FoodListAdapter myAdapter = new FoodListAdapter(context, myList);
+                    FoodListAdapter myAdapter = new FoodListAdapter(context, myList, mealBuilder);
                     mlistView = findViewById(R.id.listView);
                     if (mlistView != null) {
                         mlistView.setAdapter(myAdapter);
@@ -300,11 +300,13 @@ public class SearchFoodActivity extends AppCompatActivity {
                             mAddMealBtn.setVisibility(View.VISIBLE);
                             if (mealBuilder.isEmpty() | !mealBuilder.contains(iList.get(position))) {
                                 mealBuilder.add(iList.get(position));
-                                view.setBackgroundColor(Color.LTGRAY);
+                                myAdapter.notifyDataSetChanged();
+//                                view.setBackgroundColor(Color.LTGRAY);
                             }
                             else {
                                 mealBuilder.remove(iList.get(position));
-                                view.setBackgroundColor(Color.WHITE);
+                                myAdapter.notifyDataSetChanged();
+//                                view.setBackgroundColor(Color.WHITE);
                             }
                         }
                     });
@@ -320,7 +322,7 @@ public class SearchFoodActivity extends AppCompatActivity {
 
                 @Override
                 public void run() {
-                    RecipeListAdapter rAdapter = new RecipeListAdapter(context, recipeList);
+                    RecipeListAdapter rAdapter = new RecipeListAdapter(context, recipeList, recipeBuilder);
                     mlistView = findViewById(R.id.listView);
                     if (mlistView != null) {
                         mlistView.setAdapter(rAdapter);
@@ -335,13 +337,15 @@ public class SearchFoodActivity extends AppCompatActivity {
                             mAddMealBtn.setText("Add 1 Serving");
                             mAddMealBtn.setVisibility(View.VISIBLE);
                             if(!recipeBuilder.isEmpty()){
-                                View prevView = mlistView.getChildAt(prevPos);
-                                prevView.setBackgroundColor(Color.WHITE);
+//                                View prevView = mlistView.getChildAt(prevPos);
+//                                prevView.setBackgroundColor(Color.WHITE);
                                 recipeBuilder.clear();
+                                rAdapter.notifyDataSetChanged();
                             }
-                            prevPos = position;
+//                            prevPos = position;
                             recipeBuilder.add(recipeList.get(position));
-                            view.setBackgroundColor(Color.LTGRAY);
+                            rAdapter.notifyDataSetChanged();
+//                            view.setBackgroundColor(Color.LTGRAY);
                         }
                     });
 

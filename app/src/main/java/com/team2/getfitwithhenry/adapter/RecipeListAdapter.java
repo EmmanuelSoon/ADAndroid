@@ -29,17 +29,26 @@ import java.util.List;
 public class RecipeListAdapter extends ArrayAdapter<Recipe> {
     Context context;
     List<Recipe> recipeList;
+    List<Recipe> recipeBuilder;
 
-    public RecipeListAdapter(Context context, List<Recipe> rList) {
+    public RecipeListAdapter(Context context, List<Recipe> rList, List<Recipe> recipeBuilder) {
         super(context, R.layout.food_list, rList);
         this.context = context;
         this.recipeList = rList;
+        this.recipeBuilder = recipeBuilder;
     }
 
     public View getView(int pos, View view, @NonNull ViewGroup parent) {
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.food_list, parent, false);
+        }
+
+        if(recipeBuilder.contains(recipeList.get(pos))){
+            view.setBackgroundColor(Color.LTGRAY);
+        }
+        else{
+            view.setBackgroundColor(Color.WHITE);
         }
 
         String recipeName = recipeList.get(pos).getName();
@@ -57,12 +66,11 @@ public class RecipeListAdapter extends ArrayAdapter<Recipe> {
 
         TextView nameView = view.findViewById(R.id.queryName);
         nameView.setText(recipeList.get(pos).getName());
-        System.out.println(recipeList.get(pos).getName());
 
         TextView nutriView = view.findViewById(R.id.queryNutrition);
         nutriView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         nutriView.setText(recipeList.get(pos).getNutritionRecord().getTruncNutrition() + "\nPortion size: " + recipeList.get(pos).getPortion());
-        view.setBackgroundColor(Color.WHITE);
+//        view.setBackgroundColor(Color.WHITE);
 
         return view;
     }
