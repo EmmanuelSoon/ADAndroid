@@ -247,13 +247,16 @@ public class AddMealActivity extends AppCompatActivity {
                 mealMap.putIfAbsent(ing.getId(), 0.0);
             }
         }
+
+        setCurrentWeight(0,0);
     }
 
 
     public void setCurrentWeight(double inputWeight, int ingredientId){
         double currCal = 0;
         double currWeight = 0;
-        mealMap.put(ingredientId, inputWeight);
+        if(ingredientId != 0 && inputWeight != 0)
+            mealMap.put(ingredientId, inputWeight);
 
         for (Map.Entry<Integer, Double> entry : mealMap.entrySet()) {
             Integer key = entry.getKey();
