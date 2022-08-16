@@ -45,14 +45,14 @@ public class RecipeActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode,
                                     Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        if (requestCode == FILECHOOSER_RESULTCODE) {
-            if (null == mUploadMessage) return;
-            Uri result = intent == null || resultCode != RESULT_OK ? null
-                    : intent.getData();
-            mUploadMessage.onReceiveValue(result);
-            mUploadMessage = null;
+        if (requestCode == REQUEST_SELECT_FILE) {
+            if (uploadMessage == null) return;
+            uploadMessage.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(resultCode, intent));
+            uploadMessage = null;
         }
+
     }
+
 
 
     @Override
