@@ -125,16 +125,21 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
 
     private void onInitialDataBind() {
         mtxtName.setText("Hello "+user.getName()+",");
-        activitylevelAdapter = new ArrayAdapter<String>(this, R.layout.graph_list_item, activityLevels);
-        mactivityLevelSelector.setAdapter(activitylevelAdapter);
-        mactivityLevelSelector.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                activitylevelSelection = parent.getItemAtPosition(position).toString();
-//                Toast.makeText(QuestionnaireActivity.this, "Item: " + activitylevelSelection, Toast.LENGTH_SHORT).show();
-                showOnSelectErrorMsg(mactivityLevelSelector, mactivityLayout);
-            }
+        mactivityLevelSelector.setOnClickListener((view) -> {
+            ActivityLevelFragment frag = new ActivityLevelFragment();
+            frag.show(getSupportFragmentManager(), "Activity level Fragment");
+
         });
+//        activitylevelAdapter = new ArrayAdapter<String>(this, R.layout.graph_list_item, activityLevels);
+//        mactivityLevelSelector.setAdapter(activitylevelAdapter);
+//        mactivityLevelSelector.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                activitylevelSelection = parent.getItemAtPosition(position).toString();
+////                Toast.makeText(QuestionnaireActivity.this, "Item: " + activitylevelSelection, Toast.LENGTH_SHORT).show();
+//                showOnSelectErrorMsg(mactivityLevelSelector, mactivityLayout);
+//            }
+//        });
 
         mactivityLevelSelector.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -146,6 +151,11 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
                 }
             }
         });
+    }
+
+    public void setactivityLvl(String activitylvl){
+        activitylevelSelection = activitylvl;
+        mactivityLevelSelector.setText(activitylvl);
     }
 
     private void closeKeyboard(View view){
@@ -236,10 +246,10 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
         userHealthObj.put("user_weight", Double.parseDouble(mtxtUserWeight.getText().toString()));
         userHealthObj.put("date", LocalDate.now());
 
-        inserHealthRecordonRegistration(userHealthObj);
+        insertHealthRecordonRegistration(userHealthObj);
     }
 
-    private void inserHealthRecordonRegistration(JSONObject userObj) {
+    private void insertHealthRecordonRegistration(JSONObject userObj) {
         MediaType JsonObj = MediaType.parse("application/json; charset=utf-8");
         RequestBody requestBody = RequestBody.create(JsonObj, userObj.toString());
         Request request = new Request.Builder().url(Constants.javaURL + "/questionnaire/insertHealthRecordonRegistration").post(requestBody).build();
