@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Recipe {
     private int id;
@@ -22,6 +23,15 @@ public class Recipe {
         this.portion = portion;
         this.image = image;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Recipe recipe = (Recipe) o;
+        return id == recipe.id;
+    }
+
 
     public int getId() {
         return id;
@@ -67,3 +77,4 @@ public class Recipe {
         this.portion = portion;
     }
 }
+

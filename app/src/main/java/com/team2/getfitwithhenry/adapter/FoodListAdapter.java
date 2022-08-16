@@ -25,12 +25,14 @@ import java.util.List;
 public class FoodListAdapter extends ArrayAdapter<Ingredient> {
     private Context context;
     protected List<Ingredient> iList;
+    protected List<Ingredient> mealBuilder;
 
-    public FoodListAdapter(Context context, List<Ingredient> ingList)
+    public FoodListAdapter(Context context, List<Ingredient> ingList, List<Ingredient> mealBuilder)
     {
         super(context, R.layout.food_list, ingList);
         this.iList = ingList;
         this.context = context;
+        this.mealBuilder = mealBuilder;
 
     }
 
@@ -40,6 +42,12 @@ public class FoodListAdapter extends ArrayAdapter<Ingredient> {
             view = inflater.inflate(R.layout.food_list, parent, false);
         }
 
+        if(mealBuilder.contains(iList.get(pos))){
+            view.setBackgroundColor(Color.LTGRAY);
+        }
+        else{
+            view.setBackgroundColor(Color.WHITE);
+        }
 
         String className = iList.get(pos).getName();
         ImageView imageView = view.findViewById(R.id.imageView);
@@ -54,7 +62,7 @@ public class FoodListAdapter extends ArrayAdapter<Ingredient> {
 
         TextView nutriView = view.findViewById(R.id.queryNutrition);
         nutriView.setText(iList.get(pos).getNutritionRecord().getTruncNutrition());
-        view.setBackgroundColor(Color.WHITE);
+//        view.setBackgroundColor(Color.WHITE);
 
         return view;
 
