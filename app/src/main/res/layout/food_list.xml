@@ -8,6 +8,7 @@
         android:id="@+id/imageView"
         android:layout_width="0dp"
         android:layout_height="140dp"
+        android:paddingHorizontal="5dp"
         android:layout_weight="1"></ImageView>
 
     <LinearLayout

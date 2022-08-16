@@ -131,7 +131,7 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="35dp"
                 app:helperTextTextColor="@color/red"
-                app:startIconDrawable="@drawable/ic_goal_icon"
+                app:startIconDrawable="@drawable/ic_user_activity_level"
                 app:startIconTint="@color/md_theme_light_primary">
 
                 <AutoCompleteTextView
@@ -154,17 +154,16 @@
                     style="@style/textInputLayout.OutlinedBox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:hint="Weight (kg)"
-                    app:startIconDrawable="@drawable/ic_scale_weight_icon"
-                    android:layout_weight="1"
                     android:layout_marginEnd="5dp"
-                    >
+                    android:layout_weight="1"
+                    android:hint="Weight (kg)"
+                    app:startIconDrawable="@drawable/ic_scale_weight_icon">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/userWeight"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                       />
+                        android:inputType="numberDecimal" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -172,17 +171,17 @@
                     style="@style/textInputLayout.OutlinedBox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
                     android:layout_weight="1"
                     android:hint="Height (cm)"
                     android:textSize="5sp"
-                    app:startIconDrawable="@drawable/ic_height_sv"
-                    android:layout_marginStart="5dp"
-                    >
+                    app:startIconDrawable="@drawable/ic_height_sv">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/userHeight"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
@@ -213,45 +212,50 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:orientation="horizontal"
-                android:weightSum="2">
+                android:weightSum="3">
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/calorieLimitLayout"
                     style="@style/textInputLayout.OutlinedBox"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:enabled="false"
-                    android:hint="Cal lim (kcal)">
+                    android:layout_weight="1.5"
+                    android:focusable="false"
+                    android:longClickable="false"
+                    android:hint="Cal lim">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/txtCalorieIntake"
-                        android:layout_width="match_parent"
+                        android:layout_width="125dp"
                         android:layout_height="wrap_content"
-                        android:enabled="false" />
+                        android:focusable="false"
+                        android:longClickable="false" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <ImageButton
                     android:id="@+id/btnSaveProfileChanges"
-                    android:layout_width="88dp"
-                    android:layout_height="66dp"
-                    android:src="@drawable/ic_baseline_edit_note_24" />
+                    android:layout_gravity="center_vertical"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:src="@drawable/ic_save_user" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/waterLimitLayout"
                     style="@style/textInputLayout.OutlinedBox"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:enabled="false"
-                    android:hint="Water Lim (ml)"
+                    android:layout_weight="1.5"
+                    android:focusable="false"
+                    android:longClickable="false"
+                    android:hint="Wtr lim"
                     android:textSize="5sp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/txtWaterIntake"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:enabled="false" />
+                        android:focusable="false"
+                        android:longClickable="false" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 

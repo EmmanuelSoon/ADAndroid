@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -23,6 +24,8 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.NumberPicker;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -31,6 +34,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.android.material.slider.Slider;
 import com.team2.getfitwithhenry.adapter.FoodListAdapter;
 import com.team2.getfitwithhenry.adapter.RecipeListAdapter;
 import com.team2.getfitwithhenry.model.Constants;
@@ -67,6 +71,7 @@ public class SearchFoodActivity extends AppCompatActivity {
     private Toolbar mToolbar;
     private NavigationBarView bottomNavView;
     private Button mAddMealBtn;
+    private Button caloriesFilter;
     private MaterialButtonToggleGroup mToggleBtn;
     List<Recipe> rList;
     List<Ingredient> iList;
@@ -75,7 +80,7 @@ public class SearchFoodActivity extends AppCompatActivity {
     List<Ingredient> mealBuilder = new ArrayList<>();
     List<Recipe> recipeBuilder = new ArrayList<>();
     int prevPos = 0;
-
+    int calSelection = 1500;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +89,7 @@ public class SearchFoodActivity extends AppCompatActivity {
 
         setTopNavBar();
         setBottomNavBar();
-
+        caloriesFilter = findViewById(R.id.calFilter);
         mSearchBtn = findViewById(R.id.search);
         mEditText = findViewById(R.id.editText);
         mToggleBtn = (MaterialButtonToggleGroup) findViewById(R.id.toggleButton);
@@ -158,6 +163,41 @@ public class SearchFoodActivity extends AppCompatActivity {
             }
         });
 
+        caloriesFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Dialog d = new Dialog(SearchFoodActivity.this);
+                d.setContentView(R.layout.max_calories_dialog_layout);
+                Slider slider = d.findViewById(R.id.maxCaloriesSlider);
+                slider.setValue(calSelection);
+                TextView selection = d.findViewById(R.id.currentCalSelection);
+                selection.setText(String.format("Max. %d kcal", calSelection));
+                slider.addOnChangeListener(new Slider.OnChangeListener() {
+                    @Override
+                    public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
+                        int current = (int) value;
+                        selection.setText(String.format("Max. %d kcal", current));
+                    }
+                });
+                Button applyFilter = d.findViewById(R.id.applyFilter);
+                Button cancelFilter = d.findViewById(R.id.cancelFilter);
+                applyFilter.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        calSelection = (int) slider.getValue();
+                        d.dismiss();
+                    }
+                });
+                cancelFilter.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        d.dismiss();
+                    }
+                });
+
+                d.show();
+            }
+        });
 
     }
 
@@ -206,18 +246,10 @@ public class SearchFoodActivity extends AppCompatActivity {
     }
 
     public void getRecipeResult(String query) {
-
-        JSONObject postData = new JSONObject();
-        try {
-            postData.put("query", query);
-            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-            RequestBody body = RequestBody.create(postData.toString(), JSON);
-
-
-            //need to use your own pc's ip address here, cannot use local host.
+        String url = Constants.javaURL + "/recipe/search" +
+                (query.isEmpty()||query == null ? "" : "/" + query) + "/" + calSelection;
             Request request = new Request.Builder()
-                    .url(Constants.javaURL + "/search/recipes")
-                    .post(body)
+                    .url(url)
                     .build();
 
             client.newCall(request).enqueue(new Callback() {
@@ -225,7 +257,6 @@ public class SearchFoodActivity extends AppCompatActivity {
                 public void onFailure(Call call, IOException e) {
                     e.printStackTrace();
                 }
-
                 @Override
                 public void onResponse(Call call, Response response) {
                     try {
@@ -233,22 +264,17 @@ public class SearchFoodActivity extends AppCompatActivity {
                         if (!response.isSuccessful()) {
                             throw new IOException("Unexpected code " + response);
                         }
-
                         ObjectMapper objectMapper = new ObjectMapper();
                         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
                         objectMapper.registerModule(new JavaTimeModule());
                         rList = Arrays.asList(objectMapper.readValue(responseBody.string(), Recipe[].class));
                         displayRecipeResult(getApplicationContext(), rList);
-
                         response.body().close();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
             });
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
     }
 

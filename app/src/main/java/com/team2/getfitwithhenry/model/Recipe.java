@@ -11,14 +11,16 @@ public class Recipe {
     private List<WeightedIngredient> ingredientList = new ArrayList<>();
     private NutritionRecord nutritionRecord;
     private int portion;
+    private String image;
 
     public Recipe(@JsonProperty("id") int id, @JsonProperty("name") String name, @JsonProperty("ingredientList") List<WeightedIngredient> ingredientList,
-                  @JsonProperty("nutritionRecord") NutritionRecord nutritionRecord, @JsonProperty("portion")int portion) {
+                  @JsonProperty("nutritionRecord") NutritionRecord nutritionRecord, @JsonProperty("portion")int portion, @JsonProperty("image") String image) {
         this.id = id;
         this.name = name;
         this.ingredientList = ingredientList;
         this.nutritionRecord = nutritionRecord;
         this.portion = portion;
+        this.image = image;
     }
 
     public int getId() {
@@ -31,6 +33,10 @@ public class Recipe {
 
     public String getName() {
         return name;
+    }
+
+    public String getImage(){
+        return image;
     }
 
     public void setName(String name) {
