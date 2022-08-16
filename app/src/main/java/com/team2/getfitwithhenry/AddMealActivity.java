@@ -148,7 +148,7 @@ public class AddMealActivity extends AppCompatActivity {
                 if (AddRecipe){
                     recipeIngredients = (Map<Integer, Double>) data.getSerializableExtra("mealmap");
                 }
-                if(fromEditMeal && AddRecipe){
+                if(!mealMap.isEmpty()){
                     for (Map.Entry<Integer, Double> ing : recipeIngredients.entrySet()){
                         int ingredientId = ing.getKey();
                         double weight = ing.getValue();
