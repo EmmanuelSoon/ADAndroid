@@ -206,6 +206,7 @@ public class SearchFoodActivity extends AppCompatActivity {
         JSONObject postData = new JSONObject();
         try {
             postData.put("query", query);
+            postData.put("maxCal", calSelection);
             MediaType JSON = MediaType.parse("application/json; charset=utf-8");
             RequestBody body = RequestBody.create(postData.toString(), JSON);
 
