@@ -334,18 +334,19 @@ public class SearchFoodActivity extends AppCompatActivity {
                     mlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            mAddMealBtn.setText("Add 1 Serving");
-                            mAddMealBtn.setVisibility(View.VISIBLE);
-                            if(!recipeBuilder.isEmpty()){
-//                                View prevView = mlistView.getChildAt(prevPos);
-//                                prevView.setBackgroundColor(Color.WHITE);
+                            if(!recipeBuilder.isEmpty() && recipeBuilder.contains(recipeList.get(position))){
                                 recipeBuilder.clear();
                                 rAdapter.notifyDataSetChanged();
+                                mAddMealBtn.setVisibility(View.INVISIBLE);
                             }
-//                            prevPos = position;
-                            recipeBuilder.add(recipeList.get(position));
-                            rAdapter.notifyDataSetChanged();
-//                            view.setBackgroundColor(Color.LTGRAY);
+                            else{
+                                recipeBuilder.clear();
+                                rAdapter.notifyDataSetChanged();
+                                recipeBuilder.add(recipeList.get(position));
+                                rAdapter.notifyDataSetChanged();
+                                mAddMealBtn.setText("Add 1 Serving");
+                                mAddMealBtn.setVisibility(View.VISIBLE);
+                            }
                         }
                     });
 
