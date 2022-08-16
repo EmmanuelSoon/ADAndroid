@@ -109,6 +109,7 @@ public class SearchFoodActivity extends AppCompatActivity {
         mSearchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mAddMealBtn.setVisibility(View.INVISIBLE);
                 query = mEditText.getText().toString();
                 if (mToggleBtn.getCheckedButtonId() == R.id.ingredientBtn) {
                     getIngredientResult(query);
@@ -297,16 +298,15 @@ public class SearchFoodActivity extends AppCompatActivity {
                     mlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            mAddMealBtn.setText("Add into meal");
                             mAddMealBtn.setVisibility(View.VISIBLE);
                             if (mealBuilder.isEmpty() | !mealBuilder.contains(iList.get(position))) {
                                 mealBuilder.add(iList.get(position));
                                 myAdapter.notifyDataSetChanged();
-//                                view.setBackgroundColor(Color.LTGRAY);
                             }
                             else {
                                 mealBuilder.remove(iList.get(position));
                                 myAdapter.notifyDataSetChanged();
-//                                view.setBackgroundColor(Color.WHITE);
                             }
                         }
                     });
