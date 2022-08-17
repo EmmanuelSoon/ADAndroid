@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -64,7 +65,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private EditText mtxtName, mtxtUsername, mtxtCalorieIntake, mtxtWaterIntake, mtxtWeight, mtxtHeight, mbtnDob;
     private AutoCompleteTextView mGoalSelect, mactivityLevelSelector, mgenderSelector;
     private DatePickerDialog mdobDatePicker;
-    private ImageButton mbtnSaveChanges;
+    private Button mbtnSaveChanges;
     private String goalSelction, activitylevelSelction, genderSelection;
     private String[] goalmatch = {"WEIGHTLOSS", "WEIGHTGAIN", "WEIGHTMAINTAIN", "MUSCLE"};
     private String[] goals = {"Weight Loss", "Weight Gain", "Weight Maintain", "Muscle"};
@@ -410,54 +411,58 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     @SuppressLint("ResourceType")
     private boolean validateFormFields() {
+        boolean isValidationOk = true;
         if (mtxtName.getText().toString().trim().isEmpty()) {
-            mNameLayout.setHelperText("required*");
-            return false;
-        }
-
-        if (mtxtUsername.getText().toString().trim().isEmpty()) {
-            mEmailLayout.setHelperText("required");
-            return false;
+            mNameLayout.setHelperText("*required");
+            isValidationOk = false;
+           // return false;
         }
 
         String userNameFormat = "^[A-Za-z0-9+_.-]+@(.+)$";
         Pattern pattern = Pattern.compile(userNameFormat);
-        if (!pattern.matcher(mtxtUsername.getText().toString()).matches()) {
-            mEmailLayout.setHelperText("Invalid Email Format");
-            return false;
+        if (mtxtUsername.getText().toString().trim().isEmpty()) {
+            mEmailLayout.setHelperText("*required");
+            isValidationOk = false;
+        }
+        else if (!pattern.matcher(mtxtUsername.getText().toString()).matches()) {
+            mEmailLayout.setHelperText("*Invalid Email Format");
+            isValidationOk = false;
         }
 
         if (mtxtCalorieIntake.getText().toString().trim().isEmpty()) {
-            mcalorieLimitLayout.setHelperText("required*");
-            return false;
+            mcalorieLimitLayout.setHelperText("*required");
+            isValidationOk = false;
         }
 
         if (mtxtWaterIntake.getText().toString().trim().isEmpty()) {
-            mwaterLimitLayout.setHelperText("required*");
-            return false;
+            mwaterLimitLayout.setHelperText("*required");
+            isValidationOk = false;
         }
 
         if (mtxtWeight.getText().toString().trim().isEmpty()) {
-            mweightLayout.setHelperText("required*");
-            return false;
+            mweightLayout.setHelperText("*required");
+            isValidationOk = false;
         }
-
-        if (Double.parseDouble(mtxtWeight.getText().toString()) <= 0.0 ) {
-            mweightLayout.setHelperText("Should be greater than 0");
-            return false;
+        else if (Double.parseDouble(mtxtWeight.getText().toString()) < 3.0  || Double.parseDouble(mtxtWeight.getText().toString()) > 300.0) {
+            mweightLayout.setHelperText("*Please enter proper value");
+            isValidationOk = false;
         }
 
         if (mtxtHeight.getText().toString().trim().isEmpty()) {
-            mheightLayout.setHelperText("required*");
+            mheightLayout.setHelperText("*required");
+            isValidationOk = false;
+        }
+        else if (Double.parseDouble(mtxtHeight.getText().toString()) < 3.0 || Double.parseDouble(mtxtHeight.getText().toString()) > 300.0 ) {
+            mheightLayout.setHelperText("*Please enter proper value");
+            isValidationOk = false;
+        }
+        if(!isValidationOk) {
             return false;
         }
-
-        if (Double.parseDouble(mtxtHeight.getText().toString()) <= 0.0 ) {
-            mheightLayout.setHelperText("Should be greater than 0");
-            return false;
+        else{
+            return true;
         }
 
-        return true;
     }
 
     private void updatUserDetails(JSONObject userObj) {
