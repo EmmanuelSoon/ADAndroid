@@ -78,7 +78,7 @@
                     android:id="@+id/txtUsername"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:maxLength="20" />
+                    android:maxLength="50" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- android:drawableStart="@drawable/ic_birth_date_icon" -->
