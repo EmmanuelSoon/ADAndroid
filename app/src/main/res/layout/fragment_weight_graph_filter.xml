@@ -11,7 +11,7 @@
         android:paddingTop="10dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:hint="Select Item"
+        android:hint="@string/graph_filter"
         android:paddingLeft="30dp"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         tools:ignore="MissingConstraints">

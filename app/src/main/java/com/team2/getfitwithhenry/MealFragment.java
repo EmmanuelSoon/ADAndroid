@@ -178,8 +178,8 @@ public class MealFragment extends DialogFragment {
                             updateDietRecords();
                         }
                     });
-                    getUserFromSharedPreference();
-                    ((LoggerActivity) getActivity()).getDietRecordsFromServer(user, date);
+                    //getUserFromSharedPreference();
+                    //((LoggerActivity) getActivity()).getDietRecordsFromServer(user, date);
                 }
             });
         }

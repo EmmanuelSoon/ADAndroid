@@ -78,4 +78,5 @@
     <color name="md_theme_dark_inversePrimary">#465D90</color>
     <color name="md_theme_dark_surfaceTint">#AFC6FF</color>
     <color name="md_theme_dark_surfaceTintColor">#AFC6FF</color>
+    <color name="graphlineColor">#F3D7AD</color>
 </resources>
