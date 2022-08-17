@@ -2,6 +2,7 @@ package com.team2.getfitwithhenry;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -16,10 +17,13 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
@@ -64,6 +68,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     private File photoFile;
     private String[] REQUIRED_PERMISSIONS = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
     ActivityResultLauncher<Intent> captureImageResult;
+    ActivityResultLauncher<Intent> addMealResults;
 
     private ImageView mImageView;
     private TextView resultsText;
@@ -96,6 +101,19 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         incorrectBtn.setOnClickListener(this);
         retakeBtn.setOnClickListener(this);
 
+        addMealResults = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+                            // There are no request codes
+                            Intent intent = new Intent(CameraActivity.this, LoggerActivity.class);
+                            startActivity(intent);
+                        }
+                    }
+                });
+
         registerActivityResult();
         checkPermissions();
         deletePicturesFromPath();
@@ -110,7 +128,8 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
             List<Ingredient> iList = Arrays.asList(iPredict);
             intent = new Intent(this, AddMealActivity.class);
             intent.putExtra("ingredients", (Serializable) iList);
-            startActivity(intent);
+            addMealResults.launch(intent);
+//            startActivity(intent);
         } else if (v.getId() == R.id.incorrectBtn) {
             WrongIngredientFragment wf = new WrongIngredientFragment();
             Bundle args = new Bundle();
