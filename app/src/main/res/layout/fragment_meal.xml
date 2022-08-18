@@ -20,6 +20,8 @@
             android:textSize="25sp"
             android:textStyle="bold"
             android:text="Temp"
+            android:padding="5dp"
+            android:gravity="center"
             >
 
         </TextView>
