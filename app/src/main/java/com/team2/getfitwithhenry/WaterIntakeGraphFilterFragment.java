@@ -29,6 +29,7 @@ import com.team2.getfitwithhenry.model.HealthRecord;
 import com.team2.getfitwithhenry.model.User;
 import com.team2.getfitwithhenry.model.WeekMonthData;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class WaterIntakeGraphFilterFragment extends Fragment {
     private List<WeekMonthData> weekList;
     private List<WeekMonthData> monthList;
     private String[] monthLabel;
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
     String getItem;
     public WaterIntakeGraphFilterFragment() {
@@ -94,19 +96,16 @@ public class WaterIntakeGraphFilterFragment extends Fragment {
         if(healthRecordList==null){
             LineChart.setNoDataText("No Data to show! Please Update your information to show graph");
         }
-        LineDataSet lineDataSet1 = new LineDataSet(dataValuesforChart(healthRecordList, graphFilterItem), "Calories tracking");
+        LineDataSet lineDataSet1 = new LineDataSet(dataValuesforChart(healthRecordList, graphFilterItem), "Water Intake tracking");
         lineDataSet1.setCubicIntensity(3f);
         lineDataSet1.setAxisDependency(YAxis.AxisDependency.LEFT);
-        // lineDataSet1.setColor(Color.RED);
-        lineDataSet1.setCircleColor(Color.YELLOW);
+        lineDataSet1.setColor(Color.rgb(202,156,87));
+        lineDataSet1.setCircleColor(Color.rgb(243,215,173));
         lineDataSet1.setLineWidth(2f);
         lineDataSet1.setCircleSize(4f);
 
-        lineDataSet1.setFillColor(ColorTemplate.getHoloBlue());
-        lineDataSet1.setHighLightColor(Color.rgb(244, 117, 117));
         ArrayList<ILineDataSet> dataSets = new ArrayList<>();
         dataSets.add(lineDataSet1);
-
 
         LineChart.setDrawGridBackground(true);
         LineChart.setDrawBorders(true);
@@ -155,7 +154,7 @@ public class WaterIntakeGraphFilterFragment extends Fragment {
         if (filter.equals("Last 7 Days")) {
             for (int i = hrList.size() - 1; i >= 0; i--) {
                 HealthRecord testing1 = hrList.get(i);
-                getXAxisData.add(hrList.get(i).getDate().toString());
+                getXAxisData.add(hrList.get(i).getDate().format(formatter));
                 dataVals.add(new Entry(count, (float) hrList.get(i).getWaterIntake()));
                 count++;
             }

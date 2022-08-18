@@ -12,6 +12,7 @@
     <string name="scanner">Scanner</string>
     <string name="me">Me</string>
     <string name="addMealHeader">Add Meal</string>
+    <string name="graph_filter">Select Range</string>
 
     <string name="goToSearch">Find Specific</string>
     <string name="incorrect">Incorrect</string>

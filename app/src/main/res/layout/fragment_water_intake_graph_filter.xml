@@ -12,7 +12,7 @@
         android:paddingTop="10dp"
         android:paddingLeft="30dp"
         android:layout_margin="16dp"
-        android:hint="Select Item"
+        android:hint="@string/graph_filter"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         tools:ignore="MissingConstraints">
         <AutoCompleteTextView

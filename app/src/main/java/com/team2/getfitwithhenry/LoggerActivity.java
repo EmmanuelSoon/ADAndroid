@@ -125,6 +125,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
         DatePicker datePicker = datePickerDialog.getDatePicker();
         String dateSelect = datePicker.getYear() + "-" + String.format("%02d", (datePicker.getMonth() + 1)) + "-" + String.format("%02d", datePicker.getDayOfMonth());
         getHealthRecordFromServer(user, dateSelect);
+        getDietRecordsFromServer(user, dateSelect);
     }
 
     @Override
