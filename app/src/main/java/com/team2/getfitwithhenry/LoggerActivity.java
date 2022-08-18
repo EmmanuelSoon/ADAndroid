@@ -168,9 +168,15 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
                             Intent data = result.getData();
 
                             // handle results here
-                            DatePicker datePicker = datePickerDialog.getDatePicker();
-                            String dateSelect = datePicker.getYear() + "-" + String.format("%02d", (datePicker.getMonth() + 1)) + "-" + String.format("%02d", datePicker.getDayOfMonth());
-                            getDietRecordsFromServer(user, dateSelect);
+                            Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    DatePicker datePicker = datePickerDialog.getDatePicker();
+                                    String dateSelect = datePicker.getYear() + "-" + String.format("%02d", (datePicker.getMonth() + 1)) + "-" + String.format("%02d", datePicker.getDayOfMonth());
+                                    getDietRecordsFromServer(user, dateSelect);
+                                }
+                            }, 500);
                         }
                     }
                 });
