@@ -20,6 +20,7 @@
     <string name="empty">No Data available</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="update_weight_height_error_msg">Sorry, you can only update your height and weight for today.</string>
 
 
 </resources>

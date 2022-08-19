@@ -97,6 +97,7 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
     private Button addHeight;
     private Button addWeight;
     private ActivityResultLauncher<Intent> addMealActivityLauncher;
+    private TextView mErrorTxt;
     User user;
 
     //TODO LIST:
@@ -152,6 +153,8 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
         //
         addWeight = findViewById(R.id.addWeight);
         addHeight = findViewById(R.id.addHeight);
+
+        mErrorTxt = findViewById(R.id.errortTxt);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String currDate = LocalDate.now().format(formatter);
@@ -217,14 +220,9 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
                     setUserBMI(myBmi, bmi);
 
                     addHeight.setText(String.format("%.1f", myHr.getUserHeight()) + "cm");
-                    addHeight.setEnabled(false);
-
                     addWeight.setText(String.format("%.1f", myHr.getUserWeight()) + "Kg");
-                    addWeight.setEnabled(false);
 
                     if(LocalDate.now().equals(myHr.getDate())){
-                        addWeight.setEnabled(true);
-                        addHeight.setEnabled(true);
                         addHeight.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -240,6 +238,20 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
                                 String[] arr = String.valueOf(myHr.getUserWeight()).split("\\.");
                                 int intWeight = Integer.parseInt(arr[0]);
                                 showDialogForInput("weight",intWeight > 0 ? intWeight : 50, myHr, bmi);
+                            }
+                        });
+                    }
+                    else{
+                        addHeight.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                mErrorTxt.setVisibility(View.VISIBLE);
+                            }
+                        });
+                        addWeight.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                mErrorTxt.setVisibility(View.VISIBLE);
                             }
                         });
                     }
