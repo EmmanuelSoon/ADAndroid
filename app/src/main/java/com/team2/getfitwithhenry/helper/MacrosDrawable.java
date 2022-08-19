@@ -16,6 +16,7 @@ public class MacrosDrawable extends Drawable {
     private Paint proteinRed;
     private Paint carbsGreen;
     private Paint fatYellow;
+    private Paint emptyGrey;
     private float proteinAngle;
     private float carbAngle;
     private float fatAngle;
@@ -25,6 +26,7 @@ public class MacrosDrawable extends Drawable {
         proteinRed = new Paint();
         carbsGreen = new Paint();
         fatYellow = new Paint();
+        emptyGrey = new Paint();
         this.proteinAngle = proteinAngle;
         this.carbAngle = carbAngle;
         this.fatAngle = fatAngle;
@@ -41,6 +43,11 @@ public class MacrosDrawable extends Drawable {
         proteinRed.setARGB(255, 241, 117, 117);
         carbsGreen.setARGB(255, 129, 241, 123);
         fatYellow.setARGB(255,251, 238, 130);
+        emptyGrey.setARGB(58, 111, 111, 111);
+
+        if (proteinAngle == 0 && fatAngle == 0 && carbAngle == 0){
+            canvas.drawArc(oval, 0F, 360F, true, emptyGrey);
+        }
 
         canvas.drawArc(oval, 0F, proteinAngle, true, proteinRed);
         canvas.drawArc(oval, proteinAngle, carbAngle, true, carbsGreen);

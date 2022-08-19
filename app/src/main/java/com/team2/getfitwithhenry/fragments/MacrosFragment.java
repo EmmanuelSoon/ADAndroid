@@ -72,7 +72,7 @@ public class MacrosFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState );
         ImageView macrosChart = view.findViewById(R.id.macros_chart);
-        macrosChart.setImageDrawable(new MacrosDrawable(proteinAngle/100*360 == 0 ? 360 : proteinAngle/100*360, carbAngle/100*360, fatAngle/100*360));
+        macrosChart.setImageDrawable(new MacrosDrawable(proteinAngle/100*360, carbAngle/100*360, fatAngle/100*360));
         setIdealMacros(user, view);
         setIntake(view);
 
