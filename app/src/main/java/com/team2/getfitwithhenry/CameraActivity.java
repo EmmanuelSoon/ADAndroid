@@ -275,7 +275,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                             goToSearchBtn.setVisibility(View.VISIBLE);
                             incorrectBtn.setVisibility(View.VISIBLE);
                             retakeBtn.setVisibility(View.VISIBLE);
-
+                            goToSearchBtn.setEnabled(false);
                         }
                     });
                     e.printStackTrace();
@@ -351,9 +351,9 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 public void run() {
                     resultsText.setText(iPredict.getName() + " (100g)" + "\n" + iPredict.getNutritionRecord().getTruncNutrition());
                     goToSearchBtn.setVisibility(View.VISIBLE);
+                    goToSearchBtn.setEnabled(true);
                     incorrectBtn.setVisibility(View.VISIBLE);
                     retakeBtn.setVisibility(View.VISIBLE);
-
                 }
             });
         }
