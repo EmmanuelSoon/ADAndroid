@@ -418,6 +418,9 @@ public class LoggerActivity extends AppCompatActivity implements MealButtonsFrag
                 DateTimeFormatter format2 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                 LocalDate parsedDate = LocalDate.parse(date, format2);
                 dateButton.setText(setDate(parsedDate));
+                if(LocalDate.now().equals(parsedDate)){
+                    mErrorTxt.setVisibility(View.GONE);
+                }
 
                 getDietRecordsFromServer(user, date);
                 getHealthRecordFromServer(user, date);
