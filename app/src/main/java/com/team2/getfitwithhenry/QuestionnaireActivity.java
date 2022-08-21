@@ -128,8 +128,8 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
         mactivityLevelSelector.setOnClickListener((view) -> {
             ActivityLevelFragment frag = new ActivityLevelFragment();
             frag.show(getSupportFragmentManager(), "Activity level Fragment");
-
         });
+
 //        activitylevelAdapter = new ArrayAdapter<String>(this, R.layout.graph_list_item, activityLevels);
 //        mactivityLevelSelector.setAdapter(activitylevelAdapter);
 //        mactivityLevelSelector.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -140,6 +140,10 @@ public class QuestionnaireActivity extends AppCompatActivity implements View.OnC
 //                showOnSelectErrorMsg(mactivityLevelSelector, mactivityLayout);
 //            }
 //        });
+        mactivityLayout.setEndIconOnClickListener((view) -> {
+                    ActivityLevelFragment frag = new ActivityLevelFragment();
+                    frag.show(getSupportFragmentManager(), "Activity level Fragment");
+                });
 
         mactivityLevelSelector.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
